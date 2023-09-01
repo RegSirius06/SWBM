@@ -1,0 +1,34 @@
+{% extends "bank/base_generic.html" %}
+
+{% block title %}<title>Расписание</title>{% endblock %}
+
+{% block content %}
+<h1>Расписание на день</h1>
+{% if perms.bank.meria %}
+  <p><a href="{% url 'plans-new' %}">Здесь вы можете добавить новый пункт расписания...</a></p>
+{% endif %}
+{% if plan %}
+  <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+    <thead>
+      <tr>
+        <th scope="col">№</th>
+        <th scope="col">Время начала</th>
+        <th scope="col">Описание</th>
+        {% if perms.bank.meria %}<th scope="col">Ссылка</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for element in plan %}
+      <tr>
+        <td>{{ element.number }}</td>
+        <td>В {{ element.time }}</td>
+        <td>{{ element.comment }}</td>
+        {% if perms.bank.meria %}<td><a href="{{ element.get_absolute_url }}">Изменить пункт расписания...</a></td>{% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Расписание ещё не составлено.</p>
+{% endif %}
+{% endblock %}

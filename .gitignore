@@ -1,0 +1,12 @@
+/All_users.txt
+/lisbank/py.py
+/lisbank/backuping.py
+/bank/__pycache__/
+/bank/migrations/__pycache__/
+/bank/views/__pycache__/
+/bank/forms/__pycache__/
+/choice_of_path/__pycache__/
+/choice_of_path/migrations/__pycache__/
+/utils/__pycache__/
+/SWBM/__pycache__/
+/reserve/

@@ -1,0 +1,128 @@
+{% extends "bank/base_generic.html" %}
+
+{% block title %}
+    <title>Законы ЛИСограда</title>
+{% endblock %}
+
+{% block content %}
+    <div id="0"></div>
+    <h1>Законы ЛИСограда</h1>
+
+    <h2>Содержание:</h2>
+    <ul>
+        <li><a href="#uk">Уголовый кодекс</a></li>
+        <li><a href="#ak">Административный кодекс</a></li>
+        <li><a href="#tk">Трудовой кодекс</a></li>
+        <div id="uk"></div>
+        <li><a href="#kp">Кодекс премий</a></li>
+    </ul>
+    <br>
+    <h2>Уголовый кодекс</h2>
+    {% if rool_u %}
+    <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+        <thead>
+            <tr>
+                <th score="col">Статья</th>
+                <th score="col">Правонарушение</th>
+                <th score="col">Наказание</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in rule_u %}
+            <tr>
+                <td>{{ element.get_num }}</td>
+                <td>{{ element.comment }}</td>
+                <td>{{ element.punishment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <div id="ak"></div>
+    </table>
+    {% else %}
+    <div id="ak"></div>
+      <p>Правила ещё не утверждены.</p>
+    {% endif %}
+    <a class="text-muted" href="#0">К содержанию...</a>
+
+    <h2>Административный кодекс</h2>
+    {% if rool_a %}
+    <h5>Раздел 1 - Нарушение общественного порядка</h5>
+    <h5>Раздел 2 - Опоздания и уклонения от занятий</h5>
+    <h5>Раздел 3 - Остальные правонарушения</h5>
+    <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+        <thead>
+            <tr>
+                <th score="col">Статья</th>
+                <th score="col">Правонарушение</th>
+                <th score="col">Наказание</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in rule_a %}
+            <tr>
+                <td>{{ element.get_num }}</td>
+                <td>{{ element.comment }}</td>
+                <td>{{ element.punishment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <div id="tk"></div>
+    </table>
+    {% else %}
+    <div id="tk"></div>
+      <p>Правила ещё не утверждены.</p>
+    {% endif %}
+    <a class="text-muted" href="#0">К содержанию...</a>
+    <br />
+    <h2>Трудовой кодекс</h2>
+    {% if rool_t %}
+    <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+        <thead>
+            <tr>
+                <th score="col">Статья</th>
+                <th score="col">Работа</th>
+                <th score="col">Зарплата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in rule_t %}
+            <tr>
+                <td>{{ element.get_num }}</td>
+                <td>{{ element.comment }}</td>
+                <td>{{ element.punishment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <div id="kp"></div>
+    </table>
+    {% else %}
+    <div id="kp"></div>
+      <p>Правила ещё не утверждены.</p>
+    {% endif %}
+    <a class="text-muted" href="#0">К содержанию...</a>
+    <br />
+    <h2>Кодекс премий</h2>
+    {% if rool_p %}
+    <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+        <thead>
+            <tr>
+                <th score="col">Статья</th>
+                <th score="col">Причина премии</th>
+                <th score="col">Премия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in rule_p %}
+            <tr>
+                <td>{{ element.get_num }}</td>
+                <td>{{ element.comment }}</td>
+                <td>{{ element.punishment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+      <p>Правила ещё не утверждены.</p>
+    {% endif %}
+    <a class="text-muted" href="#0">К содержанию...</a>
+{% endblock %}

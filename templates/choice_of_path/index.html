@@ -1,0 +1,38 @@
+{% extends "choice_of_path/base_generic.html" %}
+
+{% block content %}
+<h1>Добро пожаловать!</h1>
+  <h6>Это главная страница сайта.</h6>
+  {% if user.is_authenticated %}
+    <h2>Здравствуй, {{ request.user.account }}</h2>
+    <ui>
+      {% if request.user.account.party != 0 %}
+        <li>Отряд: {{ request.user.account.party }}</li>
+      {% else %}
+        <li>Вы не принадлежите ни к одному отряду.</li>
+      {% endif %}
+      {% if request.user.account.group != None %}
+        <li>Группа: {{ request.user.account.group }}</li>
+      {% else %}
+        <li>Вы не состоите ни в одной группе.</li>
+        <p class="text-muted">Если это не так, вы можете обратиться к минфину/старшему куратору, он исправит.</p>
+      {% endif %}
+    </ui>
+  {% endif %}
+  <h2>Выберите, какой раздел сайта вам нужно посетить:</h2> 
+    <nav class="navbar navbar-expand-md">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarCollapse2">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_bank' %}">Перейти в банк</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_messenger' %}">Перейти в мессенджер</a></li>
+            {% if perms.bank.staff_ %}
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/">Перейти в admin-панель</a></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  <p class="text-muted">Не следует нарушать правила, которые вы можете прочитать <a href="{% url 'rules' %}">здесь</a>.</p>
+  <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+{% endblock %}

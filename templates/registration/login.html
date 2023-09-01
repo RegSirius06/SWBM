@@ -1,0 +1,70 @@
+{% extends "registration/base_generic.html" %}
+
+{% block content %}
+
+<style>
+html,
+body {
+  height: 100%;
+}
+
+.form-signin {
+  max-width: 330px;
+  padding: 1rem;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+</style>
+
+<h1 class="h3 mb-3 fw-normal">Пожалуйста, войдите</h1>
+
+{% if form.errors %}
+  <p class="p-3 mb-2 bg-danger text-white">Ваши имя пользователя и пароль не подходят к существующим. Попробуйте ещё раз.</p>
+{% endif %}
+
+{% if next %}
+  {% if user.is_authenticated %}
+    <p class="p-3 mb-2 bg-warning text-dark">У вашего аккаунта нет доступа к этой странице. Чтобы продолжить,
+    пожалуйста, войдите с учетной записью, которая имеет доступ к этой странице.</p>
+  {% else %}
+    <p class="p-3 mb-2 bg-warning text-dark">Вы должны войти в аккаунт, чтобы увидеть эту страницу.</p>
+  {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+<ul>
+<li>
+  {{ form.username.label_tag }}
+  <br />
+  {{ form.username }}
+</li>
+
+<li>
+{{ form.password.label_tag }}
+<br />
+{{ form.password }}
+</li>
+<br />
+<input type="submit" value="Войти" />
+<input type="hidden" name="next" value="{{ next }}" />
+</ul>
+</form>
+
+<p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+
+{% endblock %}

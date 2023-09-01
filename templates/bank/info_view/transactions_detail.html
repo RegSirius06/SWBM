@@ -1,0 +1,46 @@
+{% extends "bank/base_generic.html" %}
+
+{% block content %}
+    <h1>Транзакции {{ account.info }}</h1>
+    <h4>Сейчас на счету 
+        {% if account.balance > 0 %}
+            <span class="green">{{account.balance}}t</span>
+        {% elif account.balance == 0 %}
+            {{account.balance}}t
+        {% else %}
+            <span class="red">{{account.balance}}t</span>
+        {% endif %}
+    .</h4>
+    <h2>Последние изменения счёта:</h2>
+    {% if account.get_transactions %}
+    <table class="table table-striped table-hover table-bordered" cellpadding=30px>
+        <thead>
+            <tr>
+                <th score="col">Дата</th>
+                <th score="col">Изменение счёта</th>
+                <th score="col">Комментарий</th>
+                <th score="col">Создатель</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for element in account.get_transactions %}
+            <tr>
+                <td>{{ element.date }}</td>
+                <td>
+                    {% if element.sign == '-' %}
+                        <span {% if element.receiver == account or account.account_valid == element.transaction_valid %} class="red" {% else %} class="green" {% endif %}>{% if element.receiver == account or account.account_valid == element.transaction_valid %}-{% else %}+{% endif %}{{ element.get_sum }}</span>
+                    {% else %}
+                        <span {% if element.receiver == account or account.account_valid == element.transaction_valid %} class="green" {% else %} class="red" {% endif %}>{% if element.receiver == account or account.account_valid == element.transaction_valid %}+{% else %}-{% endif %}{{ element.get_sum }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ element.comment }}</td>
+                <td>{{ element.history }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+      <p>На счет ещё не было поступлений.</p>
+    {% endif %}
+    <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+{% endblock %}

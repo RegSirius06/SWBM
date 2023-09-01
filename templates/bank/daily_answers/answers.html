@@ -1,0 +1,22 @@
+{% extends "bank/base_generic.html" %}
+
+{% block title %}<title>Задачи</title>{% endblock %}
+
+{% block content %}
+<h1>Задачи</h1>
+{% if perms.bank.meria %}
+  <p><a href="{% url 'answers-new' %}">Здесь вы можете добавить новую задачу...</a></p>
+{% endif %}
+{% if answers %}
+  {% for element in answers %}
+    <h2>{{ element.name }}</h2>
+    {% if perms.bank.meria %}<h6><a href="{{ element.get_absolute_url }}">Изменить задачу...</a></h6>{% endif %}
+    <pre class="multiple-text">{{ element.text }}</pre>
+    <p>Плата за решение: <span class="green">{{ element.cnt }}</span>t.</p>
+    <h6 class="text-muted">Срок сдачи: {% if element.status %}14 июля{% else %}сегодня{% endif %}.</h6>
+    <br />
+  {% endfor %}
+{% else %}
+  <p>Задачи ещё не составлены.</p>
+{% endif %}
+{% endblock %}

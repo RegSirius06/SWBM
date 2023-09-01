@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+  {% block title %}<title>Выбери свой путь</title>{% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Добавление дополнительных статических файлов -->
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'src/bootstrap/css/bootstrap.min.css' %}">
+  <script src="{% static 'src/bootstrap/js/bootstrap.min.js' %}"></script>
+  <link id="main-style" rel="stylesheet" href="{% static 'bank/css/styles.css' %}">
+  <link type="image/x-icon" href="{% static 'favicon.ico' %}" rel="shortcut icon">
+  <link type="Image/x-icon" href="{% static 'favicon.ico' %}" rel="icon">
+  <script>
+    $(document).ready(function($) {
+        $("#main-style").detach().appendTo("head");
+    });
+  </script>
+</head>
+
+<body>
+    <div id="top"></div>
+    <div class="top-panel" role="navigation">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="{% url 'index' %}">На главную</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'index_of_bank' %}">Перейти в банк</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'index_of_messenger' %}">Перейти в мессенджер</a></li>
+                    {% if perms.bank.staff_ %}
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="/admin/">Перейти в admin-панель</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link disabled">В системе как {{ request.user.account.short_name }}</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'logout' %}?next={% url 'index' %}">Выйти</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link disabled">Вы не авторизированы в системе</a></li>
+                    <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'login' %}">Войти</a></li>
+                    {% endif %}
+                </ul>
+              </div>
+            </div>
+          </nav>
+    </div>
+
+    <div class="container-fluid main">
+        <div class="row">
+            <div class="col-sm-12" style="margin-top: 66px;margin-bottom: 66px;">
+                {% block content %}
+                {% endblock %}
+
+                {% block pagination %}
+                    {% if is_paginated %}
+                        <div class="pagination">
+                            <span class="page-links">
+                                {% if page_obj.has_previous %}
+                                    <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">Предыдущая страница</a>
+                                {% endif %}
+                                <span class="page-current">
+                                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+                                </span>
+                                {% if page_obj.has_next %}
+                                    <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">Следующая страница</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+
+                {% block footer %}
+                <footer class="footer mt-auto py-3 bg-body-tertiary">
+                    <div class="container">
+                        <span class="text-body-secondary">
+                            Это страница, где вы можете выбрать, куда вам нужно.
+                            <br />
+                            Успешного пользования!
+                        </span>
+                    </div>
+                </footer>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
