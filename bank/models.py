@@ -56,6 +56,39 @@ class account(models.Model):
 
     user_group = models.CharField(max_length=40, choices=EXISTING_GROUPS, default='None', help_text='Группа обучения', verbose_name="Занятия:")
     party = models.IntegerField(default=0, verbose_name="Отряд:")
+
+    EXISTING_THEMES = (
+        ('default', 'По-умолчанию'),
+        ('table-primary', 'Голубой'),
+        ('table-secondary', 'Серый'),
+        ('table-success', 'Зелёный'),
+        ('table-danger', 'Красный'),
+        ('table-warning', 'Жёлтый'),
+        ('table-info', 'Светло-зелёный'),
+        ('table-light', 'Светлая'),
+        ('table-dark', 'Тёмная'),
+
+        ('p-3 mb-2', 'По-умолчанию (аналог)'),
+        ('p-3 mb-2 bg-primary text-white', 'Голубой (аналог)'),
+        ('p-3 mb-2 bg-secondary text-white', 'Серый (аналог)'),
+        ('p-3 mb-2 bg-success text-white', 'Зелёный (аналог)'),
+        ('p-3 mb-2 bg-danger text-white', 'Красный (аналог)'),
+        ('p-3 mb-2 bg-warning text-dark', 'Жёлтый (аналог)'),
+        ('p-3 mb-2 bg-info text-dark', 'Светло-зелёный (аналог)'),
+        ('p-3 mb-2 bg-light text-dark', 'Светлая (аналог)'),
+        ('p-3 mb-2 bg-dark text-white', 'Тёмная (аналог)'),
+
+        ('p-3 mb-2 bg-primary bg-gradient text-white', 'Голубой (аналог, градиент)'),
+        ('p-3 mb-2 bg-secondary bg-gradient text-white', 'Серый (аналог, градиент)'),
+        ('p-3 mb-2 bg-success bg-gradient text-white', 'Зелёный (аналог, градиент)'),
+        ('p-3 mb-2 bg-danger bg-gradient text-white', 'Красный (аналог, градиент)'),
+        ('p-3 mb-2 bg-warning bg-gradient text-dark', 'Жёлтый (аналог, градиент)'),
+        ('p-3 mb-2 bg-info bg-gradient text-dark', 'Светло-зелёный (аналог, градиент)'),
+        ('p-3 mb-2 bg-light bg-gradient text-dark', 'Светлая (аналог, градиент)'),
+        ('p-3 mb-2 bg-dark bg-gradient text-white', 'Тёмная (аналог, градиент)'),
+    )
+
+    theme_self = models.CharField(max_length=50, choices=EXISTING_THEMES, default='default', help_text="Как это выглядит, можно посмотреть ниже.", verbose_name="Тема:")
     account_status = models.CharField(max_length=100, default='', blank=True, verbose_name="Статус:")
 
     class Meta:
@@ -66,6 +99,7 @@ class account(models.Model):
             ("transaction_base", "Может совершать переводы"),
             ("register", "Может регистрировать пользователей"),
             ("edit_users", "Может изменять пользователей"),
+            ("ant_edit", "Может изменять объявления"),
             ("meria", "Мэрия в банке"),
         )
     
@@ -298,140 +332,6 @@ class plan(models.Model):
     
     class Meta:
         ordering = ["number"]
-
-class message(models.Model):
-    date = models.DateField(verbose_name="Дата:")
-    time = models.TimeField(default=datetime.time(hour=0), verbose_name="Время:")
-    receiver = models.ForeignKey('chat', related_name='received_mess', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
-    creator = models.ForeignKey('account', related_name='created_mess', on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
-    text = models.TextField(max_length=2000, verbose_name='Текст:')
-    anonim = models.BooleanField(default=False, verbose_name='Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку.')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID сообщения.")
-    anonim_legacy = models.BooleanField(default=False, editable=False)
-
-    def get_absolute_url(self):
-        x = chat_valid.objects.get(what_chat=self.receiver) if self.receiver is not None else None
-        flag = x is not None
-        if not flag: 
-            flag = self.receiver is None
-            print('nok')
-        else: flag = x.avaliable
-        return reverse('messages-edit-n', args=[str(self.id)]) if flag else None
-    
-    def get_date(self):
-        return f'{self.date} в {self.time}'.split('.')[0]
-    
-    def anonim_status(self):
-        return 'Анонимно' if self.anonim or self.anonim_legacy else 'Публично'
-
-    def __str__(self):
-        return f'{self.date}: ' + ('(глобально)' if self.receiver is None else f'К {self.receiver}') + (f' от {self.creator}' if not self.anonim else ' (анонимно)')
-    
-    class Meta:
-        ordering = ["-date", "-time"]
-
-class chat(models.Model):
-    cnt = models.IntegerField(default=1, editable=False)
-    name = models.CharField(max_length=50, default='', verbose_name='Название чата:')
-    description = models.CharField(max_length=500, default='', verbose_name='Описание чата:')
-    creator = models.ForeignKey('account', related_name='creator_chat', on_delete=models.CASCADE, null=True, verbose_name="Создатель:")
-    anonim = models.BooleanField(default=False, verbose_name='Если вы хотите сделать чат анонимным, поставьте здесь галочку. Этот параметр неизменяем.')
-    anonim_legacy = models.BooleanField(default=False, verbose_name='Поставьте галочку, если хотите разрешить участникам отправлять анонимные сообщения.')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID чата.")
-
-    def __str__(self):
-        return f'{self.name} (создал {self.creator}): {self.cnt} участников'
-
-    def get_absolute_url(self):
-        return reverse('chats-n', args=[str(self.id)]) if chat_valid.objects.get(what_chat=self).avaliable else None
-
-    def get_absolute_url_for_edit(self):
-        return reverse('chats-edit-n', args=[str(self.id)]) if chat_valid.objects.get(what_chat=self).avaliable else None
-
-    def get_absolute_url_from_archive(self):
-        return reverse('chats-archived-n', args=[str(self.id)])
-    
-    def anonim_status(self):
-        return 'Анонимный чат' if self.anonim else \
-               'Анонимные сообщения разрешены' if self.anonim_legacy\
-                else 'Все сообщения публичные'
-
-    def archive(self):
-        chat_validator = chat_valid.objects.get(what_chat=self)
-        chat_validator.avaliable = False
-        list_x = chat_validator.get_all_CAA()
-        for i in list_x: i.read_chat()
-        chat_validator.save()
-
-    def get_read_status(self, acc: account):
-        CAA = chat_and_acc.objects.filter(what_chat=self).get(what_acc=acc)
-        return CAA.readen
-
-    def chat_valid(self):
-        return f'{self}'
-
-    class Meta:
-        ordering = ["name"]
-
-class chat_valid(models.Model):
-    what_chat = models.OneToOneField('chat', on_delete=models.CASCADE, null=True, verbose_name="Чат:")
-    avaliable = models.BooleanField(default=True, editable=False)
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    list_members = ListField(default=[], null=True, help_text="Список ID участников:")
-    list_messages = ListField(default=[], null=True, help_text="Список ID сообщений:")
-
-    def __str__(self):
-        return f'{self.what_chat} ' + ('(доступен)' if self.avaliable else '(не доступен)')
-    
-    def getting_access(self, acc: account):
-        for i in self.list_members:
-            if f'{acc.id}' == f'{i}': return True
-        return False
-    
-    def getting_access_id(self, acc: uuid):
-        for i in self.list_members:
-            if f'{acc}' == f'{i}': return True
-        return False
-    
-    def add_msg(self, msg: message):
-        if self.list_messages is None:
-            self.list_messages = []
-        self.list_messages.append(f'{msg.id}')
-        list_x = list(self.get_all_CAA())
-        for i in list_x:
-            i.readen = False
-            i.save()
-        self.save()
-        return
-    
-    def get_all_msg(self):
-        list_x = [uuid.UUID(i) for i in self.list_messages]
-        return message.objects.filter(id__in=list_x)
-    
-    def get_all_CAA(self):
-        return chat_and_acc.objects.filter(what_chat=self.what_chat)
-
-class chat_and_acc(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    what_chat = models.ForeignKey('chat', on_delete=models.CASCADE, null=True, verbose_name="Чат:")
-    what_acc = models.ForeignKey('account', on_delete=models.CASCADE, null=True, verbose_name="Аккаунт:")
-    readen = models.BooleanField(default=False, editable=False)
-
-    def __str__(self):
-        return f'{self.what_chat} ' + ('(' if self.readen else '(не ') + f'прочитан {self.what_acc})'
-
-    def valid_CAA(self):
-        return f'{self.what_chat}'
-
-    def read_chat(self):
-        self.readen = True
-        self.save()
-        return
-    
-    def unread_chat(self):
-        self.readen = False
-        self.save()
-        return
 
 class daily_answer(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")

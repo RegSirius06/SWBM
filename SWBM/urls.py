@@ -25,6 +25,6 @@ urlpatterns = [
     path('choose_your_path/', include('choice_of_path.urls'),),
     path('', RedirectView.as_view(url='/choose_your_path/', permanent=True)),
     path('bank/', include('bank.urls'),),
-    #path('messenger/', include('messener.urls'), name="messenger"),
+    path('messenger/', include('messenger.urls'),),
     path('accounts/', include('django.contrib.auth.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

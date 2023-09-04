@@ -7,6 +7,12 @@
 /bank/forms/__pycache__/
 /choice_of_path/__pycache__/
 /choice_of_path/migrations/__pycache__/
+/messenger/__pycache__/
+/messenger/migrations/__pycache__/
+/messenger/views/__pycache__/
+/messenger/forms/__pycache__/
 /utils/__pycache__/
 /SWBM/__pycache__/
 /reserve/
+/1.csv
+/users.txt

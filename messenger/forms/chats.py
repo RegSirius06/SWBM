@@ -1,78 +1,13 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from bank.models import account, transaction, message, rools, plan, daily_answer, good, chat, chat_and_acc, chat_valid
-from django.core.paginator import Paginator
-import datetime
-import uuid
 
-class SetStatus(forms.Form):
-    status = forms.CharField(max_length=50, required=False, label="Введите новый статус:")
-
-    def clean_status(self):
-        return self.cleaned_data['status']
+from bank.models import account
+from messenger.models import chat, chat_valid
+from messenger.forms.other import ImageSelectWidget
 
 class SetReadStatusForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-class NewMessageForm(forms.Form):
-    message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
-
-    def clean_message_text(self):
-        return self.cleaned_data['message_text']
-
-    message_anonim = forms.BooleanField(initial=False, required=False, label="Анонимно?", help_text="Если вы хотите отправить сообщение анонимно, вы должны поставить галочку.")
-
-    def clean_message_anonim(self):
-        return self.cleaned_data['message_anonim']
-    
-    class Meta:
-        model = message
-        fields = ['message_receiver', 'message_text', 'message_anonim']
-
-class NewMessageForm_WithoutAnonim(forms.Form):
-    message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
-
-    def clean_message_text(self):
-        return self.cleaned_data['message_text']
-    
-    class Meta:
-        model = message
-        fields = ['message_receiver', 'message_text', 'message_anonim']
-
-class ReNewMessageFormAnonim(forms.Form):
-    def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            self.fields['delete'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
-
-    message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
-
-    def clean_message_text(self):
-        return self.cleaned_data['message_text']
-
-    message_anonim = forms.BooleanField(initial=False, required=False, label="Анонимно?", help_text="Если вы хотите отправить сообщение анонимно, вы должны поставить галочку.")
-
-    def clean_message_anonim(self):
-        return self.cleaned_data['message_anonim']
-    
-    class Meta:
-        model = message
-        fields = ['message_text', 'message_anonim']
-
-class ReNewMessageFormBase(forms.Form):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['delete'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
-
-    message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
-
-    def clean_message_text(self):
-        return self.cleaned_data['message_text']
-    
-    class Meta:
-        model = message
-        fields = ['message_text']
+    pass
 
 class NewChatForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -94,6 +29,14 @@ class NewChatForm(forms.Form):
     def clean_chat_description(self):
         return self.cleaned_data['chat_description']
     
+    image_list = [f'{i}.png' for i in range(7)]
+    image_choice = forms.ChoiceField(label="Аватарка чата:", required=False, choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
+
+    def clean_image_choice(self):
+        img = self.cleaned_data['image_choice']
+        if img is None or img == '': img = self.image_list[0]
+        return img
+
     chat_anonim = forms.BooleanField(initial=False, required=False, help_text="Если вы хотите сделать чат анонимным, поставьте здесь галочку.\nЭтот параметр неизменяем.", label="Чат анонимный?")
 
     def clean_chat_anonim(self):
@@ -104,10 +47,13 @@ class NewChatForm(forms.Form):
     def clean_chat_anonim_legacy(self):
         return self.cleaned_data['chat_anonim_legacy']
 
-    chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), label="Участники чата:", help_text="Выберите участников чата. (Вы будете в нём независимо от вашего выбора здесь.)")
+    chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), label="Участники чата:", help_text="Выберите участника(-ов) чата.")
 
     def clean_chat_members(self):
-        return self.cleaned_data['chat_members']
+        members = self.cleaned_data['chat_members']
+        #if len(list(members)) > 25:
+        #    raise ValidationError(_('В чате не может быть больше 25-ти человек. Если вы хотите создать чат с большим количеством людей, вам нужно обратиться к администратору.'))
+        return members
 
 class NewChatFormConflict(forms.Form):
     CONFLICT_SOLVES = (
@@ -136,6 +82,12 @@ class ReNewChatFormAnonim(forms.Form):
 
     def clean_chat_creator(self):
         return self.cleaned_data['chat_creator']
+
+    image_list = [f'{i}.png' for i in range(7)]
+    image_choice = forms.ChoiceField(label="Аватарка чата:", choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
+
+    def clean_image_choice(self):
+        return self.cleaned_data['image_choice']
 
     chat_name = forms.CharField(label="Название чата:")
 
@@ -171,6 +123,12 @@ class ReNewChatFormBase(forms.Form):
     def clean_chat_creator(self):
         return self.cleaned_data['chat_creator']
 
+    image_list = [f'{i}.png' for i in range(7)]
+    image_choice = forms.ChoiceField(label="Аватарка чата:", choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
+
+    def clean_image_choice(self):
+        return self.cleaned_data['image_choice']
+
     chat_name = forms.CharField(label="Название чата:")
 
     def clean_chat_name(self):
@@ -183,4 +141,3 @@ class ReNewChatFormBase(forms.Form):
 
     def clean_chat_text(self):
         return self.cleaned_data['chat_text']
-

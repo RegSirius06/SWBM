@@ -1,0 +1,68 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block content %}
+<h1><img src="{{ chat.get_img }}" width="50px" height="50px" />Чат "{{ chat.name }}"</h1>
+<h3>Описание:</h3>
+<p><pre class="text-break multiple-text">{{ chat.description }}</pre></p>
+<h3>Информация:</h3>
+<form action="" method="post"><ui>
+    <li>Создатель: <strong>{{ chat.creator }}</strong></li>
+    {% if not chat.anonim %}
+    <li>Количество участников: <strong>{{ chat.cnt }}</strong></li>
+    {% else %}
+    <li>Количество участников: <strong>больше одного...</strong></li>
+    {% endif %}
+    <li>Тип чата: <strong>{% if chat.anonim %}<span class="green">Анонимный{% else %}<span class="red">Публичный{% endif %}</span></strong></li>
+    {% if not chat.anonim %}
+    <li>Анонимные сообщения в чате <strong>{% if chat.anonim_legacy %}<span class="green">разрешены{% else %}<span class="red">запрещены{% endif %}</span></strong>.</li>
+    {% else %}
+    <li>Все сообщения в чате <strong class="green">анонимные</strong>.</li>
+    {% endif %}
+    {% if chat.chat_valid.avaliable %}
+    {% if request.user.account == chat.creator %}
+    <li><strong><a href="{{ chat.get_absolute_url_for_edit }}">Если вы хотите изменить этот чат, перейдите по данной ссылке...</a></strong></li>
+    {% endif %}
+    <li>Чат помечен {% if readen_status %}<strong class="green">прочитанным{% else %}<strong class="red">не прочитанным{% endif %}</strong>.</li>
+    {% csrf_token %}
+    {{ form2.as_ul }}
+    {% if readen_status %}
+    <input type="submit" value="Пометить непрочитанным" />
+    {% else %}
+    <input type="submit" value="Пометить прочитанным" />
+    {% endif %}
+    {% endif %}
+</ui></form>
+{% if chat.chat_valid.avaliable %}
+<h3>Создать новое сообщение:</h3>
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form }}
+    </table>
+    <input type="submit" value="Отправить" />
+</form>
+{% endif %}
+
+{% load static %}
+<script src="{% static 'messenger/js/jquery.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        setInterval(updateMessages, 5000); // Обновление каждые 5 секунд (можно настроить)
+
+        function updateMessages() {
+            $.ajax({
+                url: "{{ chat.get_absolute_url_for_msg }}",
+                dataType: 'json',
+                success: function(response) {
+                    $('#messages').html(response.html); // Обновляем список сообщений
+                }
+            });
+        }
+    });
+</script>
+
+<h3>Сообщения:</h3>
+<div id="messages">
+    {% include 'messenger/updates/update_messages.html' %}
+</div>
+{% endblock %}

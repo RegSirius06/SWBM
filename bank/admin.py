@@ -1,26 +1,9 @@
 from django.contrib import admin
-from bank.models import account, transaction, rools, good, plan, message, daily_answer, chat, chat_and_acc, chat_valid
-
-@admin.register(chat)
-class ChatAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(chat_valid)
-class ChatValidAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(chat_and_acc)
-class ChatAndAccAdmin(admin.ModelAdmin):
-    pass
+from bank.models import account, transaction, rools, good, plan, daily_answer
 
 @admin.register(account)
 class AccountAdmin(admin.ModelAdmin):
     list_filter = ["user_group", "party"]
-    pass
-
-@admin.register(message)
-class MessageAdmin(admin.ModelAdmin):
-    list_filter = ["date", "receiver", "creator"]
     pass
 
 @admin.register(daily_answer)

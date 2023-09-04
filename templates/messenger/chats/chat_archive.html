@@ -1,0 +1,46 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block content %}
+<h1>Заархивированные чаты:</h1>
+{% if messages %}
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Чат</th>
+            <th scope="col">Создатель</th>
+            <th scope="col">Приватность</th>
+            <th scope="col">Ссылка</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for element in messages %}
+        <tr>
+            <td><img src="{{ element.get_img }}" width="40px" height="40px" /></td>
+            <td>{{ element.name }}</td>
+            <td>{{ element.creator }}</td>
+            <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
+                {{ element.anonim_status }}</span></td>
+            <td><a href="{{ element.get_absolute_url_from_archive }}">Перейти в чат</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if messages.has_previous %}
+    <a href="?page2={{ messages.previous_page_number }}">Предыдущая страница</a>
+{% endif %}
+<span class="page-current">
+    Страница {{ messages.number }} из {{ messages.paginator.num_pages }}.
+</span>
+{% if messages.has_next %}
+    <a href="?page2={{ messages.next_page_number }}">Следующая страница</a>
+{% endif %}
+<form method="GET" action="{% url 'messages' %}">
+    <input type="text" name="page1" value="{{ messages.number }}" />
+    <button type="submit">Перейти</button>
+</form>
+{% else %}
+    <p>В архиве ещё нет чатов.</p>
+{% endif %}
+<a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+{% endblock %}

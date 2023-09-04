@@ -1,0 +1,76 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block content %}
+<h1>Здравствуй, {{ request.user.account }}</h1>
+<form action="" method="post"><ui>
+    <li>Если вам некомфортно читать сообщения, вы можете изменить тему сообщений <a href="{% url 'list-themes' %}">по соответствующей ссылке...</a></li>
+    {% if request.user.account.party != 0 %}
+    <li>Отряд: {{ request.user.account.party }}</li>
+    {% else %}
+    <li>Вы не принадлежите ни к одному отряду.</li>
+    {% endif %}
+    <p class="text-muted">Если это не так, вы можете обратиться к админу, он исправит.</p>
+    {% csrf_token %}
+    {{ form.as_ul }}
+    <input type="submit" value="Обновить статус" />
+</ui></form>
+
+<h1>Сообщения:</h1>
+<nav class="navbar navbar-expand-md">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarCollapse2">
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-new' %}">Создать глобальное сообщение</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-new' %}">Создать новый чат</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-edit' %}">Просмотреть отправленные сообщения</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-archived' %}">Просмотреть чаты из архива</a></li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+{% load static %}
+<script url="{% static 'messenger/js/jquery.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        setInterval(updateMessages, 30000); // Обновление каждые 30 секунд (можно настроить)
+
+        function updateMessages() {
+            $.ajax({
+                url: "{% url 'update-chats' %}",
+                dataType: 'json',
+                success: function(response) {
+                    $('#chats').html(response.html); // Обновляем список сообщений
+                }
+            });
+        }
+    });
+</script>
+
+<h2>Личные чаты:</h2>
+<div id="chats">
+    {% include 'messenger/updates/update_chats.html' %}
+</div>
+
+<script>
+    $(document).ready(function() {
+        setInterval(updateMessages, 30000); // Обновление каждые 30 секунд (можно настроить)
+
+        function updateMessages() {
+            $.ajax({
+                url: "{% url 'update-globals' %}",
+                dataType: 'json',
+                success: function(response) {
+                    $('#globals').html(response.html); // Обновляем список сообщений
+                }
+            });
+        }
+    });
+</script>
+
+<h2>Глобальные сообщения:</h2>
+<div id="globals">
+    {% include 'messenger/updates/update_globals.html' %}
+</div>
+{% endblock %}

@@ -70,12 +70,10 @@ def new_account_add_from_file(request):
         form = accounts.ReadFromFileForm(request.POST)
         if form.is_valid():
             s = form.cleaned_data['way_to_file']
-            if os.path.split(s)[-1].split('.') == 'txt':
-                if s: list_with_dict = read_from.from_txt(s)
-                else: list_with_dict = read_from.from_txt()
-            else:
-                if s: list_with_dict = read_from.from_csv(s)
-                else: list_with_dict = read_from.from_csv()
+            if s:
+                if os.path.split(s)[-1].split('.')[-1] == 'txt': list_with_dict = read_from.from_txt(s)
+                else: list_with_dict = read_from.from_csv(s)
+            else: list_with_dict = read_from.from_txt()
             type_ = int(form.cleaned_data['type_'])
             for i in list_with_dict:
                 new_account = account()
@@ -105,6 +103,8 @@ def new_account_add_from_file(request):
                         perms, created = Permission.objects.get_or_create(codename="meria")
                         group_.permissions.add(perms)
                         perms, created = Permission.objects.get_or_create(codename="edit_users")
+                        group_.permissions.add(perms)
+                        perms, created = Permission.objects.get_or_create(codename="ant_edit")
                         group_.permissions.add(perms)
                 else: group_, created = Group.objects.get_or_create(name="listener")
                 group_.save()
@@ -199,6 +199,8 @@ def new_account_add(request):
                     group_.permissions.add(perms)
                     perms, created = Permission.objects.get_or_create(codename="edit_users")
                     group_.permissions.add(perms)
+                    perms, created = Permission.objects.get_or_create(codename="ant_edit")
+                    group_.permissions.add(perms)
             else: group_, created = Group.objects.get_or_create(name="listener")
             group_.save()
             group_meria, created = Group.objects.get_or_create(name="meria")
@@ -284,6 +286,8 @@ def new_account_full_add(request):
                     perms, created = Permission.objects.get_or_create(codename="meria")
                     group_.permissions.add(perms)
                     perms, created = Permission.objects.get_or_create(codename="edit_users")
+                    group_.permissions.add(perms)
+                    perms, created = Permission.objects.get_or_create(codename="ant_edit")
                     group_.permissions.add(perms)
             else: group_, created = Group.objects.get_or_create(name="listener")
             group_.save()

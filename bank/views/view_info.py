@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from bank.models import account, transaction, chat_and_acc, rools
+from bank.models import account, transaction, rools
+from messenger.models import chat_and_acc
 
 def index(request):
     forbes = account.objects.exclude(party=0).order_by('-balance')[:10]

@@ -1,10 +1,10 @@
-{% extends "bank/base_generic.html" %}
+{% extends "messenger/base_generic.html" %}
 
 {% block title %}
 {% if title %}
 <title>{{ title }}</title>
 {% else %}
-<title>Банк ЛИСа</title>
+<title>Мессенджер ЛИСа</title>
 {% endif %}
 {% endblock %}
 
@@ -17,7 +17,10 @@
         {{ form }}
         </table>
         <input type="submit" value="Сохранить изменения" />
-        <input type="submit" name="delete" value="Удалить" />
+        <input type="submit" name="delete" value="{% if delete %}{{ delete }}{% else %}Удалить{% endif %}" />
+        {% if foot %}
+        <p class="text-muted">{{ foot }}</p>
+        {% endif %}
     </form>
 
 {% endblock %}

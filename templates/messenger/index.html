@@ -1,0 +1,73 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block content %}
+<h1>Добро пожаловать!</h1>
+  <h6>Это главная страница мессенджера.</h6>
+  <!--
+  {% if user.is_authenticated %}
+    <h2>Здравствуй, {{ request.user.account }}</h2>
+    <ui>
+      {% if request.user.account.party != 0 %}
+        <li>Отряд: {{ request.user.account.party }}</li>
+      {% else %}
+        <li>Вы не принадлежите ни к одному отряду.</li>
+      {% endif %}
+      {% if request.user.account.group != 'None' %}
+        <li>Группа: {{ request.user.account.group }}</li>
+      {% else %}
+        <li>Вы не состоите ни в одной группе.</li>
+        <p class="text-muted">Если это не так, вы можете обратиться к минфину, он исправит.</p>
+      {% endif %}
+    </ui>
+  {% endif %}
+    -->
+  {% if readen_status %}
+  <h6><strong class="green">У вас нет новых сообщений.</strong></h6>
+  {% else %}
+  <h6><strong class="red">У вас есть новые сообщения!</strong></h6>
+  {% endif %}
+  <h6>Используйте поле сверху для навигации по сайту.</h6>
+  {% if perms.lfmsh.staff_ %}
+    <h2>Для персонала:</h2>
+    <nav class="navbar navbar-expand-md">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarCollapse2">
+          <ul class="navbar-nav me-auto">
+              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'anns-new' %}">Работа с объявлениями</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  {% endif %}
+<h2>Объявления:</h2>
+{% if ant_list %}
+  {% for element in ant_list %}
+  <h3>{{ element.name }}</h3>
+  <p>{{ element.text }}</p>
+  {% if element.picture %}
+    <img src="{{ element.get_img }}"
+    {% if element.orientation == 0 %} width="300" {% elif element.orientation == 1 %} width="200" {% else %} width="235" {% endif %}
+    {% if element.orientation == 0 %} height="200" {% elif element.orientation == 1 %} height="300" {% else %} height="235" {% endif %}
+    />
+  {% endif %}
+  <p class="text-muted">Создатель: {{ element.creator }}</p>
+  {% endfor %}
+  {% if ant_list.has_previous %}
+      <a href="?page1={{ ant_list.previous_page_number }}">Предыдущая страница</a>
+  {% endif %}
+  <span class="page-current">
+      Страница {{ ant_list.number }} из {{ ant_list.paginator.num_pages }}.
+  </span>
+  {% if ant_list.has_next %}
+      <a href="?page1={{ ant_list.next_page_number }}">Следующая страница</a>
+  {% endif %}
+  <form method="GET" action="{% url 'index' %}">
+      <input type="text" name="page1" value="{{ ant_list.number }}" />
+      <button type="submit">Перейти</button>
+  </form>
+  <p class="text-muted">Тоже хочешь разместить объявление? Подай заявку на его размещение <a href="{% url 'plans' %}">здесь...</a></p>
+{% else %}
+  <p>Здесь ещё нет объявлений. Но вы можете подать заявку на их размещение <a href="{% url 'plans' %}">здесь...</a></p>
+{% endif %}
+  <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+{% endblock %}
