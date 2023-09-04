@@ -73,9 +73,10 @@ class ReNewChatFormAnonim(forms.Form):
         current_user = kwargs.pop('current_user', None)
         super(ReNewChatFormAnonim, self).__init__(*args, **kwargs)
         if current_users is not None:
-            current_users_pk = [i.pk for i in current_users]
-            self.fields['chat_creator'].queryset = account.objects.filter(pk__in=current_users_pk)
-            if current_user is not None: self.fields['chat_creator'].queryset = account.objects.filter(pk__in=current_users_pk).exclude(pk=current_user.pk)
+            current_users_pk = [i.id for i in current_users]
+            self.fields['chat_creator'].queryset = account.objects.filter(id__in=current_users_pk)
+            self.fields['chat_members'].queryset = account.objects.exclude(id__in=current_users_pk)
+            if current_user is not None: self.fields['chat_creator'].queryset = account.objects.filter(id__in=current_users_pk).exclude(pk=current_user.pk)
         self.fields['delete'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
     chat_creator = forms.ModelChoiceField(queryset=account.objects.all(), required=False, label="Создатель:", help_text="Здесь вы можете изменить создателя чата. Это необязательно.")
@@ -84,10 +85,12 @@ class ReNewChatFormAnonim(forms.Form):
         return self.cleaned_data['chat_creator']
 
     image_list = [f'{i}.png' for i in range(7)]
-    image_choice = forms.ChoiceField(label="Аватарка чата:", choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
+    image_choice = forms.ChoiceField(label="Аватарка чата:", required=False, choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
 
     def clean_image_choice(self):
-        return self.cleaned_data['image_choice']
+        x = self.cleaned_data['image_choice']
+        if not x: x = self.image_list[0]
+        return x
 
     chat_name = forms.CharField(label="Название чата:")
 
@@ -107,15 +110,24 @@ class ReNewChatFormAnonim(forms.Form):
     def clean_message_anonim(self):
         return self.cleaned_data['chat_anonim']
 
+    chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), required=False, label="Добавить участников?", help_text="Выберите нового(-ых) участника(-ов) чата. Это необязательно.")
+
+    def clean_chat_members(self):
+        members = self.cleaned_data['chat_members']
+        #if len(list(members)) > 25:
+        #    raise ValidationError(_('В чате не может быть больше 25-ти человек. Если вы хотите создать чат с большим количеством людей, вам нужно обратиться к администратору.'))
+        return members
+
 class ReNewChatFormBase(forms.Form):
     def __init__(self, *args, **kwargs):
         current_users = kwargs.pop('current_users', None)
         current_user = kwargs.pop('current_user', None)
         super(ReNewChatFormBase, self).__init__(*args, **kwargs)
         if current_users is not None:
-            current_users_pk = [i.pk for i in current_users]
-            self.fields['chat_creator'].queryset = account.objects.filter(pk__in=current_users_pk)
-            if current_user is not None: self.fields['chat_creator'].queryset = account.objects.filter(pk__in=current_users_pk).exclude(pk=current_user.pk)
+            current_users_pk = [i.id for i in current_users]
+            self.fields['chat_creator'].queryset = account.objects.filter(id__in=current_users_pk)
+            self.fields['chat_members'].queryset = account.objects.exclude(id__in=current_users_pk)
+            if current_user is not None: self.fields['chat_creator'].queryset = account.objects.filter(id__in=current_users_pk).exclude(pk=current_user.pk)
         self.fields['delete'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
 
     chat_creator = forms.ModelChoiceField(queryset=account.objects.all(), required=False, label="Создатель:", help_text="Здесь вы можете изменить создателя чата. Это необязательно.")
@@ -124,10 +136,12 @@ class ReNewChatFormBase(forms.Form):
         return self.cleaned_data['chat_creator']
 
     image_list = [f'{i}.png' for i in range(7)]
-    image_choice = forms.ChoiceField(label="Аватарка чата:", choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
+    image_choice = forms.ChoiceField(label="Аватарка чата:", required=False, choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
 
     def clean_image_choice(self):
-        return self.cleaned_data['image_choice']
+        x = self.cleaned_data['image_choice']
+        if not x: x = self.image_list[0]
+        return x
 
     chat_name = forms.CharField(label="Название чата:")
 
@@ -141,3 +155,11 @@ class ReNewChatFormBase(forms.Form):
 
     def clean_chat_text(self):
         return self.cleaned_data['chat_text']
+
+    chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), required=False, label="Добавить участников?", help_text="Выберите нового(-ых) участника(-ов) чата. Это необязательно.")
+
+    def clean_chat_members(self):
+        members = self.cleaned_data['chat_members']
+        #if len(list(members)) > 25:
+        #    raise ValidationError(_('В чате не может быть больше 25-ти человек. Если вы хотите создать чат с большим количеством людей, вам нужно обратиться к администратору.'))
+        return members

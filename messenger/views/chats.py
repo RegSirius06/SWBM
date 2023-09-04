@@ -71,7 +71,7 @@ def new_chat_add(request):
         request,
         'messenger/new_and_renew/add_new.html',
         {'form': form, 'head': "Создание нового чата",
-         'foot': "Нельзя удалять/добавлять новых участников чата."}
+         'foot': "Нельзя удалять новых участников чата, но можно их добавлять."}
     )
 
 @login_required
@@ -266,8 +266,13 @@ def re_new_chat_add(request, pk):
                 chat_.description = form.cleaned_data['chat_text']
                 if anon_prov: chat_.anonim_legacy = form.cleaned_data['chat_anonim']
                 creator_chat = form.cleaned_data['chat_creator']
-                chat_.chat_ico = form.cleaned_data["image_choice"]
                 if creator_chat is not None: chat_.creator = creator_chat
+                chat_members = [f"{i.id}" for i in form.cleaned_data['chat_members']]
+                if chat_members != []:
+                    chat_valid_.list_members += chat_members
+                    chat_valid_.save()
+                    chat_.cnt = len(chat_valid_.list_members)
+                chat_.chat_ico = form.cleaned_data["image_choice"]
                 chat_.save()
                 if form.cleaned_data['delete']:
                     chat_.archive()
