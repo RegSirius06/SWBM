@@ -1,10 +1,12 @@
 import datetime
+import os
 import uuid
 import json
 
 from django.db import models
 from django.urls import reverse
 from django.templatetags.static import static
+from django.conf import settings
 
 from bank.models import account
 
@@ -200,7 +202,7 @@ class announcement(models.Model):
         return reverse('anns-new-n', args=[str(self.id)])
 
     def get_img(self):
-        return static(f'uploads/{self.picture}')
+        return os.path.join(settings.MEDIA_URL, 'announcements', f'{self.picture}')
 
     def __str__(self):
         return f'{self.name} (создал {self.creator})'

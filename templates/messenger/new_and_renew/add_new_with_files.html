@@ -1,0 +1,25 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block title %}
+{% if title %}
+<title>{{ title }}</title>
+{% else %}
+<title>Мессенджер ЛИСа</title>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+    <h1>{{ head }}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <input type="submit" value="{% if name %}{{ name }}{% else %}Создать{% endif %}" />
+        {% if foot %}
+        <p class="text-muted">{{ foot }}</p>
+        {% endif %}
+    </form>
+
+{% endblock %}

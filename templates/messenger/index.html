@@ -65,9 +65,9 @@
       <input type="text" name="page1" value="{{ ant_list.number }}" />
       <button type="submit">Перейти</button>
   </form>
-  <p class="text-muted">Тоже хочешь разместить объявление? Подай заявку на его размещение <a href="{% url 'plans' %}">здесь...</a></p>
+  <p class="text-muted">Тоже хочешь разместить объявление? Подай заявку на его размещение <a href="{% url 'anns' %}">здесь...</a></p>
 {% else %}
-  <p>Здесь ещё нет объявлений. Но вы можете подать заявку на их размещение <a href="{% url 'plans' %}">здесь...</a></p>
+  <p>Здесь ещё нет объявлений. Но вы можете подать заявку на их размещение <a href="{% url 'anns' %}">здесь...</a></p>
 {% endif %}
   <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
 {% endblock %}

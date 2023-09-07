@@ -30,7 +30,7 @@ def all_announcements_view(request):
 def new_announcement_add(request):
     def prov(img: str) -> bool:
         flag = True
-        with os.scandir(os.path.join(settings.STATIC_ROOT, 'uploads')) as listOfEntries:
+        with os.scandir(os.path.join(settings.MEDIA_ROOT, 'announcements/')) as listOfEntries:
             for entry in listOfEntries:
                 if entry.is_file():
                     if img == entry.name:
@@ -59,14 +59,17 @@ def new_announcement_add(request):
                         i += 1
                     name = name_x
                     plan_.picture = name
-                    with open(os.path.join(settings.STATIC_ROOT, 'uploads', name), 'wb') as file:
+                    with open(os.path.join(settings.MEDIA_ROOT, 'announcements/', name), 'wb') as file:
                         for chunk in image.chunks():
                             file.write(chunk)
+                    print('ok2')
                 except FileNotFoundError:
-                    os.makedirs(os.path.join(settings.STATIC_ROOT, 'uploads'))
-                    with open(os.path.join(settings.STATIC_ROOT, 'uploads', image.name), 'wb') as file:
+                    os.makedirs(os.path.join(settings.MEDIA_ROOT, 'announcements/'))
+                    with open(os.path.join(settings.MEDIA_ROOT, 'announcements/', image.name), 'wb') as file:
                         for chunk in image.chunks():
                             file.write(chunk)
+                    plan_.picture = name
+                    print('ok')
             plan_.orientation = form.cleaned_data['type_']
             if announcement.objects.all().exists(): number = list(announcement.objects.all().order_by('-number'))[-1].number + 1
             else: number = 1
@@ -82,8 +85,9 @@ def new_announcement_add(request):
                 else announcements.NewAnnouncementForm(initial=initial)
     return render(
         request,
-        'messenger/new_and_renew/add_new.html',
-        {'form': form, 'head': "Создание нового объявления", 'foot': "После модерации объявление появится на главной странице.",}
+        'messenger/new_and_renew/add_new_with_files.html',
+        {'form': form, 'head': "Создание нового объявления", 'name': "Подать заявку на создание",
+         'foot': "После модерации объявление появится на главной странице.",}
     )
 
 @permission_required('bank.staff_')

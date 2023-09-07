@@ -120,10 +120,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / STATIC_URL
+STATIC_ROOT = BASE_DIR / STATIC_URL
+
 STATICFILES_DIRS = [
-    BASE_DIR / STATIC_URL,
+    BASE_DIR / 'reserve',
 ]
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / MEDIA_URL
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -132,15 +136,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
-
-# Default settings
-# The URL to the jQuery JavaScript file
-BOOTSTRAP3 = {
-    'css_url': {
-        'url': os.path.join(STATIC_URL, 'src', 'bootstrap', 'css', 'bootstrap.css'),
-    },
-    'javascript_url': {
-        'url': os.path.join(STATIC_URL, 'src', 'bootstrap', 'js', 'bootstrap.js'),
-    },
-    'base_url': os.path.join(STATIC_URL, 'src', 'bootstrap', 'bootstrap/')
-}

@@ -1,6 +1,10 @@
+import os
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+
 from messenger.models import announcement
 from bank.models import account
 
@@ -20,8 +24,9 @@ class NewAnnouncementForm(forms.Form):
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
         if picture:
-            if not picture.name.endswith((".png", ".jpg")):
-                raise ValidationError(_("Допустимые расширения файлов: .png, .jpg"))
+            max_size = 15 * 1024 * 1024
+            if picture.size > max_size:
+                raise ValidationError(_(f"Максимальный размер файла - {max_size/1024/1024}MB"))
         return picture
 
 class NewAnnouncementFullForm(forms.Form):
@@ -40,7 +45,7 @@ class NewAnnouncementFullForm(forms.Form):
     def clean_text(self):
         return self.cleaned_data["text"]
     
-    picture = forms.ImageField(label="Картинка:", required=False)
+    picture = forms.ImageField(label="Картинка:", widget=forms.ClearableFileInput, required=False)
 
     def clean_picture(self):
         picture = self.cleaned_data["picture"]
