@@ -8,11 +8,10 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.models import User, Group, Permission
-from django.http import HttpResponse
 
 from bank.models import account, transaction
 from bank.forms import accounts
-from utils import read_from
+from utils import read_from, errors
 
 @permission_required('bank.staff_')
 @permission_required('bank.edit_users')
@@ -85,7 +84,16 @@ def new_account_add_from_file(request):
                 for u in User.objects.all():
                     if f'{u.username}' == f'{username}':
                         print(u, username)
-                        return HttpResponse("<h2>Такой пользователь уже существует. <a href=\"/\">Назад...</a></h2>")
+                        return errors.render_error(
+                            request, "bank", "Создание пользователя",
+                            f"Пользователь {username} уже существует.",
+                            [
+                                ("new-user-auto", "Назад"),
+                                ('my-transactions', 'Мой счёт'),
+                                ('index_of_bank', 'Домой'),
+                                ('index', 'На главную'),
+                            ]
+                        )
                 user_group = i['g']
                 party = i['n']
                 len_pass = 8 if type_ == 0 else 12
@@ -180,7 +188,17 @@ def new_account_add(request):
             last_name = form.cleaned_data['last_name']
             username = f'{translit(first_name[0])}.{translit(middle_name[0])}.{translit(last_name)}'
             for u in User.objects.all():
-                if f'{u.username}' == f'{username}': return HttpResponse("<h2>Такой пользователь уже существует. <a href=\"/\">Назад...</a></h2>")
+                if f'{u.username}' == f'{username}':
+                    return errors.render_error(
+                        request, "bank", "Создание пользователя",
+                        f"Пользователь {username} уже существует.",
+                        [
+                            ("new-user", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
             user_group = form.cleaned_data['user_group']
             party = form.cleaned_data['party']
             len_pass = 8 if type_ == 0 else 12
@@ -269,7 +287,17 @@ def new_account_full_add(request):
             last_name = form.cleaned_data['last_name']
             username = translit(form.cleaned_data['username'])
             for u in User.objects.all():
-                if f'{u.username}' == f'{username}': return HttpResponse("<h2>Такой пользователь уже существует. <a href=\"/\">Назад...</a></h2>")
+                if f'{u.username}' == f'{username}':
+                    return errors.render_error(
+                        request, "bank", "Создание пользователя",
+                        f"Пользователь {username} уже существует.",
+                        [
+                            ("new-user-custom", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
             user_group = form.cleaned_data['user_group']
             party = form.cleaned_data['party']
             password = form.cleaned_data['password']

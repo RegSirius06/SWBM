@@ -4,10 +4,10 @@ import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
 
 from bank.models import account, transaction, good
 from bank.forms import transactions
+from utils import errors
 
 @permission_required('bank.staff_')
 @permission_required('bank.transaction')
@@ -44,7 +44,16 @@ def new_transaction_staff_add(request):
             new_transaction.sign = form.cleaned_data['transaction_sign']
             new_transaction.history = request.user.account
             if new_transaction.creator == new_transaction.receiver:
-                return HttpResponse("<h2>Вы не можете перевести деньги на свой счёт. <a href=\"/\">Назад...</a></h2>")
+                return errors.render_error(
+                    request, "bank", "Создание транзакции",
+                    "Вы не можете перевести деньги на свой счёт.",
+                    [
+                        ("new-transaction-staff", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             new_transaction.cnt = form.cleaned_data['transaction_cnt']
             new_transaction.save()
             new_transaction.count()
@@ -109,9 +118,27 @@ def new_transaction_full_add(request):
             new_transaction.receiver = form.cleaned_data['transaction_receiver']
             new_transaction.sign = form.cleaned_data['transaction_sign']
             if new_transaction.creator == new_transaction.receiver:
-                return HttpResponse("<h2>Неужели вы <em>настолько</em> жадина? <a href=\"/\">Назад...</a></h2>")
+                return errors.render_error(
+                    request, "bank", "Создание транзакции",
+                    "Неужели вы __настолько__ жадина?",
+                    [
+                        ("new-transaction-full", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             elif account.objects.get(last_name='Admin') == new_transaction.receiver:
-                return HttpResponse("<h2>Вы не можете перевести деньги на банковский счёт. Сегодня без донатов. <a href=\"/\">Назад...</a></h2>")
+                return errors.render_error(
+                    request, "bank", "Создание транзакции",
+                    "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
+                    [
+                        ("new-transaction-full", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             new_transaction.cnt = form.cleaned_data['transaction_cnt']
             new_transaction.save()
             new_transaction.count()
@@ -148,7 +175,17 @@ def new_transaction_buy_add(request):
                 cnt += gd.cost * good_dict[gd]
                 comment += f"{gd.name}, {good_dict[gd]} раз: {gd.cost * good_dict[gd]}t; "
                 if cnt > new_transaction.receiver.balance: flag = True
-            if flag: return HttpResponse(f"<h2>На покупку не хватает денег.<br/><br/>{comment}<br/><br/>Есть {new_transaction.receiver.balance}t, а надо {cnt}t.<a href=\"/\">Назад...</a></h2>")
+            if flag:
+                return errors.render_error(
+                    request, "bank", "Создание чека",
+                    f"На покупку не хватает денег.\n\n{comment}\n\nЕсть {new_transaction.receiver.balance}t, а надо {cnt}t.",
+                    [
+                        ("new-transaction-buy", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             new_transaction.cnt = cnt
             new_transaction.history = request.user.account
             new_transaction.comment = comment
@@ -173,12 +210,39 @@ def new_transaction_base_add(request):
             new_transaction.receiver = form.cleaned_data['transaction_receiver']
             new_transaction.history = request.user.account
             if new_transaction.creator == new_transaction.receiver:
-                return HttpResponse("<h2>Неужели вы <em>настолько</em> жадина? <a href=\"/\">Назад...</a></h2>")
+                return errors.render_error(
+                    request, "bank", "Создание перевода",
+                    "Неужели вы __настолько__ жадина?",
+                    [
+                        ("new-transaction-base", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             elif account.objects.get(last_name='Admin') == new_transaction.receiver:
-                return HttpResponse("<h2>Вы не можете перевести деньги на банковский счёт. Сегодня без донатов. <a href=\"/\">Назад...</a></h2>")
+                return errors.render_error(
+                    request, "bank", "Создание перевода",
+                    "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
+                    [
+                        ("new-transaction-base", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             new_transaction.cnt = form.cleaned_data['transaction_cnt']
             if new_transaction.cnt > request.user.account.balance:
-                return HttpResponse("<h2>Вы не можете перевести денег больше, чем у вас есть, хотя вы и гений. <a href=\"/\">Назад...</a>    </h2>")
+                return errors.render_error(
+                    request, "bank", "Создание перевода",
+                    "Вы не можете перевести денег больше, чем у вас есть, хотя вы и гений.",
+                    [
+                        ("new-transaction-base", "Назад"),
+                        ('my-transactions', 'Мой счёт'),
+                        ('index_of_bank', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )
             new_transaction.save()
             new_transaction.count()
             return redirect('my-transactions')

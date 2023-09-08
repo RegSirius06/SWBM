@@ -33,7 +33,7 @@
                         <span {% if element.receiver == account or account.account_valid == element.transaction_valid %} class="green" {% else %} class="red" {% endif %}>{% if element.receiver == account or account.account_valid == element.transaction_valid %}+{% else %}-{% endif %}{{ element.get_sum }}</span>
                     {% endif %}
                 </td>
-                <td>{{ element.comment }}</td>
+                <td><pre class="text-break multiple-text">{{ element.comment }}</pre></td>
                 <td>{{ element.history }}</td>
             </tr>
             {% endfor %}

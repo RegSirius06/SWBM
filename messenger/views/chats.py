@@ -4,12 +4,11 @@ import datetime
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 
 from messenger.models import message, chat, chat_valid, chat_and_acc
 from bank.models import account
 from messenger.forms import chats, messages
-from utils import theme
+from utils import theme, errors
 
 @login_required
 def new_chat_add(request):
@@ -61,7 +60,16 @@ def new_chat_add(request):
 
             for i in range(len(set_of_chats_valid)):
                 if make_valid_form(new_chat, new_chat_valid) == make_valid_form(set_of_chats_valid[i].what_chat, set_of_chats_valid[i]):
-                    #return HttpResponse("<h2>Уже сейчас подобный чат существует. Надо только покопаться... не в архиве. <a href=\"/\">Назад...<a/></h2>")
+                    """return errors.render_error(
+                        request, "messenger", "Чат уже существует",
+                        "Уже сейчас подобный чат существует. Надо только покопаться... не в архиве.",
+                        [
+                            ("chats-new", "Назад"),
+                            ('messages', 'Мой профиль'),
+                            ('index_of_messenger', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )"""
                     return redirect('chats-new-conflict', new_chat.id, new_message.id, new_chat_valid.id, set_of_chats_valid[i].what_chat.id)
 
             return redirect('messages')
@@ -297,4 +305,15 @@ def re_new_chat_add(request, pk):
             {'form': form, 'head': f"Изменение чат \"{ chat_.name }\":", 'delete': "Сохранить и заархивировать",
              'foot': "Вы можете заархивировать чат, нажав на соответствующую кнопку. Чат не будет удалён.",}
         )
-    else: return HttpResponse("<h2>Я, конечно, всё понимаю, но <em>этого</em> мне не понять...<br/>К сожалению, вы можете редактировать только те чаты, создателем которых вы являетесь.<a href=\"/\">Назад...</a></h2>")
+    else:
+        return errors.render_error(
+            request, "messenger/", "Редактирование чатов",
+            "Я, конечно, всё понимаю, но __этого__ мне не понять...\n\nК сожалению, вы можете редактировать только те чаты, "
+            "создателем которых являетесь вы.",
+            [
+                ('chats-edit-n', 'Назад'),
+                ('messages', 'Мой профиль'),
+                ('index_of_messenger', 'Домой'),
+                ('index', 'На главную'),
+            ]
+        )

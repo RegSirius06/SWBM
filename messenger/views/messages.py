@@ -4,10 +4,10 @@ import uuid
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 
 from messenger.models import message, chat_valid
 from messenger.forms import messages
+from utils import errors
 
 @login_required
 def home_send(request):
@@ -74,8 +74,17 @@ def new_message_add(request):
             text = form.cleaned_data['message_text']
             new_message.encrypt_data(text)
             new_message.anonim = form.cleaned_data['message_anonim']
-            #if new_message.creator == new_message.receiver:
-            #    return HttpResponse("<h2>Неужели вы <em>настолько</em> одиноки?..<br/>К сожалению, нельзя себе отправлять сообщения.<a href=\"/\">Назад...</a></h2>")
+            """if new_message.creator == new_message.receiver:
+                return errors.render_error(
+                    request, "messenger", "Отправка сообщения себе",
+                    "Неужели вы __настолько__ одиноки?..\n\nК сожалению, нельзя себе отправлять сообщения.",
+                    [
+                        ("messages-new", "Назад"),
+                        ('messages', 'Мой профиль'),
+                        ('index_of_messenger', 'Домой'),
+                        ('index', 'На главную'),
+                    ]
+                )"""
             new_message.save()
             return redirect('messages')
     else:
@@ -129,5 +138,25 @@ def re_new_message_add(request, pk):
                 'messenger/new_and_renew/edit_or_delete.html',
                 {'form': form, 'head': "Изменение сообщения",
                  'foot': "Вы можете удалить сообщение, нажав на соответствующую кнопку. Сообщение без запроса подтверждения будет удалено."})
-        else: return HttpResponse("<h2>Я, конечно, всё понимаю, но <em>этого</em> мне не понять...<br/>К сожалению, вы можете редактировать только свои сообщения. <a href=\"/\">Назад...</a></h2>")
-    else: return HttpResponse("<h2>Чат с данным сообщением заархивирован. <a href=\"/\">Назад...<a/></h2>")
+        else:
+            return errors.render_error(
+                request, "messenger", "Редактирование сообщений",
+                "Я, конечно, всё понимаю, но __этого__ мне не понять...\n\nК сожалению, вы можете редактировать только свои сообщения.",
+                [
+                    ("messages-edit-n", "Назад"),
+                    ('messages', 'Мой профиль'),
+                    ('index_of_messenger', 'Домой'),
+                    ('index', 'На главную'),
+                ]
+            )
+    else:
+        return errors.render_error(
+            request, "messenger", "Редактирование сообщений",
+            "Чат с данным сообщением заархивирован.",
+            [
+                ("messages-edit-n", "Назад"),
+                ('messages', 'Мой профиль'),
+                ('index_of_messenger', 'Домой'),
+                ('index', 'На главную'),
+            ]
+        )

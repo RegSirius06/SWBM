@@ -1,0 +1,21 @@
+{% extends "bank/base_generic.html" %}
+
+{% block title %}
+<title>Ошибка: {{ error_name }}</title>
+{% endblock %}
+
+{% block content %}
+<h1>{{ error_name }}</h1>
+<p><pre class="text-break multiple-text">{{ text }}</pre></p>
+<p>
+Вы можете перейти по ссылкам ниже
+<ul>
+{% if links %}
+    {% for a in links %}
+        <li><a href="{{ a.link }}">{{ a.text }}</a></li>
+    {% endfor %}
+{% endif %}
+</ul>
+... или на любую другую страницу сайта.
+</p>
+{% endblock %}
