@@ -56,6 +56,9 @@ def update_globals(request):
     except EmptyPage:
         items2 = paginator2.page(paginator2.num_pages)
 
-    html = render_to_string('messenger/updates/update_globals.html', {'items2': items2, 'theme': theme.get_active_theme(request.user.account),
-           'postfix': f'_{theme.get_active_theme(request.user.account).postfix}' if theme.get_active_theme(request.user.account) else ''})
+    html = render_to_string(
+        'messenger/updates/update_globals.html',
+        {'items2': items2, 'theme': theme.get_active_theme(request.user.account),
+         'type': theme.get_type_theme(request.user.account)}
+    )
     return JsonResponse({'html': html})

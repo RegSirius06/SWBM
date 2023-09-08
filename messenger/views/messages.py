@@ -71,7 +71,8 @@ def new_message_add(request):
             new_message.time = datetime.datetime.now()
             new_message.creator = request.user.account
             new_message.receiver = None
-            new_message.text = form.cleaned_data['message_text']
+            text = form.cleaned_data['message_text']
+            new_message.encrypt_data(text)
             new_message.anonim = form.cleaned_data['message_anonim']
             #if new_message.creator == new_message.receiver:
             #    return HttpResponse("<h2>Неужели вы <em>настолько</em> одиноки?..<br/>К сожалению, нельзя себе отправлять сообщения.<a href=\"/\">Назад...</a></h2>")
@@ -111,13 +112,14 @@ def re_new_message_add(request, pk):
                                     break
                         message_.delete()
                     else:
-                        message_.text = form.cleaned_data['message_text'] + f"\n\n(Изменено {datetime.date.today()} в {datetime.time(hour=datetime.datetime.now().hour, minute=datetime.datetime.now().minute, second=datetime.datetime.now().second)})"
+                        text = form.cleaned_data['message_text'] + f"\n\n(Изменено {datetime.date.today()} в {datetime.time(hour=datetime.datetime.now().hour, minute=datetime.datetime.now().minute, second=datetime.datetime.now().second)})"
+                        message_.encrypt_data(text)
                         if anon_prov: message_.anonim = form.cleaned_data['message_anonim']
                         message_.save()
                     return redirect('messages-edit')
             else:
                 anonim = message_.anonim
-                text = f'{message_.text}'
+                text = message_.decrypt_data()
                 text = text[:-34] if text[-1] == ')' and "\n\n(Изменено " in text else text
                 form = messages.ReNewMessageFormAnonim(initial={'message_text': text, 'message_anonim': anonim,}) \
                     if anon_prov else messages.ReNewMessageFormBase(initial={'message_text': text})

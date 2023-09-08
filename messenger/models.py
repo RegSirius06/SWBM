@@ -9,6 +9,7 @@ from django.templatetags.static import static
 from django.conf import settings
 
 from bank.models import account
+from utils import gens, crypto
 
 class ListField(models.TextField):
     description = "Custom list field"
@@ -33,12 +34,35 @@ class ListField(models.TextField):
             return ''
         return json.dumps(value)
 
+class EncryptedTextField(models.TextField):
+    description = "Custom encrypted text (with dictionary) field"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return {"msg": "", "msg_d": "", "key": "", "alf": ""}
+        return json.loads(value)
+    
+    def to_python(self, value):
+        if isinstance(value, dict):
+            return value
+        if value is None:
+            return {"msg": "", "msg_d": "", "key": "", "alf": ""}
+        return json.loads(value)
+    
+    def get_prep_value(self, value):
+        if value is None:
+            return ""
+        return json.dumps(value)
+
 class message(models.Model):
     date = models.DateField(verbose_name="Дата:")
     time = models.TimeField(default=datetime.time(hour=0), verbose_name="Время:")
     receiver = models.ForeignKey('chat', related_name='received_mess', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
     creator = models.ForeignKey(account, related_name='created_mess', on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
-    text = models.TextField(max_length=2000, verbose_name='Текст:')
+    text = EncryptedTextField(verbose_name='Текст:')
     anonim = models.BooleanField(default=False, verbose_name='Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку.')
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID сообщения.")
     anonim_legacy = models.BooleanField(default=False, editable=False)
@@ -60,6 +84,16 @@ class message(models.Model):
 
     def __str__(self):
         return f'{self.date}: ' + ('(глобально)' if self.receiver is None else f'К {self.receiver}') + (f' от {self.creator}' if not self.anonim else ' (анонимно)')
+    
+    def encrypt_data(self, message):
+        self.text = {"msg": "", "msg_d": "", "key": "", "alf": ""}
+        self.text["alf"] = crypto.get_best_alf(message)
+        self.text["key"] = gens.key_gen(self.text["alf"])
+        self.text["msg"], self.text["msg_d"] = crypto.encode(self.text["key"], self.text["alf"], message)
+        self.save()
+    
+    def decrypt_data(self):
+        return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}'
     
     class Meta:
         ordering = ["-date", "-time"]

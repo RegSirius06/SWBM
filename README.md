@@ -1,6 +1,6 @@
 # Банк ЛИС
 
-## Я вдохновлялся и использовал как образец данные репозитории: https://github.com/RegSirius06/lisbank и https://github.com/RegSirius06/messenger_for_LFMSH
+## Я вдохновлялся и использовал как образец данные репозитории: https://github.com/RegSirius06/lisbank, https://github.com/RegSirius06/VeAr_code и https://github.com/RegSirius06/messenger_for_LFMSH
 
 ## Комментарий по поводу эксплуатации проекта
 

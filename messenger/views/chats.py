@@ -39,7 +39,8 @@ def new_chat_add(request):
             new_message.time = datetime.datetime.now()
             new_message.creator = request.user.account
             new_message.receiver = new_chat
-            new_message.text = f'Создан чат {new_chat.name} ({new_chat.description}).'
+            text = f'Создан чат {new_chat.name} ({new_chat.description}).'
+            new_message.encrypt_data(text)
             new_message.anonim = True
             
             new_chat_valid.id = uuid.uuid4()
@@ -140,7 +141,8 @@ def chat_view(request, pk):
             message_.creator = request.user.account
             message_.receiver = chat_
             message_.anonim_legacy = chat_.anonim
-            message_.text = form.cleaned_data['message_text']
+            text = form.cleaned_data['message_text']
+            message_.encrypt_data(text)
             if chat_.anonim_legacy: message_.anonim = form.cleaned_data['message_anonim']
             else: message_.anonim = chat_.anonim
             message_.save()
@@ -153,7 +155,8 @@ def chat_view(request, pk):
                 last_message.creator = chat_.creator
                 last_message.receiver = chat_
                 last_message.anonim_legacy = chat_.anonim
-                last_message.text = f'В чате накопилось 2000 сообщений, поэтому он будет заархивирован.\n\nДля вашего удобства будет создан новый подобный чат.'
+                text = f'В чате накопилось 2000 сообщений, поэтому он будет заархивирован.\n\nДля вашего удобства будет создан новый подобный чат.'
+                last_message.encrypt_data(text)
                 last_message.anonim = True
                 last_message.save()
                 chat_valid_.add_msg(last_message)
@@ -175,7 +178,8 @@ def chat_view(request, pk):
                 new_message.time = datetime.datetime.now()
                 new_message.creator = chat_.creator
                 new_message.receiver = new_chat
-                new_message.text = f'В предыдущем чате был достигнут лимит по количеству сообщений.\n\nВместо него создан аналогичный чат \"{new_chat.name} ({new_chat.description}).\"'
+                text = f'В предыдущем чате был достигнут лимит по количеству сообщений.\n\nВместо него создан аналогичный чат \"{new_chat.name} ({new_chat.description}).\"'
+                new_message.encrypt_data(text)
                 new_message.anonim = True
                 
                 new_chat_valid.id = uuid.uuid4()
