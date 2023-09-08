@@ -89,7 +89,6 @@ def new_message_add(request):
             return redirect('messages')
     else:
         form = messages.NewMessageForm(initial={'message_text': '',})
-
     return render(
         request,
         'messenger/new_and_renew/add_new.html',

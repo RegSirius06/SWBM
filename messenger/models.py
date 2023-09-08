@@ -60,21 +60,24 @@ class EncryptedTextField(models.TextField):
 class message(models.Model):
     date = models.DateField(verbose_name="Дата:")
     time = models.TimeField(default=datetime.time(hour=0), verbose_name="Время:")
-    receiver = models.ForeignKey('chat', related_name='received_mess', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
-    creator = models.ForeignKey(account, related_name='created_mess', on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
+    receiver = models.ForeignKey('chat', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
+    creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
     text = EncryptedTextField(verbose_name='Текст:')
     anonim = models.BooleanField(default=False, verbose_name='Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку.')
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID сообщения.")
     anonim_legacy = models.BooleanField(default=False, editable=False)
+    answer_for = models.ForeignKey('message', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Ответ на сообщение:")
 
     def get_absolute_url(self):
         x = chat_valid.objects.get(what_chat=self.receiver) if self.receiver is not None else None
         flag = x is not None
-        if not flag: 
+        if not flag:
             flag = self.receiver is None
-            print('nok')
         else: flag = x.avaliable
         return reverse('messages-edit-n', args=[str(self.id)]) if flag else None
+
+    def get_absolute_url_for_detail_view(self):
+        return reverse('messages-detail', args=[str(self.id)])
     
     def get_date(self):
         return f'{self.date} в {self.time}'.split('.')[0]

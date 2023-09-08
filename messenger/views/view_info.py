@@ -1,6 +1,6 @@
 import datetime
 
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
 
@@ -101,4 +101,17 @@ def home(request):
         request,
         'messenger/home/home.html',
         context=context,
+    )
+
+def view_message_detail(request, pk):
+    message_ = get_object_or_404(message, pk=pk)
+    x = chat_valid.objects.get(what_chat=message_.receiver) if message_.receiver else None
+    chat_ = message_.receiver.anonim if message_.receiver else None
+    if x: avaliable = x.avaliable
+    else: avaliable = None
+    return render(
+        request,
+        'messenger/messages/messages_detail_view.html',
+        {'element': message_, 'chat': chat_, 'avaliable': avaliable,
+        'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account),},
     )
