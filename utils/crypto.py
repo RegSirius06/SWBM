@@ -11,6 +11,15 @@ def get_best_alf(message: str) -> str:
         if f and b: return "BOTH"
     return "BOTH" if f and b else "RUSSIAN" if f else "ENGLAND" if b else "EXCLUDE"
 
+def replace_digits(x: int, key: str) -> str:
+    list_ = [key[(i + 1) * 10 % len(key)] for i in range(16)]
+    print(''.join([list_[int(s, 16)] for s in f'{hex(x)[2:]}']))
+    return ''.join([list_[int(s, 16)] for s in f'{hex(x)[2:]}'])
+
+def replace_alphas(x: str, key: str) -> int:
+    dict_ = {f"{key[(i + 1) * 10 % len(key)]}": hex(i)[2:] for i in range(16)}
+    return int(''.join([dict_[s] for s in x]), 16)
+
 def encode(key: str, alf: str, message: str) -> (str, str):
     """
     "alf" может принимать только значения словаря ALFABETS.
@@ -21,7 +30,7 @@ def encode(key: str, alf: str, message: str) -> (str, str):
     messagelist = [x for x in message]
     message_dublicate = []
 
-    digit = random.randint(1000, 9999)
+    digit = random.randint(int('1000', 16), int('FFFF', 16))
     shift = gen_shift(len(messagelist), digit)
 
     for i in range(len(messagelist)):
@@ -30,7 +39,7 @@ def encode(key: str, alf: str, message: str) -> (str, str):
             message_dublicate.append(messagelist[i])
             messagelist[i] = "\0"
 
-    code_message = str(digit)[:2] + ''.join(messagelist) + str(digit)[2:]
+    code_message = replace_digits(digit, key)[:2] + ''.join(messagelist) + replace_digits(digit, key)[2:]
 
     return code_message, ''.join(message_dublicate)
 
@@ -43,7 +52,7 @@ def decode(key: str, alf: str, message: str, message_dublicate: str) -> str:
 
     messagelist = [x for x in message]
 
-    digit = int(''.join(messagelist[:2]) + ''.join(messagelist[-2:]))
+    digit = replace_alphas(''.join(messagelist[:2]) + ''.join(messagelist[-2:]), key)
     messagelist = messagelist[2:-2]
     shift = gen_shift(len(messagelist), digit)
 
