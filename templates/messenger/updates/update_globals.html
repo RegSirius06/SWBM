@@ -23,7 +23,11 @@
             <td>Отправка: {{ element.get_date }}.</td>
         </tr>
         <tr>
-            <td colspan="2"></td>
+            <td class="blockquote-footer text-end" colspan="2">
+                {% if element.answer_for %}
+                <a href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
@@ -39,6 +43,9 @@
     <hr class="border-1" />
     <p class="{{ theme }} small"><b>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</b></p>
     <p class="p-3 mb-2 text-muted small">Отправка: {{ element.get_date }}.</p>
+    {% if element.answer_for %}
+    <a href="{{ element.get_absolute_url_for_view_answer }}" class="blockquote-footer text-end">{{ element.get_text_for_view_answer }}</a>
+    {% endif %}
     <hr class="border-2" />
     {% endfor %}
 {% else %}
@@ -65,7 +72,11 @@
             <td>Отправка: {{ element.get_date }}.</td>
         </tr>
         <tr>
-            <td colspan="2"></td>
+            <td class="blockquote-footer text-end" colspan="2">
+                {% if element.answer_for %}
+                <a href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

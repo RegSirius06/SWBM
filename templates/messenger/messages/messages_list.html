@@ -10,6 +10,7 @@
             <th scope="col">Дата</th>
             <th scope="col">Текст</th>
             <th scope="col">Статус</th>
+            <th scope="col">Ответ</th>
             <th scope="col">Обновление</th>
         </tr>
     </thead>
@@ -21,6 +22,9 @@
             <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
+            <td>{% if element.answer_for %}
+                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+                {% else %}<span class="green">Нет</span>{% endif %}</td>
             <td class="td"><a href="{{ element.get_absolute_url }}">Изменить сообщение...</a></td>
         </tr>
         {% endfor %}
@@ -51,6 +55,7 @@
             <th scope="col">Дата</th>
             <th scope="col">Текст</th>
             <th scope="col">Статус</th>
+            <th scope="col">Ответ</th>
         </tr>
     </thead>
     <tbody>
@@ -61,6 +66,9 @@
             <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
+            <td>{% if element.answer_for %}
+                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+                {% else %}<span class="green">Нет</span>{% endif %}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -89,6 +97,7 @@
             <th scope="col">Дата</th>
             <th scope="col">Текст</th>
             <th scope="col">Статус</th>
+            <th scope="col">Ответ</th>
             <th scope="col">Обновление</th>
         </tr>
     </thead>
@@ -99,6 +108,9 @@
             <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
+            <td>{% if element.answer_for %}
+                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+                {% else %}<span class="green">Нет</span>{% endif %}</td>
             <td class="td"><a href="{{ element.get_absolute_url }}">Изменить сообщение...</a></td>
         </tr>
         {% endfor %}

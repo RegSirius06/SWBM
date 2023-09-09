@@ -63,7 +63,7 @@ def home_send(request):
 @login_required
 def new_message_add(request):
     if request.method == 'POST':
-        form = messages.NewMessageForm(request.POST)
+        form = messages.NewMessageForm(request.POST, messages=message.objects.filter(receiver=None))
         if form.is_valid():
             new_message = message()
             new_message.id = uuid.uuid4()
@@ -71,6 +71,9 @@ def new_message_add(request):
             new_message.time = datetime.datetime.now()
             new_message.creator = request.user.account
             new_message.receiver = None
+            answer_for = form.cleaned_data['message_citate']
+            if answer_for: new_message.answer_for = message.objects.get(id=uuid.UUID(answer_for))
+            else: new_message.answer_for = None
             text = form.cleaned_data['message_text']
             new_message.encrypt_data(text)
             new_message.anonim = form.cleaned_data['message_anonim']
@@ -88,7 +91,7 @@ def new_message_add(request):
             new_message.save()
             return redirect('messages')
     else:
-        form = messages.NewMessageForm(initial={'message_text': '',})
+        form = messages.NewMessageForm(initial={'message_text': '',}, messages=message.objects.filter(receiver=None))
     return render(
         request,
         'messenger/new_and_renew/add_new.html',

@@ -1,5 +1,5 @@
 import random
-from utils.gens import ALFABETS, gen_shift
+from utils.gens import ALFABETS, gen_shift, encrypting_key
 
 def get_best_alf(message: str) -> str:
     f = False
@@ -11,12 +11,13 @@ def get_best_alf(message: str) -> str:
         if f and b: return "BOTH"
     return "BOTH" if f and b else "RUSSIAN" if f else "ENGLAND" if b else "EXCLUDE"
 
-def replace_digits(x: int, key: str) -> str:
+def replace_digits(x: int, key: str, alf: str) -> str:
+    key = encrypting_key(key, alf)
     list_ = [key[(i + 1) * 10 % len(key)] for i in range(16)]
-    print(''.join([list_[int(s, 16)] for s in f'{hex(x)[2:]}']))
     return ''.join([list_[int(s, 16)] for s in f'{hex(x)[2:]}'])
 
-def replace_alphas(x: str, key: str) -> int:
+def replace_alphas(x: str, key: str, alf: str) -> int:
+    key = encrypting_key(key, alf)
     dict_ = {f"{key[(i + 1) * 10 % len(key)]}": hex(i)[2:] for i in range(16)}
     return int(''.join([dict_[s] for s in x]), 16)
 
@@ -26,6 +27,7 @@ def encode(key: str, alf: str, message: str) -> (str, str):
     """
 
     alfabet = ALFABETS[alf]
+    key = encrypting_key(key, alf)
 
     messagelist = [x for x in message]
     message_dublicate = []
@@ -39,7 +41,8 @@ def encode(key: str, alf: str, message: str) -> (str, str):
             message_dublicate.append(messagelist[i])
             messagelist[i] = "\0"
 
-    code_message = replace_digits(digit, key)[:2] + ''.join(messagelist) + replace_digits(digit, key)[2:]
+    str_digit = replace_digits(digit, key, alf)
+    code_message = str_digit[:2] + ''.join(messagelist) + str_digit[2:]
 
     return code_message, ''.join(message_dublicate)
 
@@ -49,10 +52,11 @@ def decode(key: str, alf: str, message: str, message_dublicate: str) -> str:
     """
 
     alfabet = ALFABETS[alf]
+    key = encrypting_key(key, alf)
 
     messagelist = [x for x in message]
 
-    digit = replace_alphas(''.join(messagelist[:2]) + ''.join(messagelist[-2:]), key)
+    digit = replace_alphas(''.join(messagelist[:2]) + ''.join(messagelist[-2:]), key, alf)
     messagelist = messagelist[2:-2]
     shift = gen_shift(len(messagelist), digit)
 

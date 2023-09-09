@@ -12,6 +12,19 @@ ALFABETS = {
     'EXCLUDE': string.digits + string.punctuation + ' ',
 }
 
+def xor(x: int, y: int) -> int:
+    xb = bin(x)[2:]
+    yb = bin(y)[2:]
+    rs = []
+    for i, j in zip(xb, yb): rs.append('0' if i == j else '1')
+    return int(''.join(rs), 2)
+
+def encrypting_key(key: str, alf: str) -> str:
+    list_ = [ord(i) for i in key]
+    list_xor = [ord(i) for i in ALFABETS[alf]]
+    rs = [chr(xor(i, j)) for i, j in zip(list_, list_xor)]
+    return ''.join(rs)
+
 def key_gen(alf: str) -> str:
     key = list(ALFABETS[alf])
     for i in range(1000):
@@ -19,7 +32,7 @@ def key_gen(alf: str) -> str:
         y = random.randint(0, len(key) - 1)
         y = y if y != x else (y + y // 2) % len(key)
         key[x], key[y] = key[y], key[x]
-    return ''.join(key)
+    return encrypting_key(''.join(key), alf)
 
 def three_n_plus_one(i: int):
     return i // 2 if i & 1 == 0 else 3 * i + 1

@@ -50,7 +50,8 @@ class EncryptedTextField(models.TextField):
             return value
         if value is None:
             return {"msg": "", "msg_d": "", "key": "", "alf": ""}
-        return json.loads(value)
+        try: return json.loads(value)
+        except json.JSONDecodeError: return eval(value)
     
     def get_prep_value(self, value):
         if value is None:
@@ -78,6 +79,15 @@ class message(models.Model):
 
     def get_absolute_url_for_detail_view(self):
         return reverse('messages-detail', args=[str(self.id)])
+
+    def get_absolute_url_for_view_answer(self):
+        if self.answer_for: return reverse('messages-detail', args=[str(self.answer_for.id)])
+        else: return None
+
+    def get_text_for_view_answer(self):
+        if self.answer_for: return "Ответ на сообщение от " + \
+            (f"{self.answer_for.creator}" if not self.answer_for.anonim else "(аноним)")
+        else: return None
     
     def get_date(self):
         return f'{self.date} в {self.time}'.split('.')[0]

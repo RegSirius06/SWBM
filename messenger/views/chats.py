@@ -136,8 +136,9 @@ def chat_view(request, pk):
         items1 = paginator1.page(paginator1.num_pages)
     len_mess = 2000
     if request.method == 'POST':
-        form = messages.NewMessageForm_WithoutAnonim(request.POST) if chat_.anonim or not chat_.anonim_legacy\
-                else messages.NewMessageForm(request.POST)
+        form = messages.NewMessageForm_WithoutAnonim(request.POST, messages=chat_valid_.get_all_msg()) \
+            if chat_.anonim or not chat_.anonim_legacy else \
+                messages.NewMessageForm(request.POST, messages=chat_valid_.get_all_msg())
         form2 = chats.SetReadStatusForm(request.POST)
         if form.is_valid():
             if len(list(chat_valid_.list_messages)) >= len_mess:
@@ -149,6 +150,9 @@ def chat_view(request, pk):
             message_.creator = request.user.account
             message_.receiver = chat_
             message_.anonim_legacy = chat_.anonim
+            answer_for = form.cleaned_data['message_citate']
+            if answer_for: message_.answer_for = message.objects.get(id=uuid.UUID(answer_for))
+            else: message_.answer_for = None
             text = form.cleaned_data['message_text']
             message_.encrypt_data(text)
             if chat_.anonim_legacy: message_.anonim = form.cleaned_data['message_anonim']
@@ -218,8 +222,9 @@ def chat_view(request, pk):
         form2 = chats.SetReadStatusForm()
         anonim = False
         text = ''
-        form = messages.NewMessageForm(initial={'message_text': text, 'message_anonim': anonim,}) \
-            if not chat_.anonim and chat_.anonim_legacy else messages.NewMessageForm_WithoutAnonim(initial={'message_text': text})
+        form = messages.NewMessageForm(initial={'message_text': text, 'message_anonim': anonim,}, messages=chat_valid_.get_all_msg()) \
+            if not chat_.anonim and chat_.anonim_legacy else \
+                messages.NewMessageForm_WithoutAnonim(initial={'message_text': text}, messages=chat_valid_.get_all_msg())
 
     return render(
         request,
