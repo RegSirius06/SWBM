@@ -19,11 +19,6 @@
       {% endif %}
     </ui>
   {% endif %}
-  {% if readen_status %}
-  <h6><strong class="green">У вас нет новых сообщений.</strong></h6>
-  {% else %}
-  <h6><strong class="red">У вас есть новые сообщения!</strong></h6>
-  {% endif %}
   <h6>Используйте поле сверху для навигации по сайту.</h6>
   {% if perms.bank.staff_ %}
     <h2>Для персонала:</h2>
@@ -35,18 +30,13 @@
       {% else %}
         {{ admin.balance }}t
       {% endif %}</h4>
-    <nav class="navbar navbar-expand-md">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarCollapse2">
-          <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts' %}">Посмотреть все счета</a></li>
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-staff' %}">Работа с транзакциями</a></li>
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-users' %}">Работа с пользователями</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+      <ul class="nav">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts' %}">Посмотреть все счета</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-staff' %}">Работа с транзакциями</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-users' %}">Работа с пользователями</a></li>
+      </ul>
+      <br />
   {% endif %}
   {% if forbes %}
   <h2>Список "Forbes":</h2>

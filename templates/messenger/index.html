@@ -28,16 +28,11 @@
   {% endif %}
   <h6>Используйте поле сверху для навигации по сайту.</h6>
   {% if perms.lfmsh.staff_ %}
-    <h2>Для персонала:</h2>
-    <nav class="navbar navbar-expand-md">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarCollapse2">
-          <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'anns-new' %}">Работа с объявлениями</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <h2>Для персонала:</h2>
+  <ul class="navbar-nav me-auto">
+      <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'anns-new' %}">Работа с объявлениями</a></li>
+  </ul>
+  <br />
   {% endif %}
 <h2>Объявления:</h2>
 {% if ant_list %}

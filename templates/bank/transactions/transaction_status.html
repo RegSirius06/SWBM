@@ -2,24 +2,18 @@
 
 {% block content %}
     <h1>Все транзакции</h1>
-    <nav class="navbar navbar-expand-md">
-        <div class="container-fluid">
-            <div class="collapse navbar-collapse" id="navbarCollapse2">
-                <ul class="navbar-nav me-auto">
-                    {% if perms.bank.staff_ %}
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-full' %}">Создать транзакцию</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-party' %}">Оформить штраф/премию на весь отряд</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-buy' %}">Оформить покупку</a></li>
-                        {% if object_list %}
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'do' %}">Применить все штрафы/премии</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'undo' %}">Отменить все штрафы/премии</a></li>
-                        {% endif %}
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <ul class="nav">
+        {% if perms.bank.staff_ %}
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-full' %}">Создать транзакцию</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-party' %}">Оформить штраф/премию на весь отряд</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-buy' %}">Оформить покупку</a></li>
+            {% if object_list %}
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'do' %}">Применить все штрафы/премии</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'undo' %}">Отменить все штрафы/премии</a></li>
+            {% endif %}
+        {% endif %}
+    </ul>
     <br />
     {% if object_list %}
     <table  class="table table-striped table-hover table-bordered" cellpadding=30px>

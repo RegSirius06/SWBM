@@ -21,4 +21,5 @@ from choice_of_path import views
 
 urlpatterns = [
     re_path(r"^$", views.index, name="index"),
+    re_path(r'^password_change/$', views.change_password, name='password-change')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

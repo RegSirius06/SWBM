@@ -16,18 +16,13 @@
 </ui></form>
 
 <h1>Сообщения:</h1>
-<nav class="navbar navbar-expand-md">
-    <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarCollapse2">
-        <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-new' %}">Создать глобальное сообщение</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-new' %}">Создать новый чат</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-edit' %}">Просмотреть отправленные сообщения</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-archived' %}">Просмотреть чаты из архива</a></li>
-        </ul>
-      </div>
-    </div>
-</nav>
+<ul class="navbar-nav me-auto">
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-new' %}">Создать глобальное сообщение</a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-new' %}">Создать новый чат</a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-edit' %}">Просмотреть отправленные сообщения</a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-archived' %}">Просмотреть чаты из архива</a></li>
+</ul>
+<br />
 
 {% load static %}
 <script src="{% static 'src/js/jquery.js' %}"></script>

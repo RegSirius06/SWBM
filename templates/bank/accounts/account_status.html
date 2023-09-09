@@ -2,22 +2,16 @@
 
 {% block content %}
     <h1>Все аккаунты</h1>
-    <nav class="navbar navbar-expand-md">
-        <div class="container-fluid">
-            <div class="collapse navbar-collapse" id="navbarCollapse2">
-                <ul class="navbar-nav me-auto">
-                {% if perms.bank.staff_ %}
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user' %}">Создать новый аккаунт</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user-custom' %}">Создать новый аккаунт (с доп.настройкой)</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user-auto' %}">Импорт аккаунтов из файла</a></li>
-                    {% if object_list %}
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'update-all-pass' %}">Обновить все пароли</a></li>
-                    {% endif %}
-                {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <ul class="nav">
+    {% if perms.bank.staff_ %}
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user' %}">Создать новый аккаунт</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user-custom' %}">Создать новый аккаунт (с доп.настройкой)</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-user-auto' %}">Импорт аккаунтов из файла</a></li>
+        {% if object_list %}
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'update-all-pass' %}">Обновить все пароли</a></li>
+        {% endif %}
+    {% endif %}
+    </ul>
     <br />
     {% if object_list %}
     <table class="table table-striped table-hover table-bordered" cellpadding=30px>

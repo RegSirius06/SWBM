@@ -19,20 +19,16 @@
       {% endif %}
     </ui>
   {% endif %}
-  <h2>Выберите, какой раздел сайта вам нужно посетить:</h2> 
-    <nav class="navbar navbar-expand-md">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarCollapse2">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_bank' %}">Перейти в банк</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_messenger' %}">Перейти в мессенджер</a></li>
-            {% if perms.bank.staff_ %}
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/">Перейти в admin-панель</a></li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <h2>Выберите, какой раздел сайта вам нужно посетить:</h2>
+  <ul class="navbar-nav me-auto">
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_bank' %}">Перейти в банк</a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_messenger' %}">Перейти в мессенджер</a></li>
+    {% if perms.bank.staff_ %}
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/">Перейти в admin-панель</a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'password-change' %}">Сменить пароль</a></li>
+  </ul>
+  <br />
   <p class="text-muted">Не следует нарушать правила, которые вы можете прочитать <a href="{% url 'rules' %}">здесь</a>.</p>
   <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
 {% endblock %}
