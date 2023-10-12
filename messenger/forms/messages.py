@@ -31,7 +31,7 @@ class NewMessageForm(forms.Form):
 class NewMessageForm_WithoutAnonim(forms.Form):
     def __init__(self, *args, **kwargs):
         messages = kwargs.pop('messages', None)
-        super(NewMessageForm, self).__init__(*args, **kwargs)
+        super(NewMessageForm_WithoutAnonim, self).__init__(*args, **kwargs)
         if messages:
             choice_list = [(None, '---------------')]
             for i in messages:

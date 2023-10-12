@@ -1,28 +1,29 @@
-import datetime
 import uuid
 
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account, transaction, good
+from bank.models import account, good
+from constants.bank.forms import SIGN_SET, SIGN_SET_ALL
+from constants.bank.forms import DATE_START_OF_, DATE_END_OF_
 
 class NewTransactionStaffForm(forms.Form):
     transaction_date = forms.DateField(help_text="Дата должна быть в пределах смены, по умолчанию сегодня.", label="Дата:")
 
     def clean_transaction_date(self):
         data = self.cleaned_data['transaction_date']
-        if data < datetime.date(year=2024, month=6, day=25):
+        if data < DATE_START_OF_:
             raise ValidationError(_('Вы указали дату до смены.'))
-        if data > datetime.date(year=2024, month=6, day=25) + datetime.timedelta(weeks=3):
+        if data > DATE_END_OF_:
             raise ValidationError(_('Вы указали дату после смены.'))
         return data
     
     list_accounts = account.objects.exclude(party=0)
     transaction_receiver = forms.ModelChoiceField(queryset=list_accounts, label="Получатель:")#, widget=forms.RadioSelect()) 
-    
+
     def clean_transaction_receiver(self):
-            return self.cleaned_data['transaction_receiver']
+        return self.cleaned_data['transaction_receiver']
 
     transaction_cnt = forms.FloatField(help_text="Укажите сумму перевода.", label="Сумма:")
 
@@ -37,23 +38,19 @@ class NewTransactionStaffForm(forms.Form):
     def clean_transaction_comment(self):
         return self.cleaned_data['transaction_comment']
     
-    transaction_sign = forms.ChoiceField(choices=transaction.SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
+    transaction_sign = forms.ChoiceField(choices=SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
     
     def clean_transaction_sign(self):
             return self.cleaned_data['transaction_sign']
-    
-    class Meta:
-        model = transaction
-        fields = ['transaction_date', 'transaction_receiver', 'transaction_cnt', 'transaction_comment', 'transaction_sign']
 
 class NewTransactionStaffFormParty(forms.Form):
     transaction_date = forms.DateField(help_text="Дата должна быть в пределах смены, по умолчанию сегодня.", label="Дата:")
 
     def clean_transaction_date(self):
         data = self.cleaned_data['transaction_date']
-        if data < datetime.date(year=2024, month=6, day=25):
+        if data < DATE_START_OF_:
             raise ValidationError(_('Вы указали дату до смены.'))
-        if data > datetime.date(year=2024, month=6, day=25) + datetime.timedelta(weeks=3):
+        if data > DATE_END_OF_:
             raise ValidationError(_('Вы указали дату после смены.'))
         return data
     
@@ -81,7 +78,7 @@ class NewTransactionStaffFormParty(forms.Form):
     def clean_transaction_comment(self):
         return self.cleaned_data['transaction_comment']
     
-    transaction_sign = forms.ChoiceField(choices=transaction.SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
+    transaction_sign = forms.ChoiceField(choices=SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
     
     def clean_transaction_sign(self):
             return self.cleaned_data['transaction_sign']
@@ -96,9 +93,9 @@ class NewTransactionFullForm(forms.Form):
 
     def clean_transaction_date(self):
         data = self.cleaned_data['transaction_date']
-        if data < datetime.date(year=2024, month=6, day=25):
+        if data < DATE_START_OF_:
             raise ValidationError(_('Вы указали дату до смены.'))
-        if data > datetime.date(year=2024, month=6, day=25) + datetime.timedelta(weeks=3):
+        if data > DATE_END_OF_:
             raise ValidationError(_('Вы указали дату после смены.'))
         return data
     
@@ -131,14 +128,10 @@ class NewTransactionFullForm(forms.Form):
     def clean_transaction_comment(self):
         return self.cleaned_data['transaction_comment']
     
-    transaction_sign = forms.ChoiceField(choices=transaction.SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
+    transaction_sign = forms.ChoiceField(choices=SIGN_SET_ALL, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
     
     def clean_transaction_sign(self):
             return self.cleaned_data['transaction_sign']
-    
-    class Meta:
-        model = transaction
-        fields = ['transaction_date', 'transaction_receiver', 'transaction_cnt', 'transaction_comment', 'transaction_sign']
 
 class NewTransactionBuyForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -180,9 +173,9 @@ class ReNewTransactionStaffForm(forms.Form):
 
     def clean_transaction_date(self):
         data = self.cleaned_data['transaction_date']
-        if data < datetime.date(year=2024, month=6, day=25):
+        if data < DATE_START_OF_:
             raise ValidationError(_('Вы указали дату до смены.'))
-        if data > datetime.date(year=2024, month=6, day=25) + datetime.timedelta(weeks=3):
+        if data > DATE_END_OF_:
             raise ValidationError(_('Вы указали дату после смены.'))
         return data
 
@@ -199,7 +192,7 @@ class ReNewTransactionStaffForm(forms.Form):
     def clean_transaction_comment(self):
         return self.cleaned_data['transaction_comment']
     
-    transaction_sign = forms.ChoiceField(choices=transaction.SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
+    transaction_sign = forms.ChoiceField(choices=SIGN_SET, help_text="Выберите тип: премия/штраф", label="Тип транзакции:")
     
     def clean_transaction_sign(self):
             return self.cleaned_data['transaction_sign']
@@ -222,7 +215,3 @@ class NewTransactionBaseForm(forms.Form):
 
     def clean_transaction_comment(self):
         return self.cleaned_data['transaction_comment']
-    
-    class Meta:
-        model = transaction
-        fields = ['transaction_date', 'transaction_receiver', 'transaction_cnt', 'transaction_comment']

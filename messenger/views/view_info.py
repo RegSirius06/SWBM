@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from messenger.models import message, chat, chat_valid, chat_and_acc, announcement
 from bank.models import account
+from constants.bank.models import EXISTING_THEMES
 from messenger.forms import other
 from utils import theme
 
@@ -34,7 +35,7 @@ def list_themes(request):
     date = datetime.date.today()
     time = datetime.time(datetime.datetime.today().hour, datetime.datetime.today().minute, datetime.datetime.today().second,)
     d_t = f'{date} в {time}'
-    themes = [i[-1] for i in account.EXISTING_THEMES]
+    themes = [i[-1] for i in EXISTING_THEMES]
     paginator1 = Paginator(themes, 15)
     page1 = request.GET.get('page1')
     try:

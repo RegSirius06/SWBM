@@ -20,7 +20,7 @@
     </ui>
   {% endif %}
   <h2>Выберите, какой раздел сайта вам нужно посетить:</h2>
-  <ul class="navbar-nav me-auto">
+  <ul class="nav">
     <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_bank' %}">Перейти в банк</a></li>
     <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'index_of_messenger' %}">Перейти в мессенджер</a></li>
     {% if perms.bank.staff_ %}

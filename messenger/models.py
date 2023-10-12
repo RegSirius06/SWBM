@@ -10,6 +10,7 @@ from django.conf import settings
 
 from bank.models import account
 from utils import gens, crypto
+from constants.messenger.models import PICTURE_TYPES
 
 class ListField(models.TextField):
     description = "Custom list field"
@@ -43,7 +44,8 @@ class EncryptedTextField(models.TextField):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return {"msg": "", "msg_d": "", "key": "", "alf": ""}
-        return json.loads(value)
+        try: return json.loads(value)
+        except: return {"msg": "", "msg_d": "", "key": "", "alf": "BOTH"}
     
     def to_python(self, value):
         if isinstance(value, dict):
@@ -103,7 +105,8 @@ class message(models.Model):
         self.text["alf"] = crypto.get_best_alf(message)
         self.text["key"] = gens.key_gen(self.text["alf"])
         self.text["msg"], self.text["msg_d"] = crypto.encode(self.text["key"], self.text["alf"], message)
-        self.save()
+        try: self.save()
+        except: return self.text
     
     def decrypt_data(self):
         return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}'
@@ -236,12 +239,6 @@ class announcement(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
     status = models.BooleanField(default=False, verbose_name="Объявление принято?")
     picture = models.ImageField(verbose_name="Картинка:", null=True)
-
-    PICTURE_TYPES = (
-        (0, "Горизонтально"),
-        (1, "Вертикально"),
-        (2, "Квадрат"),
-    )
 
     orientation = models.IntegerField(choices=PICTURE_TYPES, verbose_name="Ориентация:", default=0)
 

@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
-from messenger.models import announcement
+from constants.messenger.models import PICTURE_TYPES
 from bank.models import account
 
 class NewAnnouncementForm(forms.Form):
@@ -55,7 +55,7 @@ class NewAnnouncementFullForm(forms.Form):
                 raise ValidationError(_(f"Максимальный размер файла - {max_size/1024/1024}MB"))
         return picture
 
-    type_ = forms.ChoiceField(required=False, choices=announcement.PICTURE_TYPES, label="Тип ориентации картинки:", help_text="По-умолчанию горизонтально.")
+    type_ = forms.ChoiceField(required=False, choices=PICTURE_TYPES, label="Тип ориентации картинки:", help_text="По-умолчанию горизонтально.")
 
     def clean_type_(self):
         x = self.cleaned_data['type_']

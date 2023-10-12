@@ -4,17 +4,13 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account
+from constants.bank.models import EXISTING_GROUPS
+from constants.bank.forms import EXISTING_TYPES
 
 class NewAccountForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['save_and_new'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
-
-    EXISTING_TYPES = (
-        (0, "Пионер"),
-        (1, "Педсостав"),
-    )
 
     type_ = forms.ChoiceField(choices=EXISTING_TYPES, label="Тип аккаунта:")
 
@@ -36,7 +32,7 @@ class NewAccountForm(forms.Form):
     def clean_last_name(self):
         return self.cleaned_data['last_name']
 
-    user_group = forms.ChoiceField(choices=account.EXISTING_GROUPS, label="Группа занятий:")
+    user_group = forms.ChoiceField(choices=EXISTING_GROUPS, label="Группа занятий:")
 
     def clean_user_group(self):
         return self.cleaned_data['user_group']
@@ -50,11 +46,6 @@ class NewAccountFullForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['save_and_new'] = forms.BooleanField(required=False, widget=forms.HiddenInput())
-
-    EXISTING_TYPES = (
-        (0, "Пионер"),
-        (1, "Педсостав"),
-    )
 
     type_ = forms.ChoiceField(choices=EXISTING_TYPES, label="Тип аккаунта:")
 
@@ -89,7 +80,7 @@ class NewAccountFullForm(forms.Form):
             raise ValidationError(_('Длина пароля должна быть равной 8-ми символам для пионера и 12-ти символам для педагога.'))
         return password
 
-    user_group = forms.ChoiceField(choices=account.EXISTING_GROUPS, label="Группа занятий:")
+    user_group = forms.ChoiceField(choices=EXISTING_GROUPS, label="Группа занятий:")
 
     def clean_user_group(self):
         return self.cleaned_data['user_group']
@@ -129,7 +120,7 @@ class ReNewAccountForm(forms.Form):
     def clean_username(self):
         return self.cleaned_data['username']
 
-    user_group = forms.ChoiceField(choices=account.EXISTING_GROUPS, label="Группа занятий:")
+    user_group = forms.ChoiceField(choices=EXISTING_GROUPS, label="Группа занятий:")
 
     def clean_user_group(self):
         return self.cleaned_data['user_group']
@@ -140,11 +131,6 @@ class ReNewAccountForm(forms.Form):
         return self.cleaned_data['party']
 
 class ReadFromFileForm(forms.Form):
-    EXISTING_TYPES = (
-        (0, "Пионер"),
-        (1, "Педсостав"),
-    )
-
     type_ = forms.ChoiceField(choices=EXISTING_TYPES, label="Тип аккаунта:")
 
     def clean_type_(self):

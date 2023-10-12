@@ -1,6 +1,3 @@
-import datetime
-import random
-import string
 import uuid
 import json
 
@@ -8,6 +5,9 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+
+from utils.passwords import gen_pass
+from constants.bank.models import EXISTING_GROUPS, EXISTING_THEMES, EXISTING_TYPES_OF_RULES, PERMISSIONS, SIGN_SET
 
 class ListField(models.TextField):
     description = "Custom list field"
@@ -41,67 +41,15 @@ class account(models.Model):
     middle_name = models.CharField(max_length=40, default='Not stated', verbose_name="Отчество:")  #   Отчество
     last_name = models.CharField(max_length=40, default='Not stated', verbose_name="Фамилия:")     #   Фамилия
 
-    EXISTING_GROUPS = (
-        ('None', 'Другое'),
-        ('Биология 1', 'Биология 1'),
-        ('Биология 2', 'Биология 2'),
-        ('Химия 1', 'Химия 1'),
-        ('Химия 2', 'Химия 2'),
-        ('Информатика', 'Информатика'),
-        ('Физика 1', 'Физика 1'),
-        ('Физика 2', 'Физика 2'),
-        ('Физика 3', 'Физика 3'),
-        ('Физика 4', 'Физика 4'),
-    )
-
     user_group = models.CharField(max_length=40, choices=EXISTING_GROUPS, default='None', help_text='Группа обучения', verbose_name="Занятия:")
     party = models.IntegerField(default=0, verbose_name="Отряд:")
-
-    EXISTING_THEMES = (
-        ('default', 'По-умолчанию'),
-        ('table-primary', 'Голубой'),
-        ('table-secondary', 'Серый'),
-        ('table-success', 'Зелёный'),
-        ('table-danger', 'Красный'),
-        ('table-warning', 'Жёлтый'),
-        ('table-info', 'Светло-зелёный'),
-        ('table-light', 'Светлая'),
-        ('table-dark', 'Тёмная'),
-
-        ('p-3 mb-2', 'По-умолчанию (аналог)'),
-        ('p-3 mb-2 bg-primary text-white', 'Голубой (аналог)'),
-        ('p-3 mb-2 bg-secondary text-white', 'Серый (аналог)'),
-        ('p-3 mb-2 bg-success text-white', 'Зелёный (аналог)'),
-        ('p-3 mb-2 bg-danger text-white', 'Красный (аналог)'),
-        ('p-3 mb-2 bg-warning text-dark', 'Жёлтый (аналог)'),
-        ('p-3 mb-2 bg-info text-dark', 'Светло-зелёный (аналог)'),
-        ('p-3 mb-2 bg-light text-dark', 'Светлая (аналог)'),
-        ('p-3 mb-2 bg-dark text-white', 'Тёмная (аналог)'),
-
-        ('p-3 mb-2 bg-primary bg-gradient text-white', 'Голубой (аналог, градиент)'),
-        ('p-3 mb-2 bg-secondary bg-gradient text-white', 'Серый (аналог, градиент)'),
-        ('p-3 mb-2 bg-success bg-gradient text-white', 'Зелёный (аналог, градиент)'),
-        ('p-3 mb-2 bg-danger bg-gradient text-white', 'Красный (аналог, градиент)'),
-        ('p-3 mb-2 bg-warning bg-gradient text-dark', 'Жёлтый (аналог, градиент)'),
-        ('p-3 mb-2 bg-info bg-gradient text-dark', 'Светло-зелёный (аналог, градиент)'),
-        ('p-3 mb-2 bg-light bg-gradient text-dark', 'Светлая (аналог, градиент)'),
-        ('p-3 mb-2 bg-dark bg-gradient text-white', 'Тёмная (аналог, градиент)'),
-    )
 
     theme_self = models.CharField(max_length=50, choices=EXISTING_THEMES, default='default', help_text="Как это выглядит, можно посмотреть ниже.", verbose_name="Тема:")
     account_status = models.CharField(max_length=100, default='', blank=True, verbose_name="Статус:")
 
     class Meta:
         ordering = ["party", "last_name"]
-        permissions = (
-            ("staff_", "Принадлежность к персоналу"),
-            ("transaction", "Может создавать транзакции"),
-            ("transaction_base", "Может совершать переводы"),
-            ("register", "Может регистрировать пользователей"),
-            ("edit_users", "Может изменять пользователей"),
-            ("ant_edit", "Может изменять объявления"),
-            ("meria", "Мэрия в банке"),
-        )
+        permissions = PERMISSIONS
     
     def get_absolute_url(self):
         return reverse('account-detail', args=[str(self.id)])
@@ -171,23 +119,6 @@ class account(models.Model):
     
     def update_passwords(self):
         def check_user_in_group(user, group_name): return user.groups.filter(name=group_name).exists()
-        def gen_pass(length: int) -> str:
-            lang = []
-            hard_to_read = "l1IioO0"
-            for i in string.printable[:62]:
-                if i in hard_to_read: continue
-                lang.append(i)
-            list_ = []
-            for u in User.objects.all():
-                list_.append(u.password)
-            set_list = set(list_)
-            while True:
-                pas = ""
-                for i in range(length):
-                    el = random.choice(lang)
-                    pas += el
-                if pas not in set_list:
-                    return pas
         users = User.objects.exclude(username__icontains='admin').order_by('username')
         s_write = '-' * 30 + '\n'
         for u in users:
@@ -210,13 +141,7 @@ class transaction(models.Model):
     history = models.ForeignKey('account', related_name='history_trans', on_delete=models.CASCADE, null=True, verbose_name="Создатель:")
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID транзакции.")
     counted = models.BooleanField(default=False, editable=False)
-
-    SIGN_SET = (
-        ('+', 'Начислить'),
-        ('-', 'Оштрафовать'),
-    )
-
-    sign = models.CharField(max_length=1, choices=SIGN_SET, default='+', verbose_name="Тип транзакции:")
+    sign = models.CharField(max_length=20, choices=SIGN_SET, default='p2p+', verbose_name="Тип транзакции:")
     cnt = models.FloatField(default=0, verbose_name="Количество:")
     
     class Meta:
@@ -241,7 +166,7 @@ class transaction(models.Model):
         if self.counted: return
         rec = self.receiver
         crt = self.creator
-        if self.sign == '+':
+        if '+' in self.sign:
             rec.balance = rec.balance + self.cnt
             rec.save()
             crt.balance = crt.balance - self.cnt
@@ -259,7 +184,7 @@ class transaction(models.Model):
         if not self.counted: return
         rec = self.receiver
         crt = self.creator
-        if self.sign == '+':
+        if '+' in self.sign:
             rec.balance = rec.balance - self.cnt
             rec.save()
             crt.balance = crt.balance + self.cnt
@@ -275,13 +200,6 @@ class transaction(models.Model):
 
 class rools(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    
-    EXISTING_TYPES_OF_RULES = (
-        ('УкТ', 'Уголовный кодекс'),
-        ('АкТ', 'Административный кодекс'),
-        ('ТкТ', 'Трудовой кодекс'),
-        ('КпТ', 'Кодекс премий'),
-    )
 
     num_type = models.CharField(max_length=3, choices=EXISTING_TYPES_OF_RULES, default='УкТ', verbose_name="Раздел законов:")
     

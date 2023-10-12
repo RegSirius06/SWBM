@@ -38,8 +38,8 @@ def new_chat_add(request):
             new_message.time = datetime.datetime.now()
             new_message.creator = request.user.account
             new_message.receiver = new_chat
-            text = f'Создан чат {new_chat.name} ({new_chat.description}).'
-            new_message.encrypt_data(text)
+            text = f'Создан чат "{new_chat.name}" ( {new_chat.description} ).'
+            new_message.text = new_message.encrypt_data(text)
             new_message.anonim = True
             
             new_chat_valid.id = uuid.uuid4()

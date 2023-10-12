@@ -3,7 +3,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 
-from bank.models import account
+from constants.bank.models import EXISTING_THEMES
 
 class ImageSelectWidget(forms.RadioSelect):
     def render(self, name, value, attrs=None, renderer=None):
@@ -31,7 +31,7 @@ class ReNewThemeForm(forms.Form):
         super(ReNewThemeForm, self).__init__(*args, **kwargs)
         self.fields['type_'].initial = selected if selected else 'default'
 
-    type_ = forms.ChoiceField(required=False, choices=account.EXISTING_THEMES, help_text="Как это выглядит, можно посмотреть ниже.", label="Тема:")
+    type_ = forms.ChoiceField(required=False, choices=EXISTING_THEMES, help_text="Как это выглядит, можно посмотреть ниже.", label="Тема:")
 
     def clean_type_(self):
         return self.cleaned_data['type_']

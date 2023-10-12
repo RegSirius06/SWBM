@@ -14,16 +14,21 @@ ALFABETS = {
 
 def xor(x: int, y: int) -> int:
     xb = bin(x)[2:]
+    s_d = '0' * (8 - len(xb))
+    xb = s_d + xb
     yb = bin(y)[2:]
+    s_d = '0' * (8 - len(yb))
+    yb = s_d + yb
     rs = []
     for i, j in zip(xb, yb): rs.append('0' if i == j else '1')
     return int(''.join(rs), 2)
 
 def encrypting_key(key: str, alf: str) -> str:
-    list_ = [ord(i) for i in key]
-    list_xor = [ord(i) for i in ALFABETS[alf]]
-    rs = [chr(xor(i, j)) for i, j in zip(list_, list_xor)]
-    return ''.join(rs)
+    # list_ = [ord(i) for i in key]
+    # list_xor = [ord(i) for i in ALFABETS[alf]]
+    # rs = [chr(xor(i, j)) for i, j in zip(list_, list_xor)]
+    # return ''.join(rs)
+    return key
 
 def key_gen(alf: str) -> str:
     key = list(ALFABETS[alf])

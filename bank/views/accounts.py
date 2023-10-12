@@ -1,7 +1,5 @@
 import os
 import uuid
-import string
-import random
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
@@ -11,7 +9,7 @@ from django.contrib.auth.models import User, Group, Permission
 
 from bank.models import account, transaction
 from bank.forms import accounts
-from utils import read_from, errors
+from utils import read_from, errors, text, passwords
 
 @permission_required('bank.staff_')
 @permission_required('bank.edit_users')
@@ -36,35 +34,6 @@ def account_info(request):
 @permission_required('bank.staff_')
 @permission_required('bank.register')
 def new_account_add_from_file(request):
-    def translit(s: str) -> str:
-        ans = ""
-        s = s.lower()
-        table_d = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
-                   'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', ' ': '_',
-                   'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': '', 'ы': 'i', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'}
-        for c in s:
-            try: ans += table_d[c]
-            except KeyError: ans += c
-        return ans
-
-    def gen_pass(length: int) -> str:
-        lang = []
-        hard_to_read = "l1IioO0"
-        for i in string.printable[:62]:
-            if i in hard_to_read: continue
-            lang.append(i)
-        list_ = []
-        for u in User.objects.all():
-            list_.append(u.password)
-        set_list = set(list_)
-        while True:
-            pas = ""
-            for i in range(length):
-                el = random.choice(lang)
-                pas += el
-            if pas not in set_list:
-                return pas
-
     if request.method == 'POST':
         form = accounts.ReadFromFileForm(request.POST)
         if form.is_valid():
@@ -80,7 +49,7 @@ def new_account_add_from_file(request):
                 first_name = i['i']
                 middle_name = i['o']
                 last_name = i['f']
-                username = f'{translit(first_name[0])}.{translit(middle_name[0])}.{translit(last_name)}'
+                username = f'{text.translit(first_name[0])}.{text.translit(middle_name[0])}.{text.translit(last_name)}'
                 for u in User.objects.all():
                     if f'{u.username}' == f'{username}':
                         print(u, username)
@@ -97,7 +66,7 @@ def new_account_add_from_file(request):
                 user_group = i['g']
                 party = i['n']
                 len_pass = 8 if type_ == 0 else 12
-                password = gen_pass(len_pass)
+                password = passwords.gen_pass(len_pass)
 
                 if f'{type_}' == '1':
                     group_, created = Group.objects.get_or_create(name="pedagogue")
@@ -148,35 +117,6 @@ def new_account_add_from_file(request):
 @permission_required('bank.staff_')
 @permission_required('bank.register')
 def new_account_add(request):
-    def translit(s: str) -> str:
-        ans = ""
-        s = s.lower()
-        table_d = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
-                   'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', ' ': '_',
-                   'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': '', 'ы': 'i', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'}
-        for c in s:
-            try: ans += table_d[c]
-            except KeyError: ans += c
-        return ans
-
-    def gen_pass(length: int) -> str:
-        lang = []
-        hard_to_read = "l1IioO0"
-        for i in string.printable[:62]:
-            if i in hard_to_read: continue
-            lang.append(i)
-        list_ = []
-        for u in User.objects.all():
-            list_.append(u.password)
-        set_list = set(list_)
-        while True:
-            pas = ""
-            for i in range(length):
-                el = random.choice(lang)
-                pas += el
-            if pas not in set_list:
-                return pas
-
     if request.method == 'POST':
         form = accounts.NewAccountForm(request.POST)
         if form.is_valid():
@@ -186,7 +126,7 @@ def new_account_add(request):
             first_name = form.cleaned_data['first_name']
             middle_name = form.cleaned_data['middle_name']
             last_name = form.cleaned_data['last_name']
-            username = f'{translit(first_name[0])}.{translit(middle_name[0])}.{translit(last_name)}'
+            username = f'{text.translit(first_name[0])}.{text.translit(middle_name[0])}.{text.translit(last_name)}'
             for u in User.objects.all():
                 if f'{u.username}' == f'{username}':
                     return errors.render_error(
@@ -202,7 +142,7 @@ def new_account_add(request):
             user_group = form.cleaned_data['user_group']
             party = form.cleaned_data['party']
             len_pass = 8 if type_ == 0 else 12
-            password = gen_pass(len_pass)
+            password = passwords.gen_pass(len_pass)
 
             if f'{type_}' == '1':
                 group_, created = Group.objects.get_or_create(name="pedagogue")
@@ -265,17 +205,6 @@ def new_account_add(request):
 @permission_required('bank.staff_')
 @permission_required('bank.register')
 def new_account_full_add(request):
-    def translit(s: str) -> str:
-        ans = ""
-        s = s.lower()
-        table_d = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
-                   'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', ' ': '_',
-                   'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': '', 'ы': 'i', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'}
-        for c in s:
-            try: ans += table_d[c]
-            except KeyError: ans += c
-        return ans
-
     if request.method == 'POST':
         form = accounts.NewAccountFullForm(request.POST)
         if form.is_valid():
@@ -285,7 +214,7 @@ def new_account_full_add(request):
             first_name = form.cleaned_data['first_name']
             middle_name = form.cleaned_data['middle_name']
             last_name = form.cleaned_data['last_name']
-            username = translit(form.cleaned_data['username'])
+            username = text.translit(form.cleaned_data['username'])
             for u in User.objects.all():
                 if f'{u.username}' == f'{username}':
                     return errors.render_error(
@@ -363,17 +292,6 @@ def new_account_full_add(request):
 @permission_required('bank.staff_')
 @permission_required('bank.edit_users')
 def re_new_account_full_add(request, pk):
-    def translit(s: str) -> str:
-        ans = ""
-        s = s.lower()
-        table_d = {'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye', 'ё': 'yo', 'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y',
-                   'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', ' ': '_',
-                   'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sh', 'ъ': '', 'ы': 'i', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'}
-        for c in s:
-            try: ans += table_d[c]
-            except KeyError: ans += c
-        return ans
-
     account_ = get_object_or_404(account, id=pk)
     user_ = User.objects.get(id=account_.user.id)
     if request.method == 'POST':
@@ -393,7 +311,7 @@ def re_new_account_full_add(request, pk):
                 middle_name = form.cleaned_data['middle_name']
                 last_name = form.cleaned_data['last_name']
                 balance = form.cleaned_data['balance']
-                username = translit(form.cleaned_data['username'])
+                username = text.translit(form.cleaned_data['username'])
                 user_group = form.cleaned_data['user_group']
                 party = form.cleaned_data['party']
                 

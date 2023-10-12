@@ -124,7 +124,7 @@ def re_new_message_add(request, pk):
                         message_.delete()
                     else:
                         text = form.cleaned_data['message_text'] + f"\n\n(Изменено {datetime.date.today()} в {datetime.time(hour=datetime.datetime.now().hour, minute=datetime.datetime.now().minute, second=datetime.datetime.now().second)})"
-                        message_.encrypt_data(text)
+                        message_.text = message_.encrypt_data(text)
                         if anon_prov: message_.anonim = form.cleaned_data['message_anonim']
                         message_.save()
                     return redirect('messages-edit')
