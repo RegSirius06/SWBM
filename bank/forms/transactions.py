@@ -20,7 +20,7 @@ class NewTransactionStaffForm(forms.Form):
         return data
     
     list_accounts = account.objects.exclude(party=0)
-    transaction_receiver = forms.ModelChoiceField(queryset=list_accounts, label="Получатель:")#, widget=forms.RadioSelect()) 
+    transaction_receiver = forms.ModelMultipleChoiceField(queryset=list_accounts, label="Получатель:")#, widget=forms.RadioSelect()) 
 
     def clean_transaction_receiver(self):
         return self.cleaned_data['transaction_receiver']

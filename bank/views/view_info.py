@@ -60,6 +60,7 @@ def all_accounts_detail_view(request, pk):
         request,
         'bank/info_view/transactions_detail.html',
         context={
+            'account': account_,
             'object_list': items1,
         }
     )

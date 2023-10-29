@@ -16,3 +16,10 @@
 /reserve/
 /1.csv
 /users.txt
+/runserver.py
+/setup.py
+/setup.spec
+/build/
+/dist/
+/manage.spec
+/swbm.spec

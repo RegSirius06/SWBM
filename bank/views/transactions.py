@@ -35,28 +35,30 @@ def new_transaction_staff_add(request):
     if request.method == 'POST':
         form = transactions.NewTransactionStaffForm(request.POST)
         if form.is_valid():
-            new_transaction = transaction()
-            new_transaction.id = uuid.uuid4()
-            new_transaction.date = form.cleaned_data['transaction_date']
-            new_transaction.comment = form.cleaned_data['transaction_comment']
-            new_transaction.creator = account.objects.get(last_name='Admin')
-            new_transaction.receiver = form.cleaned_data['transaction_receiver']
-            new_transaction.sign = form.cleaned_data['transaction_sign']
-            new_transaction.history = request.user.account
-            if new_transaction.creator == new_transaction.receiver:
-                return errors.render_error(
-                    request, "bank", "Создание транзакции",
-                    "Вы не можете перевести деньги на свой счёт.",
-                    [
-                        ("new-transaction-staff", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            new_transaction.cnt = form.cleaned_data['transaction_cnt']
-            new_transaction.save()
-            new_transaction.count()
+            receiver = form.cleaned_data['transaction_receiver']
+            for i in receiver:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = form.cleaned_data['transaction_date']
+                new_transaction.comment = form.cleaned_data['transaction_comment']
+                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.receiver = i
+                new_transaction.sign = form.cleaned_data['transaction_sign']
+                new_transaction.history = request.user.account
+                if new_transaction.creator == new_transaction.receiver:
+                    return errors.render_error(
+                        request, "bank", "Создание транзакции",
+                        "Вы не можете перевести деньги на свой счёт.",
+                        [
+                            ("new-transaction-staff", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                new_transaction.cnt = form.cleaned_data['transaction_cnt']
+                new_transaction.save()
+                new_transaction.count()
             return redirect('info-staff')
     else:
         transaction_date = datetime.datetime.now()

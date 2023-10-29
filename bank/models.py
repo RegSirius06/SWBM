@@ -148,10 +148,13 @@ class transaction(models.Model):
         ordering = ["-date"]
 
     def __str__(self):
-        return f'От {self.creator} к {self.receiver} на сумму {self.sign}{self.cnt}t (Создал {self.history}): {self.comment}'
+        return f'От {self.creator} к {self.receiver} на сумму {self.cnt}t (Создал {self.history}): {dict(SIGN_SET)[self.sign]}'
 
     def get_sum(self):
         return f'{self.cnt}t'
+
+    def get_type_of(self):
+        return f'{dict(SIGN_SET)[self.sign]}'
 
     def transaction_valid(self, x):
         return f'{self.receiver.last_name[-1]}'

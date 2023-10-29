@@ -19,6 +19,7 @@
             <tr>
                 <th score="col">Дата</th>
                 <th score="col">Изменение счёта</th>
+                <th score="col">Тип изменения</th>
                 <th score="col">Комментарий</th>
                 <th score="col">Создатель</th>
             </tr>
@@ -42,6 +43,7 @@
                         {% endif %}
                     {% endif %}
                 </td>
+                <td>{{ element.get_type_of }}</td>
                 <td><pre class="text-break multiple-text">{{ element.comment }}</pre></td>
                 <td>{{ element.history }}</td>
             </tr>
