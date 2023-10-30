@@ -16,7 +16,7 @@
         </tr>
         <tr>
             <td>{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
-            <td rowspan="4"><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
+            <td rowspan="4"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
         </tr>
         <tr>
             <td>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</td>
@@ -34,7 +34,7 @@
     <p class="{{ theme }}">
         <strong>{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}:{% endif %}</strong>
         <br />
-        <pre class="{{ theme }} text-break multiple-text">{{ element.decrypt_data }}</pre>
+        <pre class="{{ theme }} text-break multiple-text">{{ element.display_text }}</pre>
     </p>
     <hr class="border-1" />
     <p class="{{ theme }} small"><b>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</b></p>
@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <td>{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
-            <td rowspan="4"><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
+            <td rowspan="4"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
         </tr>
         <tr>
             <td>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</td>

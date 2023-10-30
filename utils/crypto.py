@@ -28,7 +28,6 @@ def encode(key: str, alf: str, message: str) -> (str, str):
 
     alfabet = ALFABETS[alf]
     key = encrypting_key(key, alf)
-    print(key)
 
     messagelist = [x for x in message]
     message_dublicate = []

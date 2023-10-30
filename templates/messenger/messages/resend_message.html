@@ -1,0 +1,17 @@
+{% extends "messenger/base_generic.html" %}
+
+{% block content %}
+    <h1>Пересылка сообщения</h1>
+    <p>Вы можете посмотреть информацию о пересылаемом сообщении <a href="{{ message.get_absolute_url_for_detail_view }}">здесь...</a></p>
+    {% if chats %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <input type="submit" value="Переслать" />
+    </form>
+    {% else %}
+    У вас нет чатов, в которые вы могли бы переслать сообщение.
+    {% endif %}
+{% endblock %}

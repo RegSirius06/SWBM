@@ -31,13 +31,17 @@ def new_chat_add(request):
             members.append(f'{request.user.account.id}')
             new_chat.chat_ico = form.cleaned_data["image_choice"]
             new_chat.creator = request.user.account
+            new_chat.avaliable_resend_messages = form.cleaned_data["chat_resend"]
             new_chat.cnt = len(members)
             
             new_message.id = uuid.uuid4()
             new_message.date = datetime.datetime.today()
             new_message.time = datetime.datetime.now()
+            new_message.date_of_edit = datetime.datetime.today()
+            new_message.time_of_edit = datetime.datetime.now()
             new_message.creator = request.user.account
             new_message.receiver = new_chat
+            new_message.editable = False
             text = f'Создан чат "{new_chat.name}" ( {new_chat.description} ).'
             new_message.text = new_message.encrypt_data(text)
             new_message.anonim = True
@@ -147,6 +151,8 @@ def chat_view(request, pk):
             message_.id = uuid.uuid4()
             message_.date = datetime.datetime.today()
             message_.time = datetime.datetime.today()
+            message_.date_of_edit = datetime.datetime.today()
+            message_.time_of_edit = datetime.datetime.today()
             message_.creator = request.user.account
             message_.receiver = chat_
             message_.anonim_legacy = chat_.anonim
@@ -164,12 +170,15 @@ def chat_view(request, pk):
                 last_message.id = uuid.uuid4()
                 last_message.date = datetime.datetime.today()
                 last_message.time = datetime.datetime.today()
+                last_message.date_of_edit = datetime.datetime.today()
+                last_message.time_of_edit = datetime.datetime.today()
                 last_message.creator = chat_.creator
                 last_message.receiver = chat_
                 last_message.anonim_legacy = chat_.anonim
                 text = f'В чате накопилось 2000 сообщений, поэтому он будет заархивирован.\n\nДля вашего удобства будет создан новый подобный чат.'
                 last_message.encrypt_data(text)
                 last_message.anonim = True
+                last_message.editable = False
                 last_message.save()
                 chat_valid_.add_msg(last_message)
                 
@@ -188,8 +197,11 @@ def chat_view(request, pk):
                 new_message.id = uuid.uuid4()
                 new_message.date = datetime.datetime.today()
                 new_message.time = datetime.datetime.now()
+                new_message.date_of_edit = datetime.datetime.today()
+                new_message.time_of_edit = datetime.datetime.now()
                 new_message.creator = chat_.creator
                 new_message.receiver = new_chat
+                new_message.editable = False
                 text = f'В предыдущем чате был достигнут лимит по количеству сообщений.\n\nВместо него создан аналогичный чат \"{new_chat.name} ({new_chat.description}).\"'
                 new_message.encrypt_data(text)
                 new_message.anonim = True
@@ -290,6 +302,7 @@ def re_new_chat_add(request, pk):
                     chat_valid_.save()
                     chat_.cnt = len(chat_valid_.list_members)
                 chat_.chat_ico = form.cleaned_data["image_choice"]
+                chat_.avaliable_resend_messages = form.cleaned_data["chat_resend"]
                 chat_.save()
                 if form.cleaned_data['delete']:
                     chat_.archive()
@@ -300,9 +313,12 @@ def re_new_chat_add(request, pk):
             name = chat_.name
             text = chat_.description
             chat_ico = chat_.chat_ico
-            form = chats.ReNewChatFormAnonim(initial={'chat_text': text, 'chat_name': name, 'chat_anonim': anonim, 'image_choice': chat_ico,},\
-                                       current_users=current_users, current_user=request.user.account) if anon_prov else \
-                   chats.ReNewChatFormBase(initial={'chat_text': text, 'chat_name': name, 'image_choice': chat_ico,}, current_users=current_users, current_user=request.user.account)
+            chat_resend = chat_.avaliable_resend_messages
+            form = chats.ReNewChatFormAnonim(initial={'chat_text': text, 'chat_name': name, 'chat_anonim': anonim,\
+                    'image_choice': chat_ico, 'chat_resend': chat_resend,}, current_users=current_users,\
+                        current_user=request.user.account) if anon_prov else chats.ReNewChatFormBase(initial={'chat_text': text,\
+                            'chat_name': name, 'image_choice': chat_ico, 'chat_resend': chat_resend,}, current_users=current_users,\
+                                current_user=request.user.account)
 
         return render(
             request,

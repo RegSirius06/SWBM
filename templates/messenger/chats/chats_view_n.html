@@ -18,6 +18,7 @@
     {% else %}
     <li>Все сообщения в чате <strong class="green">анонимные</strong>.</li>
     {% endif %}
+    <li>Сообщения из чата пересылать <strong>{% if chat.resend_status %}<span class="green">можно{% else %}<span class="red">нельзя{% endif %}</span></strong>.</li>
     {% if chat.chat_valid.avaliable %}
     {% if request.user.account == chat.creator %}
     <li><strong><a href="{{ chat.get_absolute_url_for_edit }}">Если вы хотите изменить этот чат, перейдите по данной ссылке...</a></strong></li>

@@ -19,7 +19,7 @@
         <tr>
             <td>{{ element.receiver.name }}</td>
             <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
+            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
             <td>{% if element.answer_for %}
@@ -63,7 +63,7 @@
         <tr>
             <td>{{ element.receiver.name }}</td>
             <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
+            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
             <td>{% if element.answer_for %}
@@ -105,7 +105,7 @@
         {% for element in messages_public %}
         <tr>
             <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.decrypt_data }}</pre></td>
+            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
             <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
                 {{ element.anonim_status }}</span></td>
             <td>{% if element.answer_for %}

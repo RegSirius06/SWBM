@@ -8,9 +8,9 @@ class NewMessageForm(forms.Form):
         messages = kwargs.pop('messages', None)
         super(NewMessageForm, self).__init__(*args, **kwargs)
         if messages:
-            choice_list = [(None, '---------------')]
+            choice_list = [(None, '-' * 30)]
             for i in messages:
-                choice_list.append((f"{i.id}", f"{i.decrypt_data()}"))
+                choice_list.append((f"{i.id}", f"{i.decrypt_data()}"[:20] + ('...' if len(i.decrypt_data()) >= 20 else '')))
             self.fields['message_citate'].choices = choice_list
 
     message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
@@ -33,11 +33,11 @@ class NewMessageForm_WithoutAnonim(forms.Form):
         messages = kwargs.pop('messages', None)
         super(NewMessageForm_WithoutAnonim, self).__init__(*args, **kwargs)
         if messages:
-            choice_list = [(None, '---------------')]
+            choice_list = [(None, '-' * 30)]
             for i in messages:
-                choice_list.append((f"{i.id}", f"{i.decrypt_data()}"))
+                choice_list.append((f"{i.id}", f"{i.decrypt_data()}"[:20] + ('...' if len(i.decrypt_data()) >= 20 else '')))
             self.fields['message_citate'].choices = choice_list
-    
+
     message_text = forms.CharField(widget=forms.Textarea, help_text="Текст сообщения.", label="Текст:")
 
     def clean_message_text(self):
@@ -80,3 +80,21 @@ class ReNewMessageFormBase(forms.Form):
     class Meta:
         model = message
         fields = ['message_text']
+
+class ResendMessageForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        chats = kwargs.pop('chats', None)
+        chat = kwargs.pop('chat', None)
+        super(ResendMessageForm, self).__init__(*args, **kwargs)
+        choice_list = [('None', 'Глобальный чат')] if chat else []
+        if chats:
+            for i in chats:
+                if i != chat: choice_list.append((f"{i.id}", f"{i.name}"))
+        self.fields['chats'].choices = choice_list
+    
+    chats = forms.MultipleChoiceField(choices=(), required=False, label="Выберите чат, в который хотите переслать сообщение:")
+
+    def clean_chats(self):
+        x = self.cleaned_data['chats']
+        x = [i if i != 'None' else None for i in x]
+        return x

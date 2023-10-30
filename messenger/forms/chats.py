@@ -37,6 +37,11 @@ class NewChatForm(forms.Form):
         if img is None or img == '': img = self.image_list[0]
         return img
 
+    chat_resend = forms.BooleanField(initial=True, required=False, help_text="Если вы хотите разрешить пересылать сообщения из чата, поставьте здесь галочку.", label="Пересылка сообщенний?")
+
+    def clean_chat_resend(self):
+            return self.cleaned_data['chat_resend']
+
     chat_anonim = forms.BooleanField(initial=False, required=False, help_text="Если вы хотите сделать чат анонимным, поставьте здесь галочку.\nЭтот параметр неизменяем.", label="Чат анонимный?")
 
     def clean_chat_anonim(self):
@@ -109,6 +114,11 @@ class ReNewChatFormAnonim(forms.Form):
 
     def clean_message_anonim(self):
         return self.cleaned_data['chat_anonim']
+    
+    chat_resend = forms.BooleanField(required=False, help_text="Если вы хотите разрешить пересылать сообщения из чата, поставьте здесь галочку.", label="Пересылка сообщенний?")
+
+    def clean_chat_resend(self):
+            return self.cleaned_data['chat_resend']
 
     chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), required=False, label="Добавить участников?", help_text="Выберите нового(-ых) участника(-ов) чата. Это необязательно.")
 
@@ -155,6 +165,11 @@ class ReNewChatFormBase(forms.Form):
 
     def clean_chat_text(self):
         return self.cleaned_data['chat_text']
+    
+    chat_resend = forms.BooleanField(required=False, help_text="Если вы хотите разрешить пересылать сообщения из чата, поставьте здесь галочку.", label="Пересылка сообщенний?")
+
+    def clean_chat_resend(self):
+            return self.cleaned_data['chat_resend']
 
     chat_members = forms.ModelMultipleChoiceField(queryset=account.objects.all(), required=False, label="Добавить участников?", help_text="Выберите нового(-ых) участника(-ов) чата. Это необязательно.")
 

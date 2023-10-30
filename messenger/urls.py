@@ -16,6 +16,8 @@ urlpatterns = [
     re_path(r'^messages/edit/$', messages.home_send, name='messages-edit'),
     re_path(r'^messages/edit/(?P<pk>[-\w]+)/$', messages.re_new_message_add, name='messages-edit-n'),
 
+    re_path(r'^messages/resend/(?P<chat_id>[-\w]+)/(?P<message_id>[-\w]+)/$', messages.message_resend, name='messages-resend'),
+
     re_path(r'^chats/new/$', chats.new_chat_add, name='chats-new'),
     re_path(r'^chats/new/conflict/(?P<new_chat_id>[-\w]+)/(?P<new_message_id>[-\w]+)/(?P<new_chat_valid_id>[-\w]+)/(?P<existing_chat_id>[-\w]+)/$',
             chats.new_chat_add_confilct, name='chats-new-conflict'),

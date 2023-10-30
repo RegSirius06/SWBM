@@ -19,8 +19,16 @@
             <td><img src="{{ element.get_img }}" width="40px" height="40px" /></td>
             <td>{{ element.name }}</td>
             <td>{{ element.creator }}</td>
-            <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span></td>
+            <td>
+                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
+                {{ element.anonim_status }}</span>
+                <br />
+                {% if element.resend_status %}
+                <span class="red">Сообщения можно пересылать</span>
+                {% else %}
+                <span class="green">Сообщения нельзя пересылать</span>
+                {% endif %}
+            </td>
             <td><a href="{{ element.get_absolute_url_from_archive }}">Перейти в чат</a></td>
         </tr>
         {% endfor %}

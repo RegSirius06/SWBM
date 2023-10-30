@@ -9,7 +9,7 @@ from django.templatetags.static import static
 from django.conf import settings
 
 from bank.models import account
-from utils import gens, crypto
+from utils import gens, crypto, text
 from constants.messenger.models import PICTURE_TYPES
 
 class ListField(models.TextField):
@@ -61,13 +61,17 @@ class EncryptedTextField(models.TextField):
         return json.dumps(value)
 
 class message(models.Model):
-    date = models.DateField(verbose_name="Дата:")
+    date = models.DateField(default=datetime.date(year=1, month=1, day=1), verbose_name='Дата:')
     time = models.TimeField(default=datetime.time(hour=0), verbose_name="Время:")
     receiver = models.ForeignKey('chat', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
     creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
     text = EncryptedTextField(verbose_name='Текст:')
     anonim = models.BooleanField(default=False, verbose_name='Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку.')
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID сообщения.")
+    date_of_edit = models.DateField(default=datetime.date(year=1, month=1, day=1), verbose_name="Дата последнего измененния:")
+    time_of_edit = models.TimeField(default=datetime.time(hour=0), verbose_name="Время последнего изменения:")
+    editable = models.BooleanField(default=True, editable=False)
+    history = models.BooleanField(default=False, editable=False)
     anonim_legacy = models.BooleanField(default=False, editable=False)
     answer_for = models.ForeignKey('message', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Ответ на сообщение:")
 
@@ -86,6 +90,10 @@ class message(models.Model):
         if self.answer_for: return reverse('messages-detail', args=[str(self.answer_for.id)])
         else: return None
 
+    def get_absolute_url_for_resend(self):
+        if self.receiver: return reverse('messages-resend', args=[str(self.receiver.id), str(self.id)])
+        else: return reverse('messages-resend', args=['global', str(self.id)])
+
     def get_text_for_view_answer(self):
         if self.answer_for: return "Ответ на сообщение от " + \
             (f"{self.answer_for.creator}" if not self.answer_for.anonim else "(аноним)")
@@ -100,17 +108,23 @@ class message(models.Model):
     def __str__(self):
         return f'{self.date}: ' + ('(глобально)' if self.receiver is None else f'К {self.receiver}') + (f' от {self.creator}' if not self.anonim else ' (анонимно)')
     
-    def encrypt_data(self, message):
+    def encrypt_data(self, message: str):
         self.text = {"msg": "", "msg_d": "", "key": "", "alf": ""}
         self.text["alf"] = crypto.get_best_alf(message)
         self.text["key"] = gens.key_gen(self.text["alf"])
         self.text["msg"], self.text["msg_d"] = crypto.encode(self.text["key"], self.text["alf"], message)
         try: self.save()
-        except: return self.text
+        except: pass
+        return self.text
     
     def decrypt_data(self):
         return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}'
-    
+
+    def display_text(self):
+        f = self.date == self.date_of_edit and self.time == self.time_of_edit
+        add_text = text.get_change_msg(self.date_of_edit, self.time_of_edit) if not f else ''
+        return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}' + add_text
+
     class Meta:
         ordering = ["-date", "-time"]
 
@@ -121,7 +135,8 @@ class chat(models.Model):
     creator = models.ForeignKey(account, related_name='creator_chat', on_delete=models.CASCADE, null=True, verbose_name="Создатель:")
     anonim = models.BooleanField(default=False, verbose_name='Если вы хотите сделать чат анонимным, поставьте здесь галочку. Этот параметр неизменяем.')
     anonim_legacy = models.BooleanField(default=False, verbose_name='Поставьте галочку, если хотите разрешить участникам отправлять анонимные сообщения.')
-    chat_ico = models.ImageField(verbose_name="Иконка чата:", null=True)
+    avaliable_resend_messages = models.BooleanField(default=True, verbose_name='Поставьте галочку, если хотите разрешить пересылать сообщения из этого чата.')
+    chat_ico = models.ImageField(verbose_name="Иконка чата:")
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID чата.")
 
     def __str__(self):
@@ -138,7 +153,10 @@ class chat(models.Model):
 
     def get_absolute_url_for_msg(self):
         return reverse('update-messages', args=[str(self.id)])
-    
+
+    def resend_status(self):
+        return self.avaliable_resend_messages
+
     def anonim_status(self):
         return 'Анонимный чат' if self.anonim else \
                'Анонимные сообщения разрешены' if self.anonim_legacy\
