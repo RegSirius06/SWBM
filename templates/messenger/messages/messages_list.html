@@ -20,8 +20,16 @@
             <td>{{ element.receiver.name }}</td>
             <td>{{ element.get_date }}</td>
             <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span></td>
+            <td>
+                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
+                {{ element.anonim_status }}</span>
+                <br />
+                {% if element.editable %}
+                <span class="green">Изменяемое</span>
+                {% else %}
+                <span class="red">Неизменяемое</span>
+                {% endif %}
+            </td>
             <td>{% if element.answer_for %}
                 <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
                 {% else %}<span class="green">Нет</span>{% endif %}</td>
@@ -64,8 +72,16 @@
             <td>{{ element.receiver.name }}</td>
             <td>{{ element.get_date }}</td>
             <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span></td>
+            <td>
+                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
+                {{ element.anonim_status }}</span>
+                <br />
+                {% if element.editable %}
+                <span class="green">Изменяемое</span>
+                {% else %}
+                <span class="red">Неизменяемое</span>
+                {% endif %}
+            </td>
             <td>{% if element.answer_for %}
                 <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
                 {% else %}<span class="green">Нет</span>{% endif %}</td>
@@ -106,8 +122,16 @@
         <tr>
             <td>{{ element.get_date }}</td>
             <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td><span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span></td>
+            <td>
+                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
+                {{ element.anonim_status }}</span>
+                <br />
+                {% if element.editable %}
+                <span class="green">Изменяемое</span>
+                {% else %}
+                <span class="red">Неизменяемое</span>
+                {% endif %}
+            </td>
             <td>{% if element.answer_for %}
                 <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
                 {% else %}<span class="green">Нет</span>{% endif %}</td>
