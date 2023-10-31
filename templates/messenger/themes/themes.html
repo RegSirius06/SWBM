@@ -43,21 +43,30 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td colspan="2" class="small text-end"><span class="blockquote-footer"></span></td>
         </tr>
         <tr>
-            <td>{{ request.user.account }}</td>
-            <td rowspan="4"><pre class="text-break multiple-text">Это пример сообщения. Вы его никогда не отправляли.</pre></td>
+            <td class="w-25">{{ request.user.account }}</td>
+            <td rowspan="3"><pre class="text-break multiple-text">Это пример сообщения. Вы его никогда не отправляли.</pre></td>
         </tr>
         <tr>
-            <td>Статус: {{ request.user.account.get_status }}</td>
+            <td>Статус: {{ request.user.account.get_status }}.</td>
         </tr>
         <tr>
             <td>Отправка: {{ date }}.</td>
         </tr>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td class="small">
+            <a href="" class="blockquote-footer">
+                <i>Ответ на сообщение от [кого-то]</i>
+            </a>
+            </td>
+            <td class="text-end small">
+            <a href="" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -71,6 +80,10 @@
     <hr class="border-1" />
     <p class="{{ theme }} small"><b>Статус: {{ request.user.account.get_status }}.</b></p>
     <p class="p-3 mb-2 text-muted small">Отправка: {{ date }}.</p>
+    <i>
+    <a href="" class="p-3 mb-2 small blockquote-footer text-end">Ответ на сообщение от [кого-то]</a>
+    <a href="" class="p-3 mb-2 small">Переслать это сообщение?</a>
+    </i>
     <hr class="border-2" />
 {% else %}
 <table class="table table-striped table-bordered {{ theme }}" cellpadding=30px>
@@ -81,21 +94,30 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td colspan="2" class="small text-end"><span class="blockquote-footer"></span></td>
         </tr>
         <tr>
-            <td>{{ request.user.account }}</td>
-            <td rowspan="4"><pre class="text-break multiple-text">Это пример сообщения. Вы его никогда не отправляли.</pre></td>
+            <td class="w-25">{{ request.user.account }}</td>
+            <td rowspan="3"><pre class="text-break multiple-text">Это пример сообщения. Вы его никогда не отправляли.</pre></td>
         </tr>
         <tr>
-            <td>Статус: {{ request.user.account.get_status }}</td>
+            <td>Статус: {{ request.user.account.get_status }}.</td>
         </tr>
         <tr>
             <td>Отправка: {{ date }}.</td>
         </tr>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td class="small">
+            <a href="" class="blockquote-footer">
+                <i>Ответ на сообщение от [кого-то]</i>
+            </a>
+            </td>
+            <td class="text-end small">
+            <a href="" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
+            </td>
         </tr>
     </tbody>
 </table>

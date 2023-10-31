@@ -3,7 +3,7 @@ import uuid
 
 from django.conf import settings
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from messenger.models import announcement
@@ -27,6 +27,7 @@ def all_announcements_view(request):
         context={'plans': items1,},
     )
 
+@login_required
 def new_announcement_add(request):
     def prov(img: str) -> bool:
         flag = True

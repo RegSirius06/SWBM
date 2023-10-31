@@ -4,7 +4,8 @@ from bank.models import account, transaction, rools, good, plan, daily_answer
 @admin.register(account)
 class AccountAdmin(admin.ModelAdmin):
     list_filter = ["user_group", "party"]
-    pass
+    list_display = ('last_name', 'first_name', 'middle_name', 'party', 'user_group',)
+    search_fields = ("last_name__startswith", )
 
 @admin.register(daily_answer)
 class AnswerAdmin(admin.ModelAdmin):

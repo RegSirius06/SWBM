@@ -8,13 +8,13 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td colspan="2" class="small text-end"><span class="blockquote-footer"></span></td>
         </tr>
         {% for element in items2 %}
         <tr>
-            <td>{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
-            <td rowspan="5"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
+            <td class="w-25">{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
+            <td rowspan="3"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
         </tr>
         <tr>
             <td>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</td>
@@ -22,25 +22,26 @@
         <tr>
             <td>Отправка: {{ element.get_date }}.</td>
         </tr>
-        <tr>
-            <td>
+        <tr class="small">
             {% if element.answer_for %}
-            <a href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
-            {% else %}
-            Это обычное сообщение.
-            {% endif %}
+            <td class="small">
+            <a href="{{ element.get_absolute_url_for_view_answer }}" class="blockquote-footer">
+                <i>{{ element.get_text_for_view_answer }}</i>
+            </a>
             </td>
-        </tr>
-        <tr>
-            <td>
-            {% if element.receiver and element.receiver.resend_status %}
-            <a href="{{ element.get_absolute_url_for_resend }}">Переслать это сообщение?</a>
-            {% else %}
-            Сообщения этого чата нельзя пересылать.
-            {% endif %}
+            <td class="text-end small">
+            <a href="{{ element.get_absolute_url_for_resend }}" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
             </td>
+            {% else %}
+            <td class="text-end small" colspan="2">
+            <a href="{{ element.get_absolute_url_for_resend }}" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
+            </td>
+            {% endif %}
         </tr>
-        <tr><td colspan="2"></td></tr>
         {% endfor %}
     </tbody>
 </table>
@@ -55,14 +56,14 @@
     <hr class="border-1" />
     <p class="{{ theme }} small"><b>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</b></p>
     <p class="p-3 mb-2 text-muted small">Отправка: {{ element.get_date }}.</p>
+    <i>
     {% if element.answer_for %}
-    <a href="{{ element.get_absolute_url_for_view_answer }}" class="blockquote-footer text-end">{{ element.get_text_for_view_answer }}</a>
+    <a href="{{ element.get_absolute_url_for_view_answer }}" class="p-3 mb-2 small blockquote-footer text-end">{{ element.get_text_for_view_answer }}</a>
     {% endif %}
     {% if chat.resend_status %}
     <a href="{{ element.get_absolute_url_for_resend }}" class="p-3 mb-2 small">Переслать это сообщение?</a>
-    {% else %}
-    <span class="p-3 mb-2 small small">Сообщения этого чата нельзя пересылать.</span>
     {% endif %}
+    </i>
     <hr class="border-2" />
     {% endfor %}
 {% else %}
@@ -74,13 +75,13 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td colspan="2"></td>
+        <tr class="small">
+            <td colspan="2" class="small text-end"><span class="blockquote-footer"></span></td>
         </tr>
         {% for element in items2 %}
         <tr>
-            <td>{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
-            <td rowspan="5"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
+            <td class="w-25">{% if element.anonim %}Сообщение отправлено анонимно.{% else %}{{ element.creator }}{% endif %}</td>
+            <td rowspan="3"><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
         </tr>
         <tr>
             <td>{% if element.anonim %}Статус неизвестен{% else %}Статус: {{ element.creator.get_status }}{% endif %}.</td>
@@ -88,25 +89,26 @@
         <tr>
             <td>Отправка: {{ element.get_date }}.</td>
         </tr>
-        <tr>
-            <td>
+        <tr class="small">
             {% if element.answer_for %}
-            <a href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
+            <td class="small">
+            <a href="{{ element.get_absolute_url_for_view_answer }}" class="blockquote-footer">
+                <i>{{ element.get_text_for_view_answer }}</i>
+            </a>
+            </td>
+            <td class="text-end small">
+            <a href="{{ element.get_absolute_url_for_resend }}" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
+            </td>
             {% else %}
-            Это обычное сообщение.
+            <td class="text-end small" colspan="2">
+            <a href="{{ element.get_absolute_url_for_resend }}" class="blockquote-footer">
+                <i>Переслать это сообщение?</i>
+            </a>
+            </td>
             {% endif %}
-            </td>
         </tr>
-        <tr>
-            <td>
-                {% if chat.resend_status %}
-                <a href="{{ element.get_absolute_url_for_resend }}">Переслать это сообщение?</a>
-                {% else %}
-                Сообщения этого чата нельзя пересылать.
-                {% endif %}
-            </td>
-        </tr>
-        <tr><td colspan="2"></td></tr>
         {% endfor %}
     </tbody>
 </table>

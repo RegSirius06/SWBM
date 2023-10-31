@@ -20,3 +20,8 @@ class ChatAndAccAdmin(admin.ModelAdmin):
 @admin.register(message)
 class MessageAdmin(admin.ModelAdmin):
     list_filter = ["date", "receiver", "creator"]
+
+    def get_view_on_site_url(self, obj=None):
+        if obj is None or not self.view_on_site:
+            return None
+        return obj.get_absolute_url_for_detail_view
