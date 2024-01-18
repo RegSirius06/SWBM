@@ -1,0 +1,497 @@
+{
+    
+    "constants": {
+        "EXISTING_GROUPS": [
+            ["None", "Другое"],
+            ["Биология 1", "Биология 1"],
+            ["Биология 2", "Биология 2"],
+            ["Химия 1", "Химия 1"],
+            ["Химия 2", "Химия 2"],
+            ["Информатика", "Информатика"],
+            ["Физика 1", "Физика 1"],
+            ["Физика 2", "Физика 2"],
+            ["Физика 3", "Физика 3"],
+            ["Физика 4", "Физика 4"]
+        ],
+        "EXISTING_THEMES": [
+            ["default", "По-умолчанию"],
+            ["table-primary", "Голубой"],
+            ["table-secondary", "Серый"],
+            ["table-success", "Зелёный"],
+            ["table-danger", "Красный"],
+            ["table-warning", "Жёлтый"],
+            ["table-info", "Светло-зелёный"],
+            ["table-light", "Светлая"],
+            ["table-dark", "Тёмная"],
+        
+            ["p-3 mb-2", "По-умолчанию (аналог)"],
+            ["p-3 mb-2 bg-primary text-white", "Голубой (аналог)"],
+            ["p-3 mb-2 bg-secondary text-white", "Серый (аналог)"],
+            ["p-3 mb-2 bg-success text-white", "Зелёный (аналог)"],
+            ["p-3 mb-2 bg-danger text-white", "Красный (аналог)"],
+            ["p-3 mb-2 bg-warning text-dark", "Жёлтый (аналог)"],
+            ["p-3 mb-2 bg-info text-dark", "Светло-зелёный (аналог)"],
+            ["p-3 mb-2 bg-light text-dark", "Светлая (аналог)"],
+            ["p-3 mb-2 bg-dark text-white", "Тёмная (аналог)"],
+        
+            ["p-3 mb-2 bg-primary bg-gradient text-white", "Голубой (аналог, градиент)"],
+            ["p-3 mb-2 bg-secondary bg-gradient text-white", "Серый (аналог, градиент)"],
+            ["p-3 mb-2 bg-success bg-gradient text-white", "Зелёный (аналог, градиент)"],
+            ["p-3 mb-2 bg-danger bg-gradient text-white", "Красный (аналог, градиент)"],
+            ["p-3 mb-2 bg-warning bg-gradient text-dark", "Жёлтый (аналог, градиент)"],
+            ["p-3 mb-2 bg-info bg-gradient text-dark", "Светло-зелёный (аналог, градиент)"],
+            ["p-3 mb-2 bg-light bg-gradient text-dark", "Светлая (аналог, градиент)"],
+            ["p-3 mb-2 bg-dark bg-gradient text-white", "Тёмная (аналог, градиент)"]
+        ],
+        "EXISTING_TYPES_OF_RULES": [
+            ["УкТ", "Уголовный кодекс"],
+            ["АкТ", "Административный кодекс"],
+            ["ТкТ", "Трудовой кодекс"],
+            ["КпТ", "Кодекс премий"]
+        ],
+        "SIGN_SET_ALL": [
+            ["p2p+", "Личный перевод"],
+            ["dining_services+", "Дежурный в столовой"],
+            ["activity+", "Активность"],
+            ["salary+", "Зарплата"],
+            ["fee+", "Гонорар"],
+            ["purchase-", "Покупка"],
+            ["fine-", "Штраф"]
+        ],
+        "SIGN_SET": [
+            ["dining_services+", "Дежурный в столовой"],
+            ["activity+", "Активность"],
+            ["salary+", "Зарплата"],
+            ["fee+", "Гонорар"],
+            ["purchase-", "Покупка"],
+            ["fine-", "Штраф"]
+        ],
+        "PERMISSIONS": [
+            ["staff_", "Принадлежность к персоналу"],
+            ["transaction", "Может создавать транзакции"],
+            ["transaction_base", "Может совершать переводы"],
+            ["register", "Может регистрировать пользователей"],
+            ["edit_users", "Может изменять пользователей"],
+            ["ant_edit", "Может изменять объявления"],
+            ["meria", "Мэрия в банке"]
+        ],
+        "EXISTING_TYPES": [
+            [0, "Пионер"],
+            [1, "Педсостав"]
+        ],
+        "DATE_START": {
+            "year": 2024,
+            "month": 6,
+            "day": 24,
+            "distance": 21
+        },
+        "PICTURE_TYPES": [
+            [0, "Горизонтально"],
+            [1, "Вертикально"],
+            [2, "Квадрат"]
+        ],
+        "CONFLICT_SOLVES": [
+            [0, "Создать новый чат и заархивировать существующий"],
+            [1, "Не создавать новый чат, заархивировать существующий"],
+            [2, "Не создавать новый чат, не архивировать существующий"]
+        ]
+    },
+    "bank": {
+        "models": {
+            "account": {
+                "fields": {
+                    "user": { "verbose_name": "Пользователь:" },
+                    "balance": { "verbose_name": "Баланс:" },
+                    "id": { "help_text": "Уникальный ID аккаунта." },
+                    "first_name": { "default": "Не указано", "verbose_name": "Имя:" },
+                    "middle_name": { "default": "Не указано", "verbose_name": "Отчество:" },
+                    "last_name": { "default": "Не указано", "verbose_name": "Фамилия:" },
+                    "user_group": { "help_text": "Группа обучения", "verbose_name": "Занятия:" },
+                    "party": { "verbose_name": "Отряд:" },
+                    "theme_self": { "help_text": "Как это выглядит, можно посмотреть на сайте.", "verbose_name": "Тема:" },
+                    "account_status": { "verbose_name": "Статус:" }
+                },
+                "methods": {
+                    "info": "отряд, группа",
+                    "get_status": "не установлен"
+                }
+            },
+            "transaction": {
+                "fields": {
+                    "date": { "verbose_name": "Дата:" },
+                    "comment": { "default": "Не указано", "verbose_name": "Комментарий:" },
+                    "receiver": { "verbose_name": "Тот, кому выписана транзакция:" },
+                    "creator": { "verbose_name": "Тот, с чьего счёта выписывается транзакция:" },
+                    "history": { "verbose_name": "Тот, кто создал транзакцию:" },
+                    "id": { "help_text": "Уникальный ID транзакции." },
+                    "sign": { "verbose_name": "Тип транзакции:" },
+                    "cnt": { "verbose_name": "Количество:" }
+                },
+                "methods": {
+                    "__str__": [
+                        "От",
+                        "к",
+                        "на сумму",
+                        "Создал"
+                    ]
+                }
+            },
+            "good": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "name": { "verbose_name": "Название:" },
+                    "comment": { "verbose_name": "Комментарий:" },
+                    "cost": { "verbose_name": "Цена:" }
+                }
+            },
+            "rools": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "num_type": { "verbose_name": "Раздел законов:" },
+                    "num_pt1": { "help_text": "Раздел кодекса", "verbose_name": "Кусок номера 1" },
+                    "num_pt2": { "help_text": "Часть раздела", "verbose_name": "Кусок номера 2" },
+                    "comment": { "default": "Не указано", "verbose_name": "Комментарий:" },
+                    "punishment": { "default": "Не указано", "verbose_name": "Наказание:" }
+                }
+            },
+            "plan": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "time": { "verbose_name": "Во сколько:" },
+                    "comment": { "verbose_name": "Комментарий:" },
+                    "number": { "verbose_name": "Номер в списке: " }
+                }
+            },
+            "daily_answer": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "name": { "verbose_name": "Название задачи:", "default": "none" },
+                    "text": { "verbose_name": "Условие задачи:" },
+                    "cnt": { "verbose_name": "Награда:" },
+                    "status": { "verbose_name": "Это задача смены?" }
+                },
+                "methods": {
+                    "__str__": "на"
+                }
+            }
+        },
+        "forms": {
+            "accounts": {
+                "__BaseAccountForm__": {
+                    "fields": {
+                        "first_name": { "label": "Имя:" },
+                        "middle_name": { "label": "Отчество:" },
+                        "last_name": { "label": "Фамилия:" },
+                        "user_group": { "label": "Группа занятий:" },
+                        "party": { "label": "Номер отряда:" }
+                    },
+                    "methods": {
+                        "clean_party": "Отряд должен иметь номер, больший нуля; ноль для педсостава."
+                    }
+                },
+                "NewAccountForm": {
+                    "fields": {
+                        "type_": { "label": "Тип аккаунта:" }
+                    }
+                },
+                "NewAccountFullForm": {
+                    "fields": {
+                        "type_": { "label": "Тип аккаунта:" },
+                        "username": { "label": "Login:" },
+                        "password": { "label": "Password:" }
+                    },
+                    "methods": {
+                        "clean_password": "Длина пароля должна быть равной 8-ми символам для пионера и 12-ти символам для педагога."
+                    }
+                },
+                "ReNewAccountForm": {
+                    "fields": {
+                        "balance": { "label": "Баланс:" },
+                        "username": { "label": "Login:" }
+                    }
+                },
+                "ReadFromFileForm": {
+                    "fields": {
+                        "type_": { "label": "Тип аккаунта:" },
+                        "way_to_file": { "label": "Путь к файлу (с названием файла):" }
+                    },
+                    "methods": {
+                        "clean_way_to_file": "Расширение файла должно быть .txt или .csv"
+                    }
+                }
+            },
+            "daily_answers": {
+                "NewDailyAnswerAddForm": {
+                    "fields": {
+                        "name": { "label": "Название задачи:" },
+                        "comment": { "label": "Условие задачи:" },
+                        "cost": { "label": "Награда:" },
+                        "giga_ans": { "label": "Это задача смены?" }
+                    },
+                    "methods": {
+                        "clean_cost": "Награда должна стоить хотя бы сколько-то."
+                    }
+                }
+            },
+            "goods": {
+                "NewGoodAddForm": {
+                    "fields": {
+                        "name": { "label": "Название:" },
+                        "comment": { "label": "Комментарий:" },
+                        "cost": { "label": "Цена:" }
+                    }
+                }
+            },
+            "plans": {
+                "NewPlanAddForm": {
+                    "fields": {
+                        "time": { "label": "Во сколько:" },
+                        "comment": { "label": "Комментарий:" },
+                        "number": { "label": "Номер в списке:" }
+                    }
+                }
+            },
+            "transactions": {
+                "NewTransactionBaseForm": {
+                    "fields": {
+                        "transaction_receiver": { "label": "Получатель:" },
+                        "transaction_cnt": { "help_text": "Укажите сумму перевода.", "label": "Сумма:"},
+                        "transaction_comment": { "help_text": "Пояснение перевода.", "label": "Комментарий:" }
+                    },
+                    "methods": {
+                        "clean_transaction_cnt": "Вы не можете перевести сумму средств меньше нуля или ноль."
+                    }
+                },
+                "NewTransactionStaffForm": {
+                    "fields": {
+                        "transaction_date": { "help_text": "Дата должна быть в пределах смены, по умолчанию сегодня.", "label": "Дата:" },
+                        "transaction_sign": { "help_text": "Выберите тип: премия/штраф", "label": "Тип транзакции:" }
+                    },
+                    "methods": {
+                        "clean_transaction_date": ["Вы указали дату до смены.", "Вы указали дату после смены."]
+                    }
+                },
+                "NewTransactionStaffFormParty": {
+                    "fields": {
+                        "transaction_receiver": { "label": "Получатель:", "help_text": "Введите номер отряда." }
+                    },
+                    "methods": {
+                        "clean_transaction_receiver": ["Вы не можете выбрать служебные отряды.", "Такого отряда не существует."]
+                    }
+                },
+                "NewTransactionFullForm": {
+                    "fields": {
+                        "transaction_creator": { "label": "Даватель:" },
+                        "transaction_history": { "label": "Создатель:" }
+                    }
+                },
+                "NewTransactionBuyForm": {
+                    "fields": {
+                        "transaction_receiver": { "label": "Покупатель:" }
+                    }
+                },
+                "ReNewTransactionStaffForm": {
+                    "fields": {
+                        "transaction_history": { "label": "Создатель:" }
+                    }
+                }
+            }
+        }
+    },
+    "messenger": {
+        "models": {
+            "message": {
+                "fields": {
+                    "date": { "verbose_name": "Дата:" },
+                    "time": { "verbose_name": "Время:" },
+                    "receiver": { "verbose_name": "Получатель:" },
+                    "creator": { "verbose_name": "Отправитель:" },
+                    "text": { "verbose_name": "Текст:" },
+                    "anonim": { "verbose_name": "Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку." },
+                    "id": { "help_text": "Уникальный ID сообщения." },
+                    "date_of_edit": { "verbose_name": "Дата последнего измененния:" },
+                    "time_of_edit": { "verbose_name": "Время последнего изменения:" },
+                    "answer_for": { "verbose_name": "Ответ на сообщение:" }
+                },
+                "methods": {
+                    "get_text_for_view_answer": ["Ответ на сообщение от ", "(аноним)"],
+                    "get_date": "в",
+                    "anonim_status": ["Анонимно", "Публично"],
+                    "__str__": ["(глобально)", "К", "от", "(анонимно)"]
+                }
+            },
+            "chat": {
+                "fields": {
+                    "name": { "verbose_name": "Название чата:" },
+                    "description": { "verbose_name": "Описание чата:" },
+                    "creator": { "verbose_name": "Создатель:" },
+                    "anonim": { "verbose_name": "Если вы хотите сделать чат анонимным, поставьте здесь галочку. Этот параметр неизменяем." },
+                    "anonim_legacy": { "verbose_name": "Поставьте галочку, если хотите разрешить участникам отправлять анонимные сообщения." },
+                    "avaliable_resend_messages": { "verbose_name": "Поставьте галочку, если хотите разрешить пересылать сообщения из этого чата." },
+                    "chat_ico": { "verbose_name": "Иконка чата:" },
+                    "id": { "help_text": "Уникальный ID чата." }
+                },
+                "methods": {
+                    "__str__": ["создал", "участников"],
+                    "anonim_status": ["Анонимный чат", "Анонимные сообщения разрешены", "Все сообщения публичные"]
+                }
+            },
+            "chat_valid": {
+                "fields": {
+                    "what_chat": { "verbose_name": "Чат:" },
+                    "id": { "help_text": "Уникальный ID." },
+                    "list_members": { "verbose_name": "Список ID участников:" },
+                    "list_messages": { "verbose_name": "Список ID сообщений:" }
+                },
+                "methods": {
+                    "__str__": ["(доступен)", "(не доступен)"]
+                }
+            },
+            "chat_and_acc": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "what_chat": { "verbose_name": "Чат:" },
+                    "what_acc": { "verbose_name": "Аккаунт:" }
+                },
+                "methods": {
+                    "__str__": ["(не ", "прочитан"]
+                }
+            },
+            "announcement": {
+                "fields": {
+                    "number": { "verbose_name": "Номер в списке:" },
+                    "creator": { "verbose_name": "Отправитель:" },
+                    "name": { "verbose_name": "Название:" },
+                    "text": { "verbose_name": "Текст:" },
+                    "id": { "help_text": "Уникальный ID." },
+                    "status": { "verbose_name": "Объявление принято?" },
+                    "picture": { "verbose_name": "Картинка:" },
+                    "orientation": { "verbose_name": "Ориентация:" }
+                },
+                "methods": {
+                    "__str__": "создал"
+                }
+            }
+        },
+        "forms": {
+            "announcement": {
+                "NewAnnouncementForm": {
+                    "fields": {
+                        "name": { "label": "Название:" },
+                        "text": { "label": "Текст:" },
+                        "picture": { "label": "Картинка:" }
+                    },
+                    "methods": {
+                        "clean_picture": [15, "Максимальный размер файла", "MB"]
+                    }
+                },
+                "NewAnnouncementFullForm": {
+                    "fields": {
+                        "creator": { "label": "Создатель:" },
+                        "type_": { "label": "Тип ориентации картинки:", "help_text": "По-умолчанию горизонтально." }
+                    }
+                },
+                "ReNewAnnouncementForm": {
+                    "fields": {
+                        "status": { "label": "Объявление принято?" },
+                        "creator": { "label": "Создатель:" }
+                    }
+                }
+            },
+            "chats": {
+                "NewChatForm": {
+                    "fields": {
+                        "chat_name": { "label": "Название чата:" },
+                        "chat_description": { "label": "Описание чата:" },
+                        "image_choice": { "label": "Аватарка чата:" },
+                        "chat_resend": {
+                            "help_text": "Если вы хотите разрешить пересылать сообщения из чата, поставьте здесь галочку.",
+                            "label": "Пересылка сообщенний?"
+                        },
+                        "chat_anonim": {
+                            "help_text": "Если вы хотите сделать чат анонимным, поставьте здесь галочку.\nЭтот параметр неизменяем.",
+                            "label": "Чат анонимный?"
+                        },
+                        "chat_anonim_legacy": {
+                            "label": "Анонимные сообщения?",
+                            "help_text": "Если вы хотите разрешить отправку анонимных сообщений, вы должны поставить галочку.\nЭтот параметр неизменяем, не влияет на анонимный чат."
+                        },
+                        "chat_members": { "label": "Участники чата:", "help_text": "Выберите участника(-ов) чата." }
+                    },
+                    "methods": {
+                        "clean_chat_name": "Чат с таким именем уже существует. Постарайтесь быть креативнее.",
+                        "clean_chat_members": [25, "В чате не может быть больше 25-ти человек. Если вы хотите создать чат с большим количеством людей, вам нужно обратиться к администратору."]
+                    }
+                },
+                "NewChatFormConflict": {
+                    "fields": {
+                        "solve": { "label": "Действие:" }
+                    }
+                },
+                "ReNewChatFormBase": {
+                    "fields": {
+                        "chat_creator": {
+                            "label": "Создатель:",
+                            "help_text": "Здесь вы можете изменить создателя чата. Это необязательно."
+                        },
+                        "image_choice": { "label": "Аватарка чата:" },
+                        "chat_name": { "label": "Название чата:" },
+                        "chat_text": { "label": "Описание чата:" },
+                        "chat_resend": {
+                            "help_text": "Если вы хотите разрешить пересылать сообщения из чата, поставьте здесь галочку.",
+                            "label": "Пересылка сообщенний?"
+                        },
+                        "chat_members": {
+                            "label": "Добавить участников?",
+                            "help_text": "Выберите нового(-ых) участника(-ов) чата. Это необязательно."
+                        }
+                    },
+                    "methods": {
+                        "clean_chat_name": "Чат с таким именем уже существует. Постарайтесь быть креативнее.",
+                        "clean_chat_members": [25, "В чате не может быть больше 25-ти человек. Если вы хотите создать чат с большим количеством людей, вам нужно обратиться к администратору."]
+                    }
+                },
+                "ReNewChatFormAnonim": {
+                    "fields": {
+                        "chat_anonim": {
+                            "label": "Анонимные сообщения?",
+                            "help_text": "Если вы хотите разрешить отправку сообщения анонимно, вы должны поставить галочку."
+                        }
+                    }
+                }
+            },
+            "messages": {
+                "NewMessageForm": {
+                    "fields": {
+                        "message_text": { "help_text": "Текст сообщения.", "label": "Текст:" },
+                        "message_anonim": {
+                            "label": "Анонимно?",
+                            "help_text": "Если вы хотите отправить сообщение анонимно, вы должны поставить галочку."
+                        },
+                        "message_citate": { "label": "Ответить на:", "help_text": "Выберите сообщение, на которое вы хотите ответить: " }
+                    }
+                },
+                "ResendMessageForm": {
+                    "fields": {
+                        "chats": { "label": "Выберите чат, в который хотите переслать сообщение:" }
+                    },
+                    "methods": {
+                        "__init__": "Глобальный чат"
+                    }
+                }
+            },
+            "other": {
+                "SetStatus": {
+                    "fields": {
+                        "status": { "label": "Введите новый статус:" }
+                    }
+                },
+                "ReNewThemeForm": {
+                    "fields": {
+                        "type_": { "help_text": "Как это выглядит, можно посмотреть ниже после применения новой темы.", "label": "Тема:" }
+                    }
+                }
+            }
+        }
+    }
+}

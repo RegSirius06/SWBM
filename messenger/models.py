@@ -10,7 +10,7 @@ from django.conf import settings
 
 from bank.models import account
 from utils import gens, crypto, text
-from constants.messenger.models import PICTURE_TYPES
+from constants.constants import PICTURE_TYPES, get_const_messenger_models as gc
 
 class ListField(models.TextField):
     description = "Custom list field"
@@ -61,19 +61,23 @@ class EncryptedTextField(models.TextField):
         return json.dumps(value)
 
 class message(models.Model):
-    date = models.DateField(default=datetime.date(year=1, month=1, day=1), verbose_name='Дата:')
-    time = models.TimeField(default=datetime.time(hour=0), verbose_name="Время:")
-    receiver = models.ForeignKey('chat', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Получатель:")
-    creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
-    text = EncryptedTextField(verbose_name='Текст:')
-    anonim = models.BooleanField(default=False, verbose_name='Если вы хотите отправить это сообщение анонимно, поставьте здесь галочку.')
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID сообщения.")
-    date_of_edit = models.DateField(default=datetime.date(year=1, month=1, day=1), verbose_name="Дата последнего измененния:")
-    time_of_edit = models.TimeField(default=datetime.time(hour=0), verbose_name="Время последнего изменения:")
+    date = models.DateField(default=datetime.date(year=1, month=1, day=1), verbose_name=gc("message, fields, date, verbose_name"))
+    time = models.TimeField(default=datetime.time(hour=0), verbose_name=gc("message, fields, time, verbose_name"))
+    receiver = models.ForeignKey('chat', blank=True, on_delete=models.CASCADE, null=True,
+                                 verbose_name=gc("message, fields, receiver, verbose_name"))
+    creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name=gc("message, fields, creator, verbose_name"))
+    text = EncryptedTextField(verbose_name=gc("message, fields, text, verbose_name"))
+    anonim = models.BooleanField(default=False, verbose_name=gc("message, fields, anonim, verbose_name"))
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("message, fields, id, help_text"))
+    date_of_edit = models.DateField(default=datetime.date(year=1, month=1, day=1),
+                                    verbose_name=gc("message, fields, date_of_edit, verbose_name"))
+    time_of_edit = models.TimeField(default=datetime.time(hour=0),
+                                    verbose_name=gc("message, fields, time_of_edit, verbose_name"))
     editable = models.BooleanField(default=True, editable=False)
     history = models.BooleanField(default=False, editable=False)
     anonim_legacy = models.BooleanField(default=False, editable=False)
-    answer_for = models.ForeignKey('message', blank=True, on_delete=models.CASCADE, null=True, verbose_name="Ответ на сообщение:")
+    answer_for = models.ForeignKey('message', blank=True, on_delete=models.CASCADE, null=True,
+                                   verbose_name=gc("message, fields, answer_for, verbose_name"))
 
     def get_absolute_url(self):
         x = chat_valid.objects.get(what_chat=self.receiver) if self.receiver is not None else None
@@ -95,18 +99,22 @@ class message(models.Model):
         else: return reverse('messages-resend', args=['global', str(self.id)])
 
     def get_text_for_view_answer(self):
-        if self.answer_for: return "Ответ на сообщение от " + \
-            (f"{self.answer_for.creator}" if not self.answer_for.anonim else "(аноним)")
+        def_text = gc("message, methods, get_text_for_view_answer")
+        if self.answer_for: return def_text[0] + \
+            (f"{self.answer_for.creator}" if not self.answer_for.anonim else def_text[1])
         else: return None
     
     def get_date(self):
-        return f'{self.date} в {self.time}'.split('.')[0]
+        return f'{self.date} {gc("message, methods, get_date")} {self.time}'.split('.')[0]
     
     def anonim_status(self):
-        return 'Анонимно' if self.anonim or self.anonim_legacy else 'Публично'
+        def_text = gc("message, methods, anonim_status")
+        return def_text[0] if self.anonim or self.anonim_legacy else def_text[1]
 
     def __str__(self):
-        return f'{self.date}: ' + ('(глобально)' if self.receiver is None else f'К {self.receiver}') + (f' от {self.creator}' if not self.anonim else ' (анонимно)')
+        def_text = gc("message, methods, __str__")
+        return f'{self.date}: ' + (def_text[0] if self.receiver is None else f'{def_text[1]} {self.receiver}') + ' ' + \
+            (f'{def_text[2]} {self.creator}' if not self.anonim else def_text[3])
     
     def encrypt_data(self, message: str):
         self.text = {"msg": "", "msg_d": "", "key": "", "alf": ""}
@@ -130,17 +138,19 @@ class message(models.Model):
 
 class chat(models.Model):
     cnt = models.IntegerField(default=1, editable=False)
-    name = models.CharField(max_length=50, default='', verbose_name='Название чата:')
-    description = models.CharField(max_length=500, default='', verbose_name='Описание чата:')
-    creator = models.ForeignKey(account, related_name='creator_chat', on_delete=models.CASCADE, null=True, verbose_name="Создатель:")
-    anonim = models.BooleanField(default=False, verbose_name='Если вы хотите сделать чат анонимным, поставьте здесь галочку. Этот параметр неизменяем.')
-    anonim_legacy = models.BooleanField(default=False, verbose_name='Поставьте галочку, если хотите разрешить участникам отправлять анонимные сообщения.')
-    avaliable_resend_messages = models.BooleanField(default=True, verbose_name='Поставьте галочку, если хотите разрешить пересылать сообщения из этого чата.')
-    chat_ico = models.ImageField(verbose_name="Иконка чата:")
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID чата.")
+    name = models.CharField(max_length=50, default='', verbose_name=gc("chat, fields, name, verbose_name"))
+    description = models.CharField(max_length=500, default='', verbose_name=gc("chat, fields, description, verbose_name"))
+    creator = models.ForeignKey(account, related_name='creator_chat', on_delete=models.CASCADE, null=True,
+                                verbose_name=gc("chat, fields, creator, verbose_name"))
+    anonim = models.BooleanField(default=False, verbose_name=gc("chat, fields, anonim, verbose_name"))
+    anonim_legacy = models.BooleanField(default=False, verbose_name=gc("chat, fields, anonim_legacy, verbose_name"))
+    avaliable_resend_messages = models.BooleanField(default=True, verbose_name=gc("chat, fields, avaliable_resend_messages, verbose_name"))
+    chat_ico = models.ImageField(verbose_name=gc("chat, fields, chat_ico, verbose_name"))
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("chat, fields, id, help_text"))
 
     def __str__(self):
-        return f'{self.name} (создал {self.creator}): {self.cnt} участников'
+        def_text = gc("chat, methods, __str__")
+        return f'{self.name} ({def_text[0]} {self.creator}): {self.cnt} {def_text[1]}'
 
     def get_absolute_url(self):
         return reverse('chats-n', args=[str(self.id)]) if chat_valid.objects.get(what_chat=self).avaliable else None
@@ -158,9 +168,8 @@ class chat(models.Model):
         return self.avaliable_resend_messages
 
     def anonim_status(self):
-        return 'Анонимный чат' if self.anonim else \
-               'Анонимные сообщения разрешены' if self.anonim_legacy\
-                else 'Все сообщения публичные'
+        def_text = gc("chat, methods, anonim_status")
+        return def_text[0] if self.anonim else def_text[1] if self.anonim_legacy else def_text[2]
 
     def archive(self):
         chat_validator = chat_valid.objects.get(what_chat=self)
@@ -190,14 +199,16 @@ class chat(models.Model):
         ordering = ["name"]
 
 class chat_valid(models.Model):
-    what_chat = models.OneToOneField('chat', on_delete=models.CASCADE, null=True, verbose_name="Чат:")
+    what_chat = models.OneToOneField('chat', on_delete=models.CASCADE, null=True,
+                                     verbose_name=gc("chat_valid, fields, what_chat, verbose_name"))
     avaliable = models.BooleanField(default=True, editable=False)
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    list_members = ListField(default=[], null=True, help_text="Список ID участников:")
-    list_messages = ListField(default=[], null=True, help_text="Список ID сообщений:")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("chat_valid, fields, id, help_text"))
+    list_members = ListField(default=[], null=True, verbose_name=gc("chat_valid, fields, list_members, verbose_name"))
+    list_messages = ListField(default=[], null=True, verbose_name=gc("chat_valid, fields, list_messages, verbose_name"))
 
     def __str__(self):
-        return f'{self.what_chat} ' + ('(доступен)' if self.avaliable else '(не доступен)')
+        def_text = gc("chat_valid, methods, __str__")
+        return f'{self.what_chat} ' + (def_text[0] if self.avaliable else def_text[1])
     
     def getting_access(self, acc: account):
         for i in self.list_members:
@@ -228,13 +239,16 @@ class chat_valid(models.Model):
         return chat_and_acc.objects.filter(what_chat=self.what_chat)
 
 class chat_and_acc(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    what_chat = models.ForeignKey('chat', on_delete=models.CASCADE, null=True, verbose_name="Чат:")
-    what_acc = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name="Аккаунт:")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("chat_and_acc, fields, id, help_text"))
+    what_chat = models.ForeignKey('chat', on_delete=models.CASCADE, null=True,
+                                  verbose_name=gc("chat_and_acc, fields, what_chat, verbose_name"))
+    what_acc = models.ForeignKey(account, on_delete=models.CASCADE, null=True,
+                                 verbose_name=gc("chat_and_acc, fields, what_acc, verbose_name"))
     readen = models.BooleanField(default=False, editable=False)
 
     def __str__(self):
-        return f'{self.what_chat} ' + ('(' if self.readen else '(не ') + f'прочитан {self.what_acc})'
+        def_text = gc("chat_and_acc, methods, __str__")
+        return f'{self.what_chat} ' + ('(' if self.readen else def_text[0]) + f'{def_text[1]} {self.what_acc})'
 
     def valid_CAA(self):
         return f'{self.what_chat}'
@@ -250,15 +264,16 @@ class chat_and_acc(models.Model):
         return
 
 class announcement(models.Model):
-    number = models.IntegerField(default=0, verbose_name="Номер в списке:")
-    creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True, verbose_name="Отправитель:")
-    name = models.TextField(max_length=50, verbose_name='Название:')
-    text = models.TextField(max_length=5000, verbose_name='Текст:')
+    number = models.IntegerField(default=0, verbose_name=gc("announcement, fields, number, verbose_name"))
+    creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True,
+                                verbose_name=gc("announcement, fields, creator, verbose_name"))
+    name = models.TextField(max_length=50, verbose_name=gc("announcement, fields, name, verbose_name"))
+    text = models.TextField(max_length=5000, verbose_name=gc("announcement, fields, text, verbose_name"))
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
-    status = models.BooleanField(default=False, verbose_name="Объявление принято?")
-    picture = models.ImageField(verbose_name="Картинка:", null=True)
-
-    orientation = models.IntegerField(choices=PICTURE_TYPES, verbose_name="Ориентация:", default=0)
+    status = models.BooleanField(default=False, verbose_name=gc("announcement, fields, status, verbose_name"))
+    picture = models.ImageField(verbose_name=gc("announcement, fields, picture, verbose_name"), null=True)
+    orientation = models.IntegerField(choices=PICTURE_TYPES, default=0,
+                                      verbose_name=gc("announcement, fields, orientation, verbose_name"))
 
     def get_absolute_url(self):
         return reverse('anns-new-n', args=[str(self.id)])
@@ -267,7 +282,7 @@ class announcement(models.Model):
         return os.path.join(settings.MEDIA_URL, 'announcements', f'{self.picture}')
 
     def __str__(self):
-        return f'{self.name} (создал {self.creator})'
+        return f'{self.name} ({gc("announcement, methods, __str__")} {self.creator})'
     
     class Meta:
         ordering = ["-number"]

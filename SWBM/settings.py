@@ -136,3 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
+
+# Custom names
+LOCALIZATION_FILE_DIR = BASE_DIR
+LOCALIZATION_FILE_NAME = "localization.json"

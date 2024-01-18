@@ -3,7 +3,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 
-from constants.bank.models import EXISTING_THEMES
+from constants.constants import EXISTING_THEMES, get_const_messenger_forms as gc
 
 class ImageSelectWidget(forms.RadioSelect):
     def render(self, name, value, attrs=None, renderer=None):
@@ -20,7 +20,7 @@ class ImageSelectWidget(forms.RadioSelect):
         return mark_safe('\n'.join(output))
 
 class SetStatus(forms.Form):
-    status = forms.CharField(max_length=50, required=False, label="Введите новый статус:")
+    status = forms.CharField(max_length=50, required=False, label=gc("other, SetStatus, fields, status, label"))
 
     def clean_status(self):
         return self.cleaned_data['status']
@@ -28,10 +28,11 @@ class SetStatus(forms.Form):
 class ReNewThemeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         selected = kwargs.pop('selected', None)
-        super(ReNewThemeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['type_'].initial = selected if selected else 'default'
 
-    type_ = forms.ChoiceField(required=False, choices=EXISTING_THEMES, help_text="Как это выглядит, можно посмотреть ниже.", label="Тема:")
+    type_ = forms.ChoiceField(required=False, choices=EXISTING_THEMES, help_text=gc("other, ReNewThemeForm, fields, type_, help_text"),
+                              label=gc("other, ReNewThemeForm, fields, type_, label"))
 
     def clean_type_(self):
         return self.cleaned_data['type_']

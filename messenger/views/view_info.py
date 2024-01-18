@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from messenger.models import message, chat, chat_valid, chat_and_acc, announcement
 from bank.models import account
-from constants.bank.models import EXISTING_THEMES
+from constants.constants import EXISTING_THEMES
 from messenger.forms import other
 from utils import theme
 

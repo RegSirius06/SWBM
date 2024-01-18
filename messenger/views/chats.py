@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from messenger.models import message, chat, chat_valid, chat_and_acc
 from bank.models import account
 from messenger.forms import chats, messages
+#from constants.constants import get_error as ge
 from utils import theme, errors
 
 @login_required
@@ -288,8 +289,9 @@ def re_new_chat_add(request, pk):
         anon_prov = not chat_.anonim and not chat_.anonim_legacy
         current_users = account.objects.filter(id__in=[uuid.UUID(i) for i in chat_valid_.list_members])
         if request.method == 'POST':
-            form = chats.ReNewChatFormAnonim(request.POST, current_users=current_users, current_user=request.user.account) if anon_prov\
-                    else chats.ReNewChatFormBase(request.POST, current_users=current_users, current_user=request.user.account)
+            form = chats.ReNewChatFormAnonim(request.POST, current_users=current_users, current_user=request.user.account, self_id=pk)\
+                if anon_prov else\
+                    chats.ReNewChatFormBase(request.POST, current_users=current_users, current_user=request.user.account, self_id=pk)
             if form.is_valid():
                 chat_.name = form.cleaned_data['chat_name']
                 chat_.description = form.cleaned_data['chat_text']
@@ -316,9 +318,9 @@ def re_new_chat_add(request, pk):
             chat_resend = chat_.avaliable_resend_messages
             form = chats.ReNewChatFormAnonim(initial={'chat_text': text, 'chat_name': name, 'chat_anonim': anonim,\
                     'image_choice': chat_ico, 'chat_resend': chat_resend,}, current_users=current_users,\
-                        current_user=request.user.account) if anon_prov else chats.ReNewChatFormBase(initial={'chat_text': text,\
-                            'chat_name': name, 'image_choice': chat_ico, 'chat_resend': chat_resend,}, current_users=current_users,\
-                                current_user=request.user.account)
+                        current_user=request.user.account, self_id=pk) if anon_prov else chats.ReNewChatFormBase(initial=
+                            {'chat_text': text, 'chat_name': name, 'image_choice': chat_ico, 'chat_resend': chat_resend,},
+                                current_users=current_users, current_user=request.user.account, self_id=pk)
 
         return render(
             request,
