@@ -36,6 +36,14 @@ class NewTransactionStaffForm(NewTransactionBaseForm):
          fields_order = ('transaction_date', 'transaction_receiver', 'transaction_cnt',\
                          'transaction_comment', 'transaction_sign')
 
+    list_accounts = tuple((x.id, f"{x}") for x in account.objects.exclude(party=0).order_by('party', 'last_name'))
+    transaction_receiver = forms.MultipleChoiceField(choices=list_accounts,\
+                           label=gc('transactions, NewTransactionStaffForm, fields, transaction_receiver, label'))
+
+    def clean_transaction_receiver(self):
+        list_x = list(self.cleaned_data['transaction_receiver'])
+        return account.objects.filter(id__in=list_x)
+
     transaction_date = forms.DateField(help_text=gc('transactions, NewTransactionStaffForm, fields, transaction_date, help_text'),\
                                        label=gc('transactions, NewTransactionStaffForm, fields, transaction_date, label'))
 

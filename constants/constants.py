@@ -46,3 +46,7 @@ DATE_END_OF_ = DATE_START_OF_ + datetime.timedelta(days=__date_of_start__["dista
 PICTURE_TYPES = tuple(tuple(x) for x in get_const_from_lc('PICTURE_TYPES'))
 
 CONFLICT_SOLVES = tuple(tuple(x) for x in get_const_from_lc('CONFLICT_SOLVES'))
+
+__accrual_time__ = dict(get_const_from_lc('ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS'))
+ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS = datetime.time(hour=__accrual_time__["hour"], minute=__accrual_time__["minute"],
+                                                       second=__accrual_time__["second"], microsecond=__accrual_time__["microsecond"])

@@ -111,39 +111,41 @@ def new_transaction_full_add(request):
     if request.method == 'POST':
         form = transactions.NewTransactionFullForm(request.POST, current_users=list_accounts)
         if form.is_valid():
-            new_transaction = transaction()
-            new_transaction.id = uuid.uuid4()
-            new_transaction.date = form.cleaned_data['transaction_date']
-            new_transaction.comment = form.cleaned_data['transaction_comment']
-            new_transaction.creator = form.cleaned_data['transaction_creator']
-            new_transaction.history = form.cleaned_data['transaction_history']
-            new_transaction.receiver = form.cleaned_data['transaction_receiver']
-            new_transaction.sign = form.cleaned_data['transaction_sign']
-            if new_transaction.creator == new_transaction.receiver:
-                return errors.render_error(
-                    request, "bank", "Создание транзакции",
-                    "Неужели вы __настолько__ жадина?",
-                    [
-                        ("new-transaction-full", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            elif account.objects.get(last_name='Admin') == new_transaction.receiver:
-                return errors.render_error(
-                    request, "bank", "Создание транзакции",
-                    "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
-                    [
-                        ("new-transaction-full", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            new_transaction.cnt = form.cleaned_data['transaction_cnt']
-            new_transaction.save()
-            new_transaction.count()
+            receiver = form.cleaned_data['transaction_receiver']
+            for i in receiver:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = form.cleaned_data['transaction_date']
+                new_transaction.comment = form.cleaned_data['transaction_comment']
+                new_transaction.creator = form.cleaned_data['transaction_creator']
+                new_transaction.history = form.cleaned_data['transaction_history']
+                new_transaction.receiver = i
+                new_transaction.sign = form.cleaned_data['transaction_sign']
+                if new_transaction.creator == new_transaction.receiver:
+                    return errors.render_error(
+                        request, "bank", "Создание транзакции",
+                        "Неужели вы __настолько__ жадина?",
+                        [
+                            ("new-transaction-full", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                elif account.objects.get(last_name='Admin') == new_transaction.receiver:
+                    return errors.render_error(
+                        request, "bank", "Создание транзакции",
+                        "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
+                        [
+                            ("new-transaction-full", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                new_transaction.cnt = form.cleaned_data['transaction_cnt']
+                new_transaction.save()
+                new_transaction.count()
             return redirect('info-staff')
     else:
         transaction_date = datetime.datetime.now()
@@ -161,38 +163,40 @@ def new_transaction_buy_add(request):
     if request.method == 'POST':
         form = transactions.NewTransactionBuyForm(request.POST)
         if form.is_valid():
-            new_transaction = transaction()
-            new_transaction.id = uuid.uuid4()
-            new_transaction.date = datetime.datetime.today()
-            new_transaction.creator = account.objects.get(last_name='Admin')
-            new_transaction.receiver = form.cleaned_data['transaction_receiver']
-            new_transaction.sign = '-'
-            good_dict = form.clean_goods()[0]
-            good_list_id = form.clean_goods()[1]
-            goods = good.objects.filter(id__in=good_list_id).order_by("-cost")
-            cnt = 0
-            flag = False
-            comment = "Чек за покупку: "
-            for gd in goods:
-                cnt += gd.cost * good_dict[gd]
-                comment += f"{gd.name}, {good_dict[gd]} раз: {gd.cost * good_dict[gd]}t; "
-                if cnt > new_transaction.receiver.balance: flag = True
-            if flag:
-                return errors.render_error(
-                    request, "bank", "Создание чека",
-                    f"На покупку не хватает денег.\n\n{comment}\n\nЕсть {new_transaction.receiver.balance}t, а надо {cnt}t.",
-                    [
-                        ("new-transaction-buy", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            new_transaction.cnt = cnt
-            new_transaction.history = request.user.account
-            new_transaction.comment = comment
-            new_transaction.save()
-            new_transaction.count()
+            receiver = form.cleaned_data['transaction_receiver']
+            for i in receiver:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = datetime.datetime.today()
+                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.receiver = i
+                new_transaction.sign = '-'
+                good_dict = form.clean_goods()[0]
+                good_list_id = form.clean_goods()[1]
+                goods = good.objects.filter(id__in=good_list_id).order_by("-cost")
+                cnt = 0
+                flag = False
+                comment = "Чек за покупку: "
+                for gd in goods:
+                    cnt += gd.cost * good_dict[gd]
+                    comment += f"{gd.name}, {good_dict[gd]} раз: {gd.cost * good_dict[gd]}t; "
+                    if cnt > new_transaction.receiver.balance: flag = True
+                if flag:
+                    return errors.render_error(
+                        request, "bank", "Создание чека",
+                        f"На покупку не хватает денег.\n\n{comment}\n\nЕсть {new_transaction.receiver.balance}t, а надо {cnt}t.",
+                        [
+                            ("new-transaction-buy", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                new_transaction.cnt = cnt
+                new_transaction.history = request.user.account
+                new_transaction.comment = comment
+                new_transaction.save()
+                new_transaction.count()
             return redirect('info-staff')
     else:
         form = transactions.NewTransactionBuyForm(initial={})
@@ -204,49 +208,51 @@ def new_transaction_base_add(request):
     if request.method == 'POST':
         form = transactions.NewTransactionBaseForm(request.POST)
         if form.is_valid():
-            new_transaction = transaction()
-            new_transaction.id = uuid.uuid4()
-            new_transaction.date = datetime.datetime.today()
-            new_transaction.comment = form.cleaned_data['transaction_comment']
-            new_transaction.creator = request.user.account
-            new_transaction.receiver = form.cleaned_data['transaction_receiver']
-            new_transaction.history = request.user.account
-            if new_transaction.creator == new_transaction.receiver:
-                return errors.render_error(
-                    request, "bank", "Создание перевода",
-                    "Неужели вы __настолько__ жадина?",
-                    [
-                        ("new-transaction-base", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            elif account.objects.get(last_name='Admin') == new_transaction.receiver:
-                return errors.render_error(
-                    request, "bank", "Создание перевода",
-                    "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
-                    [
-                        ("new-transaction-base", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            new_transaction.cnt = form.cleaned_data['transaction_cnt']
-            if new_transaction.cnt > request.user.account.balance:
-                return errors.render_error(
-                    request, "bank", "Создание перевода",
-                    "Вы не можете перевести денег больше, чем у вас есть, хотя вы и гений.",
-                    [
-                        ("new-transaction-base", "Назад"),
-                        ('my-transactions', 'Мой счёт'),
-                        ('index_of_bank', 'Домой'),
-                        ('index', 'На главную'),
-                    ]
-                )
-            new_transaction.save()
-            new_transaction.count()
+            receiver = form.cleaned_data['transaction_receiver']
+            for i in receiver:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = datetime.datetime.today()
+                new_transaction.comment = form.cleaned_data['transaction_comment']
+                new_transaction.creator = request.user.account
+                new_transaction.receiver = i
+                new_transaction.history = request.user.account
+                if new_transaction.creator == new_transaction.receiver:
+                    return errors.render_error(
+                        request, "bank", "Создание перевода",
+                        "Неужели вы __настолько__ жадина?",
+                        [
+                            ("new-transaction-base", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                elif account.objects.get(last_name='Admin') == new_transaction.receiver:
+                    return errors.render_error(
+                        request, "bank", "Создание перевода",
+                        "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
+                        [
+                            ("new-transaction-base", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                new_transaction.cnt = form.cleaned_data['transaction_cnt']
+                if new_transaction.cnt > request.user.account.balance:
+                    return errors.render_error(
+                        request, "bank", "Создание перевода",
+                        "Вы не можете перевести денег больше, чем у вас есть, хотя вы и гений.",
+                        [
+                            ("new-transaction-base", "Назад"),
+                            ('my-transactions', 'Мой счёт'),
+                            ('index_of_bank', 'Домой'),
+                            ('index', 'На главную'),
+                        ]
+                    )
+                new_transaction.save()
+                new_transaction.count()
             return redirect('my-transactions')
     else:
         transaction_date = datetime.datetime.now()

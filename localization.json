@@ -94,7 +94,13 @@
             [0, "Создать новый чат и заархивировать существующий"],
             [1, "Не создавать новый чат, заархивировать существующий"],
             [2, "Не создавать новый чат, не архивировать существующий"]
-        ]
+        ],
+        "ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS": {
+            "hour": 8,
+            "minute": 0,
+            "second": 0,
+            "microsecond": 0
+        }
     },
     "bank": {
         "models": {
@@ -264,6 +270,7 @@
                 },
                 "NewTransactionStaffForm": {
                     "fields": {
+                        "transaction_receiver": { "label": "Получатель(-и):" },
                         "transaction_date": { "help_text": "Дата должна быть в пределах смены, по умолчанию сегодня.", "label": "Дата:" },
                         "transaction_sign": { "help_text": "Выберите тип: премия/штраф", "label": "Тип транзакции:" }
                     },
