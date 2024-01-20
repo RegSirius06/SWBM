@@ -2,7 +2,10 @@ from functools import wraps
 import threading
 import datetime
 import time
+
 from typing import ParamSpec, TypeVar, Callable, Generic, Self, Optional
+
+from constants.constants import ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS
 
 __F_Spec__ = ParamSpec("__F_Spec__")
 __F_Return__ = TypeVar("__F_Return__")
@@ -36,7 +39,7 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
             if target_time:
                 self.target_time = target_time
             else:
-                self.target_time = datetime.time(19, 22, 0, 0)
+                self.target_time = ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS
         else:
             if call in self.decorators:
                 raise ValueError(f"The decorator is already applied to {call.wrapped_call.__name__}. "
