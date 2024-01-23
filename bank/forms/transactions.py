@@ -8,8 +8,11 @@ from bank.models import account, good
 from constants.constants import SIGN_SET, SIGN_SET_ALL, DATE_START_OF_, DATE_END_OF_, get_const_bank_forms as gc
 
 class NewTransactionBaseForm(forms.Form):
-    list_accounts = account.objects.exclude(party=0).order_by('party', 'last_name')
-    transaction_receiver = forms.ModelChoiceField(queryset=list_accounts,\
+    def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+         self.fields["transaction_receiver"].queryset = account.objects.exclude(party=0).order_by('party', 'last_name')
+    
+    transaction_receiver = forms.ModelChoiceField(queryset=None,\
                            label=gc('transactions, NewTransactionBaseForm, fields, transaction_receiver, label'))
 
     def clean_transaction_receiver(self):
@@ -33,11 +36,12 @@ class NewTransactionBaseForm(forms.Form):
 class NewTransactionStaffForm(NewTransactionBaseForm):
     def __init__(self, *args, **kwargs):
          super().__init__(*args, **kwargs)
+         self.fields["transaction_receiver"].choices =\
+            tuple([(x.id, f"{x}") for x in account.objects.exclude(party=0).order_by('party', 'last_name')])
          fields_order = ('transaction_date', 'transaction_receiver', 'transaction_cnt',\
                          'transaction_comment', 'transaction_sign')
 
-    list_accounts = tuple((x.id, f"{x}") for x in account.objects.exclude(party=0).order_by('party', 'last_name'))
-    transaction_receiver = forms.MultipleChoiceField(choices=list_accounts,\
+    transaction_receiver = forms.MultipleChoiceField(choices=[],\
                            label=gc('transactions, NewTransactionStaffForm, fields, transaction_receiver, label'))
 
     def clean_transaction_receiver(self):

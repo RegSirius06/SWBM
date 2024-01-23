@@ -208,7 +208,7 @@ def new_transaction_base_add(request):
     if request.method == 'POST':
         form = transactions.NewTransactionBaseForm(request.POST)
         if form.is_valid():
-            receiver = form.cleaned_data['transaction_receiver']
+            receiver = [form.cleaned_data['transaction_receiver']]
             for i in receiver:
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()

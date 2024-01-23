@@ -28,14 +28,14 @@
             <tr>
                 <td>{{ element.date }}</td>
                 <td>
-                    {% if element.sign == '-' %}
-                        {% if element.receiver == account and account.account_valid == element.transaction_valid %}
+                    {% if '-' in element.sign %}
+                        {% if element.receiver == account %}
                         <span class="red">-{{ element.get_sum }}</span>
                         {% else %}
                         <span class="green">+{{ element.get_sum }}</span>
                         {% endif %}
                     {% else %}
-                        {% if element.receiver == account and account.account_valid == element.transaction_valid %}
+                        {% if element.receiver == account %}
                         <span class="green">+{{ element.get_sum }}</span>
                         {% else %}
                         <span class="red">-{{ element.get_sum }}</span>

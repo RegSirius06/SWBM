@@ -386,7 +386,8 @@
                     "fields": {
                         "name": { "label": "Название:" },
                         "text": { "label": "Текст:" },
-                        "picture": { "label": "Картинка:" }
+                        "picture": { "label": "Картинка:" },
+                        "type_": { "label": "Тип ориентации картинки:", "help_text": "По-умолчанию горизонтально." }
                     },
                     "methods": {
                         "clean_picture": [15, "Максимальный размер файла", "MB"]
@@ -394,8 +395,7 @@
                 },
                 "NewAnnouncementFullForm": {
                     "fields": {
-                        "creator": { "label": "Создатель:" },
-                        "type_": { "label": "Тип ориентации картинки:", "help_text": "По-умолчанию горизонтально." }
+                        "creator": { "label": "Создатель:" }
                     }
                 },
                 "ReNewAnnouncementForm": {

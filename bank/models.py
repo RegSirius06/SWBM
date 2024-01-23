@@ -79,7 +79,7 @@ class account(models.Model):
             ret.append(i)
         return ret if ret != list() else None
 
-    def account_valid(self, x) -> str:
+    def account_valid(self) -> str:
         return f'{self.party}'
 
     def renew_transactions(self) -> str:
@@ -147,7 +147,7 @@ class transaction(models.Model):
     def get_type_of(self) -> str:
         return f'{dict(SIGN_SET_ALL)[self.sign]}'
 
-    def transaction_valid(self, x) -> str:
+    def transaction_valid(self) -> str:
         return f'{self.receiver.last_name[-1]}'
 
     def get_absolute_url(self):

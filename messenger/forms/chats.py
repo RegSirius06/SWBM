@@ -119,7 +119,7 @@ class ReNewChatFormBase(forms.Form):
         return self.cleaned_data['chat_text']
     
     chat_resend = forms.BooleanField(required=False, help_text=gc("chats, ReNewChatFormBase, fields, chat_resend, help_text"),
-                                     label=gc("chats, ReNewChatFormBase, fields, chat_creator, label"))
+                                     label=gc("chats, ReNewChatFormBase, fields, chat_resend, label"))
 
     def clean_chat_resend(self):
             return self.cleaned_data['chat_resend']

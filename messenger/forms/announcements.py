@@ -28,6 +28,14 @@ class NewAnnouncementForm(forms.Form):
                 raise ValidationError(_(f"{def_text[1]} - {max_size/1024/1024}{def_text[2]}"))
         return picture
 
+    type_ = forms.ChoiceField(required=False, choices=PICTURE_TYPES,
+                              label=gc("announcement, NewAnnouncementForm, fields, type_, label"),
+                              help_text=gc("announcement, NewAnnouncementForm, fields, type_, help_text"))
+
+    def clean_type_(self):
+        x = self.cleaned_data['type_']
+        return int(x) if x else 0
+
 class NewAnnouncementFullForm(NewAnnouncementForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,14 +46,6 @@ class NewAnnouncementFullForm(NewAnnouncementForm):
 
     def clean_creator(self):
         return self.cleaned_data["creator"]
-
-    type_ = forms.ChoiceField(required=False, choices=PICTURE_TYPES,
-                              label=gc("announcement, NewAnnouncementFullForm, fields, type_, label"),
-                              help_text=gc("announcement, NewAnnouncementFullForm, fields, type_, help_text"))
-
-    def clean_type_(self):
-        x = self.cleaned_data['type_']
-        return int(x) if x else 0
 
 class ReNewAnnouncementForm(forms.Form):
     def __init__(self, *args, **kwargs):
