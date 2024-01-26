@@ -1,11 +1,14 @@
-from functools import wraps
 import threading
 import datetime
 import time
 
+from functools import wraps
 from typing import ParamSpec, TypeVar, Callable, Generic, Self, Optional
 
-from constants.constants import ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS
+try:
+    from constants.constants import ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS
+except:
+    ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS = datetime.time(0,0,0,0)
 
 __F_Spec__ = ParamSpec("__F_Spec__")
 __F_Return__ = TypeVar("__F_Return__")

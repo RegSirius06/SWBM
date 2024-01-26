@@ -38,10 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
     'choice_of_path.apps.ChoiceOfPathConfig',
     'bank.apps.BankConfig',
     'messenger.apps.MessengerConfig',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -140,3 +144,7 @@ LOGIN_REDIRECT_URL = '/'
 # Custom names
 LOCALIZATION_FILE_DIR = BASE_DIR
 LOCALIZATION_FILE_NAME = "localization.json"
+
+SITEMAP_PROVIDERS = {
+    'mysitemap': 'SWBM.sitemaps.MySiteMap',
+}

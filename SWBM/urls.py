@@ -19,12 +19,19 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.sitemaps.views import sitemap
+from SWBM.sitemaps import MySiteMap
+
+sitemaps = {
+    'mysitemap': MySiteMap,
+}
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('choose_your_path/', include('choice_of_path.urls'),),
+    path('admin/', admin.site.urls, name="admin_"),
+    path('choose_your_path/', include('choice_of_path.urls'), name="CYP_COP"),
     path('', RedirectView.as_view(url='/choose_your_path/', permanent=True)),
-    path('bank/', include('bank.urls'),),
-    path('messenger/', include('messenger.urls'),),
+    path('bank/', include('bank.urls'), name="bank_"),
+    path('messenger/', include('messenger.urls'), name="messenger_"),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
