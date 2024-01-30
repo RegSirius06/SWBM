@@ -127,6 +127,7 @@ def chat_view(request, pk):
     chat_ = get_object_or_404(chat, pk=pk)
     chat_valid_ = chat_valid.objects.get(what_chat=chat_)
     chat_and_acc_all_ = chat_valid_.get_all_CAA()
+    chat_.cnt = len(chat_and_acc_all_)
     chat_and_acc_ = chat_and_acc_all_.get(what_acc=request.user.account)
     chat_and_acc_.readen = True
     chat_and_acc_.save()

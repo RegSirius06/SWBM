@@ -36,7 +36,7 @@ def new_transaction_staff_add(request):
         form = transactions.NewTransactionStaffForm(request.POST)
         if form.is_valid():
             receiver = form.cleaned_data['transaction_receiver']
-            for i in receiver:
+            for i in [*receiver]:
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = form.cleaned_data['transaction_date']
@@ -112,7 +112,7 @@ def new_transaction_full_add(request):
         form = transactions.NewTransactionFullForm(request.POST, current_users=list_accounts)
         if form.is_valid():
             receiver = form.cleaned_data['transaction_receiver']
-            for i in receiver:
+            for i in [*receiver]:
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = form.cleaned_data['transaction_date']
@@ -164,7 +164,7 @@ def new_transaction_buy_add(request):
         form = transactions.NewTransactionBuyForm(request.POST)
         if form.is_valid():
             receiver = form.cleaned_data['transaction_receiver']
-            for i in receiver:
+            for i in [receiver]:
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = datetime.datetime.today()
@@ -209,7 +209,7 @@ def new_transaction_base_add(request):
         form = transactions.NewTransactionBaseForm(request.POST)
         if form.is_valid():
             receiver = [form.cleaned_data['transaction_receiver']]
-            for i in receiver:
+            for i in [receiver]:
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = datetime.datetime.today()
