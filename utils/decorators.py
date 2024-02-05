@@ -1,6 +1,5 @@
-import threading
+import asyncio
 import datetime
-import time
 
 from functools import wraps
 from typing import ParamSpec, TypeVar, Callable, Generic, Self, Optional, overload
@@ -57,35 +56,22 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
         self.decorators.append(self)
 
         @wraps(self.wrapped_call)
-        def caller(
-            *args: __F_Spec__.args,
-            **kwargs: __F_Spec__.kwargs
-            ) -> __F_Return__:
-            return self.wrapped_call(*args, **kwargs)
-
-        self.caller = caller
-
-        @wraps(self.wrapped_call)
-        def wrapper(
+        async def wrapper(
             *args: __F_Spec__.args,
             **kwargs: __F_Spec__.kwargs
             ) -> None:
-            flag = True
+            current_time = datetime.datetime.now().time()
+            now = datetime.datetime.combine(datetime.date.today(), current_time)
+            target = datetime.datetime.combine(datetime.date.today(), self.target_time)
+            if now > target:
+                target += datetime.timedelta(days=1)
+            time_to_sleep = (target - now).total_seconds()
+            await asyncio.sleep(time_to_sleep)
             while True:
-                if flag:
-                    current_time = datetime.datetime.now().time()
-                    now = datetime.datetime.combine(datetime.date.today(), current_time)
-                    target = datetime.datetime.combine(datetime.date.today(), target_time)
-                    if now > target:
-                        target += datetime.timedelta(days=1)
-                    time_to_sleep = (target - now).total_seconds()
-                    time.sleep(time_to_sleep)
-                    flag = False
                 self.wrapped_call(*args, **kwargs)
-                time.sleep(self.interval_in_seconds)
-        t = threading.Thread(target=wrapper, args=())
-        t.daemon = True
-        t.start()
+                await asyncio.sleep(self.interval_in_seconds)
+        
+        asyncio.run(wrapper())
 
     def __call__(
             self,
@@ -93,13 +79,14 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
             **kwargs: __F_Spec__.kwargs
             ) -> Optional[__F_Return__]:
         if self.call_create_buf:
-            self.call_result = self.caller(*args, **kwargs)
+            self.call_result = self.wrapped_call(*args, **kwargs)
             self.call_create_buf = False
         return self.call_result
 
 def periodic_function_call(
         interval_in_seconds: int,
         target_time: Optional[datetime.time] = None,
+        *,
         call_return: Optional[bool] = False
         ) -> Callable[[Callable[__F_Spec__, __F_Return__]], __PeriodicFunctionCall__[__F_Spec__, __F_Return__]]:
     def decorator(func: Callable[__F_Spec__, __F_Return__]) -> __PeriodicFunctionCall__[__F_Spec__, __F_Return__]:
@@ -193,7 +180,7 @@ def function_logger(
     return wrap_decorator(func)
 
 """
-@periodic_function_call(30, datetime.time(20, 8, 0, 0))
+@periodic_function_call(30, datetime.time(15, 6, 0, 0))
 def test() -> None:
     print("ok")
 
@@ -207,5 +194,4 @@ import random
 while(True):
     test()
     test2(random.randint(-1000, 1000))
-    time.sleep(10)
 """
