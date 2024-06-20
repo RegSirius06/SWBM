@@ -148,3 +148,8 @@ LOCALIZATION_FILE_NAME = "localization.json"
 SITEMAP_PROVIDERS = {
     'mysitemap': 'SWBM.sitemaps.MySiteMap',
 }
+
+# AUTORUNS
+CRONJOBS = [
+    ('* * * * *', f'bank.cron.Autoruns.get_autoruns')
+]

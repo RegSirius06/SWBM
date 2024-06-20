@@ -1,5 +1,5 @@
 from django.urls import re_path
-from bank.views import plans, daily_answers, goods, accounts, view_info, transactions
+from bank.views import autotransactions, plans, daily_answers, goods, accounts, view_info, transactions
 #from django.conf.urls import url
 
 urlpatterns = [
@@ -39,4 +39,8 @@ urlpatterns = [
     re_path(r'^account/create/auto/$', accounts.new_account_add_from_file, name='new-user-auto'),
     re_path(r'^account/edit/all_pass/$', accounts.update_all_pass, name='update-all-pass'),
     re_path(r'^account/edit/(?P<pk>[-\w]+)/$', accounts.re_new_account_full_add, name='account-edit-n'),
+
+    re_path(r'^autotransactions/info/$', autotransactions.all_autotransactions_view, name='autotransactions'),
+    re_path(r'^autotransactions/create/$', autotransactions.new_autotransaction_add, name='new-autotransaction'),
+    re_path(r'^autotransactions/edit/(?P<pk>[-\w]+)/$', autotransactions.re_new_autotransaction_add, name='autotransaction-edit'),
 ]

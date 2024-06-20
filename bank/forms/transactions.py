@@ -35,11 +35,11 @@ class NewTransactionBaseForm(forms.Form):
 
 class NewTransactionStaffForm(NewTransactionBaseForm):
     def __init__(self, *args, **kwargs):
-         super().__init__(*args, **kwargs)
-         self.fields["transaction_receiver"].choices =\
+        super().__init__(*args, **kwargs)
+        self.fields["transaction_receiver"].choices =\
             tuple([(x.id, f"{x}") for x in account.objects.exclude(party=0).order_by('party', 'last_name')])
-         fields_order = ('transaction_date', 'transaction_receiver', 'transaction_cnt',\
-                         'transaction_comment', 'transaction_sign')
+        fields_order = ('transaction_date', 'transaction_receiver', 'transaction_cnt',\
+                        'transaction_comment', 'transaction_sign')
 
     transaction_receiver = forms.MultipleChoiceField(choices=[],\
                            label=gc('transactions, NewTransactionStaffForm, fields, transaction_receiver, label'))

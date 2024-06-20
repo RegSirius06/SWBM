@@ -1,5 +1,5 @@
+import datetime
 import uuid
-import json
 
 from django.db import models
 from django.urls import reverse
@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 from utils.passwords import gen_pass
+from utils.decorators import periodic_function_call, function_logger
 from constants.constants import EXISTING_GROUPS, EXISTING_THEMES, EXISTING_TYPES_OF_RULES, PERMISSIONS, SIGN_SET_ALL, get_const_bank_models as gc
 
 class account(models.Model):
@@ -151,9 +152,6 @@ class transaction(models.Model):
         return f'{self.receiver.last_name[-1]}'
 
     def get_absolute_url(self):
-        return reverse('transaction-detail', args=[str(self.id)])
-
-    def get_absolute_url_for_edit(self):
         return reverse('transaction-edit', args=[str(self.id)])
     
     def count(self):
@@ -192,8 +190,62 @@ class transaction(models.Model):
         self.save()
         return
 
+class autotransaction(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("autotransaction, fields, id, help_text"))
+    history = models.ForeignKey('account', related_name='history_autotrans', on_delete=models.CASCADE, null=True,
+                                verbose_name=gc("autotransaction, fields, history, verbose_name"))
+    creator = models.ForeignKey('account', related_name='created_autotrans', on_delete=models.CASCADE, null=True,
+                                verbose_name=gc("transaction, fields, creator, verbose_name"))
+    accounts = models.ManyToManyField('account', related_name='receiver_autotrans',
+                                verbose_name=gc("autotransaction, fields, accounts, verbose_name"))
+    comment = models.CharField(max_length=70, default=gc("autotransaction, fields, comment, default"),
+                               verbose_name=gc("transaction, fields, comment, verbose_name"))
+    sign = models.CharField(max_length=20, choices=SIGN_SET_ALL, default='p2p+',
+                            verbose_name=gc("autotransaction, fields, sign, verbose_name"))
+    cnt = models.FloatField(default=0, verbose_name=gc("autotransaction, fields, cnt, verbose_name"))
+    skip = models.IntegerField(default=0, verbose_name=gc("autotransaction, fields, skip, verbose_name"))
+
+    def __str__(self) -> str:
+        x = gc("autotransaction, methods, __str__")
+        return f'{x[0]} {self.creator} (\"{self.comment}\") {x[2]} {self.cnt}t ({x[3]} {self.history}): {dict(SIGN_SET_ALL)[self.sign]}'
+
+    def get_sum(self) -> str:
+        return f'{self.cnt}t'
+
+    def get_type_of(self) -> str:
+        return f'{dict(SIGN_SET_ALL)[self.sign]}'
+
+    def get_absolute_url(self):
+        return reverse('autotransaction-edit', args=[str(self.id)])
+
+    def is_skipped(self) -> bool:
+        return self.skip > 0
+
+    def create_transactions(self):
+        if self.skip > 0:
+            self.skip -= 1
+            self.save()
+            return
+        @function_logger(name_log_file='./autotransactions.txt')
+        def do():
+            rs = []
+            for acc in self.accounts.all():
+                t = transaction()
+                t.cnt = self.cnt
+                t.history = self.history
+                t.creator = self.creator
+                t.receiver = acc
+                t.comment = self.comment
+                t.sign = self.sign
+                t.date = datetime.datetime.now()
+                t.save()
+                t.count()
+                rs.append(f'{t}')
+            return rs
+        do()
+
 class rools(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text="Уникальный ID.")
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("rools, fields, id, help_text"))
     num_type = models.CharField(max_length=3, choices=EXISTING_TYPES_OF_RULES, default=EXISTING_TYPES_OF_RULES[0][0],
                                 verbose_name=gc("rools, fields, num_type, verbose_name"))
     num_pt1 = models.IntegerField(default=1, help_text=gc("rools, fields, num_pt1, help_text"),

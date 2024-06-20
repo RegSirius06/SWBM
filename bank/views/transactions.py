@@ -64,9 +64,9 @@ def new_transaction_staff_add(request):
         transaction_date = datetime.datetime.now()
         transaction_comment = "Не указано"
         transaction_cnt = 0
-        transaction_sign = '+'
-        form = transactions.NewTransactionStaffForm(initial={'transaction_date': transaction_date, 'transaction_comment': transaction_comment,
-                                               'transaction_cnt': transaction_cnt, 'transaction_sign': transaction_sign})
+        form = transactions.NewTransactionStaffForm(initial={'transaction_date': transaction_date, 
+                                                             'transaction_comment': transaction_comment,
+                                                             'transaction_cnt': transaction_cnt})
 
     return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': "Добавить новую транзакцию (штраф/премию)"})
 
@@ -95,9 +95,9 @@ def new_transaction_staff_party_add(request):
         transaction_date = datetime.datetime.now()
         transaction_comment = "Не указано"
         transaction_cnt = 0
-        transaction_sign = '+'
-        form = transactions.NewTransactionStaffFormParty(initial={'transaction_date': transaction_date, 'transaction_comment': transaction_comment,
-                                                     'transaction_cnt': transaction_cnt, 'transaction_sign': transaction_sign})
+        form = transactions.NewTransactionStaffFormParty(initial={'transaction_date': transaction_date, 
+                                                                  'transaction_comment': transaction_comment, 
+                                                                  'transaction_cnt': transaction_cnt})
 
     return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': "Добавить новую транзакцию (штраф/премию) на отряд"})
 
@@ -151,9 +151,8 @@ def new_transaction_full_add(request):
         transaction_date = datetime.datetime.now()
         transaction_comment = "Не указано"
         transaction_cnt = 0
-        transaction_sign = '+'
         form = transactions.NewTransactionFullForm(initial={'transaction_date': transaction_date, 'transaction_comment': transaction_comment,
-               'transaction_cnt': transaction_cnt, 'transaction_sign': transaction_sign}, current_users=list_accounts,)
+               'transaction_cnt': transaction_cnt}, current_users=list_accounts,)
 
     return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': "Добавить новую транзакцию",})
 
@@ -170,7 +169,7 @@ def new_transaction_buy_add(request):
                 new_transaction.date = datetime.datetime.today()
                 new_transaction.creator = account.objects.get(last_name='Admin')
                 new_transaction.receiver = i
-                new_transaction.sign = '-'
+                new_transaction.sign = "purchase-"
                 good_dict = form.clean_goods()[0]
                 good_list_id = form.clean_goods()[1]
                 goods = good.objects.filter(id__in=good_list_id).order_by("-cost")
@@ -213,6 +212,7 @@ def new_transaction_base_add(request):
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = datetime.datetime.today()
+                new_transaction.sign = "p2p+"
                 new_transaction.comment = form.cleaned_data['transaction_comment']
                 new_transaction.creator = request.user.account
                 new_transaction.receiver = i

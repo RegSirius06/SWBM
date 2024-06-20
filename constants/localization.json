@@ -142,6 +142,28 @@
                     ]
                 }
             },
+            "autotransaction": {
+                "fields": {
+                    "id": { "help_text": "Уникальный ID." },
+                    "history": { "verbose_name": "Создатель:" },
+                    "creator": { "verbose_name": "Тот, с чьего счёта выписывается транзакция:" },
+                    "accounts": { "verbose_name": "Аккаунты:" },
+                    "period": { "verbose_name": "Период создания:" },
+                    "time": { "verbose_name": "Время суток для первого создания:" },
+                    "comment": { "default": "Не указано", "verbose_name": "Комментарий:" },
+                    "sign": { "verbose_name": "Тип транзакции:" },
+                    "cnt": { "verbose_name": "Количество:" },
+                    "skip": { "verbose_name": "Сколько дней пропускать (считая сегодня):" }
+                },
+                "methods": {
+                    "__str__": [
+                        "От",
+                        "к",
+                        "на сумму",
+                        "Создал"
+                    ]
+                }
+            },
             "good": {
                 "fields": {
                     "id": { "help_text": "Уникальный ID." },

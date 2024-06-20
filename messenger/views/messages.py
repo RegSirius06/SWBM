@@ -190,7 +190,7 @@ def message_resend(request, chat_id, message_id):
                         new_message = message_
                         new_message.id = uuid.uuid4()
                         text = new_message.decrypt_data() +\
-                            (f"\n\n(Пересланное сообщение от {new_message.creator})" if not new_message.history else '')
+                            (f"\n\n<<(Пересланное сообщение от {new_message.creator})>>" if not new_message.history else '')
                         new_message.history = True
                         new_message.text = new_message.encrypt_data(text)
                         new_message.creator = request.user.account

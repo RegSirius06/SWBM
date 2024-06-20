@@ -12,4 +12,4 @@ def translit(s: str) -> str:
         return ans
 
 def get_change_msg(date: datetime.date, time: datetime.time) -> str:
-    return f"\n\n(Изменено {date} в {str(time).split('.')[0]})"
+    return f"\n\n<<(Изменено {date} в {str(time).split('.')[0]})>>"

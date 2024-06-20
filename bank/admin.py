@@ -1,5 +1,5 @@
 from django.contrib import admin
-from bank.models import account, transaction, rools, good, plan, daily_answer
+from bank.models import account, transaction, autotransaction, rools, good, plan, daily_answer
 
 @admin.register(account)
 class AccountAdmin(admin.ModelAdmin):
@@ -20,10 +20,15 @@ class TransactionAdmin(admin.ModelAdmin):
     list_filter = ["date", "receiver", "creator", "history", "counted"]
     pass
 
+@admin.register(autotransaction)
+class AutoTransactionAdmin(admin.ModelAdmin):
+    list_filter = ["creator", "history"]
+    pass
+
 @admin.register(good)
 class GoodAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(rools)
-class Rools_Admin(admin.ModelAdmin):
+class RoolsAdmin(admin.ModelAdmin):
     pass
