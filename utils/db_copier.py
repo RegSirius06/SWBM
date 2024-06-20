@@ -29,10 +29,14 @@ def rename_file(destination_path):
     return new_path
 
 def main():
-    copy_file(source_file, destination_directory)
-
-    new_path = rename_file(destination_directory)
-    shutil.move(os.path.join(destination_directory, "db.sqlite3"), new_path)
+    try:
+        copy_file(source_file, destination_directory)
+        new_path = rename_file(destination_directory)
+        shutil.move(os.path.join(destination_directory, "db.sqlite3"), new_path)
+    except FileExistsError:
+        return
+    except FileNotFoundError:
+        return
 
     print("Copied  succesfully!")
 
