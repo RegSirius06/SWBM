@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from django.apps import AppConfig
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -13,6 +14,7 @@ class ChoiceOfPathConfig(AppConfig):
         if not os.path.isdir(destination_directory):
             os.makedirs(destination_directory)
         scheduler = BackgroundScheduler()
-        scheduler.add_job(main, 'interval', hours=12)
-        main()
+        now = datetime.datetime.now()
+        sleep = datetime.timedelta(hours=(23 - now.hour) % 12, minutes=58 - now.minute, seconds=60 - now.second)
+        scheduler.add_job(main, 'interval', seconds=10, start_date=now + sleep)
         scheduler.start()

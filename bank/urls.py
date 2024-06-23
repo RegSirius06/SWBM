@@ -28,6 +28,8 @@ urlpatterns = [
     re_path(r'^transactions/create/full/$', transactions.new_transaction_full_add, name='new-transaction-full'),
     re_path(r'^transactions/create/buy/$', transactions.new_transaction_buy_add, name='new-transaction-buy'),
     re_path(r'^transactions/create/party/$', transactions.new_transaction_staff_party_add, name='new-transaction-party'),
+    re_path(r'^transactions/create/rool/$', transactions.new_rool_transaction_add, name='new-transaction-rool'),
+    re_path(r'^transactions/create/rool/(?P<pk>[-\w]+)/$', transactions.new_rool_transaction_base_add, name='new-transaction-rool-base'),
 
     re_path(r'^transactions/my/$', view_info.my_transaction_view, name='my-transactions'),
     re_path(r'^accounts/$', view_info.all_accounts_list_view, name='accounts'),

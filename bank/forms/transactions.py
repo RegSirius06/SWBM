@@ -1,11 +1,29 @@
 import uuid
 
 from django import forms
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account, good
+from bank.models import account, good, rools
 from constants.constants import SIGN_SET, SIGN_SET_ALL, DATE_START_OF_, DATE_END_OF_, get_const_bank_forms as gc
+
+class NewTransactionRoolBaseForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+         super().__init__(*args, **kwargs)
+         self.fields["transaction_receiver"].queryset = account.objects.exclude(party=0).order_by('party', 'last_name')
+    
+    transaction_receiver = forms.ModelMultipleChoiceField(queryset=None,\
+                           label=gc('transactions, NewTransactionBaseForm, fields, transaction_receiver, label'))
+
+    def clean_transaction_receiver(self):
+        return self.cleaned_data['transaction_receiver']
+
+class NewTransactionRoolForm(NewTransactionRoolBaseForm):
+    rool = forms.ModelChoiceField(queryset=rools.objects.filter(Q(cost__gt=0)), label='Пункт:')
+
+    def clean_rool(self):
+        return self.cleaned_data['rool']
 
 class NewTransactionBaseForm(forms.Form):
     def __init__(self, *args, **kwargs):

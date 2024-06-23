@@ -95,5 +95,6 @@ def rools_view(request):
             'rool_a': rools.objects.filter(num_type='АкТ').order_by('num_pt1', 'num_pt2'),
             'rool_t': rools.objects.filter(num_type='ТкТ').order_by('num_pt1', 'num_pt2'),
             'rool_p': rools.objects.filter(num_type='КпТ').order_by('num_pt1', 'num_pt2'),
+            'is_ped': request.user.account.is_ped()
         }
     )

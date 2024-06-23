@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 
 from utils.passwords import gen_pass
 from utils.decorators import periodic_function_call, function_logger
-from constants.constants import EXISTING_GROUPS, EXISTING_THEMES, EXISTING_TYPES_OF_RULES, PERMISSIONS, SIGN_SET_ALL, get_const_bank_models as gc
+from constants.constants import EXISTING_GROUPS, EXISTING_THEMES, EXISTING_TYPES_OF_RULES, PERMISSIONS, SIGN_SET_ALL, SIGN_SET, get_const_bank_models as gc
 
 class account(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name=gc('account, fields, user, verbose_name'))
@@ -68,7 +68,10 @@ class account(models.Model):
         return 0
     
     def is_ped(self) -> bool:
-        group = self.user.groups.get(name="pedagogue")
+        try:
+            group = self.user.groups.get(name="pedagogue")
+        except:
+            group = None
         return group is not None
 
     def get_transactions(self):
@@ -256,17 +259,32 @@ class rools(models.Model):
                                verbose_name=gc("rools, fields, comment, verbose_name"))
     punishment = models.CharField(max_length=100, default=gc("rools, fields, punishment, default"),
                                   verbose_name=gc("rools, fields, punishment, verbose_name"))
+    cost = models.FloatField(default=0, verbose_name="Цена")
+    sign = models.CharField(max_length=20, choices=SIGN_SET, default='fine-',
+                            verbose_name=gc("transaction, fields, sign, verbose_name"))
 
     class Meta:
         ordering = ["num_type", "num_pt1", "num_pt2"]
 
+    def __str__(self) -> str:
+        return (f'{self.num_type} {self.num_pt1}.0{self.num_pt2}' if len(f'{self.num_pt2}') == 1 else\
+            f'{self.num_type} {self.num_pt1}.{self.num_pt2}') + f': {self.comment}'
+
     def get_num(self) -> str:
         return f'{self.num_type} {self.num_pt1}.0{self.num_pt2}' if len(f'{self.num_pt2}') == 1 else\
             f'{self.num_type} {self.num_pt1}.{self.num_pt2}'
+
+    def get_cost(self) -> str:
+        return f'{self.cost}t' if self.cost > 0 else "Не нормирован"
     
-    def __str__(self) -> str:
-        return f'{self.num_type} {self.num_pt1}.0{self.num_pt2}' if len(f'{self.num_pt2}') == 1 else\
-            f'{self.num_type} {self.num_pt1}.{self.num_pt2}'
+    def is_costable(self):
+        return self.cost > 0
+
+    def get_type_tr(self) -> str:
+        return f'{dict(SIGN_SET_ALL)[self.sign]}'
+
+    def get_tr_url(self):
+        return reverse('new-transaction-rool-base', args=[str(self.id)])
 
 class good(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("good, fields, id, help_text"))

@@ -21,6 +21,7 @@
 /SWBM/__pycache__/
 /reserve/
 /1.csv
+/db_.sqlite3
 /users.txt
 /runserver.py
 /setup.py

@@ -18,9 +18,9 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.MIGRATE_HEADING('Autotransactions runner launched.'))
         scheduler = BackgroundScheduler()
-        scheduler.add_job(main, 'interval', minutes=1)
         now = datetime.datetime.now()
-        #time.sleep(3600 * (23 - now.hour) + 60 * (58 - now.minute) + (60 - now.second))
+        sleep = datetime.timedelta(hours=23 - now.hour, minutes=58 - now.minute, seconds=60 - now.second)
+        scheduler.add_job(main, 'interval', hours=24, start_date=now + sleep)
         main()
         scheduler.start()
         while True: pass

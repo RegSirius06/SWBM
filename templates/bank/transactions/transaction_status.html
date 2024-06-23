@@ -6,6 +6,7 @@
         {% if perms.bank.staff_ %}
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-full' %}">Создать транзакцию</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
+            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-rool' %}">Оформить штраф/премию по правилу</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-party' %}">Оформить штраф/премию на весь отряд</a></li>
             <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-buy' %}">Оформить покупку</a></li>
             {% if object_list %}

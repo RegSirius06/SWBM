@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from bank.models import account, transaction, good
+from bank.models import account, transaction, good, rools
 from bank.forms import transactions
 from utils import errors
 
@@ -28,6 +28,58 @@ def all_transactions_view(request):
             'object_list': items1,
         }
     )
+
+@permission_required('bank.staff_')
+@permission_required('bank.transaction')
+def new_rool_transaction_base_add(request, pk):
+    rool_ = get_object_or_404(rools, pk=pk)
+    if request.method == 'POST':
+        form = transactions.NewTransactionRoolBaseForm(request.POST)
+        if form.is_valid():
+            receivers = [*form.cleaned_data['transaction_receiver']]
+            for i in receivers:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = datetime.datetime.today()
+                new_transaction.sign = rool_.sign
+                new_transaction.comment = f'{rool_}'
+                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.receiver = i
+                new_transaction.history = request.user.account
+                new_transaction.cnt = rool_.cost
+                new_transaction.save()
+                new_transaction.count()
+            return redirect('rules')
+    else:
+        form = transactions.NewTransactionRoolBaseForm(initial={})
+
+    return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': f"Перевод по пункту {rool_}"})
+
+@permission_required('bank.staff_')
+@permission_required('bank.transaction')
+def new_rool_transaction_add(request):
+    if request.method == 'POST':
+        form = transactions.NewTransactionRoolForm(request.POST)
+        if form.is_valid():
+            rool_ = form.cleaned_data['rool']
+            receivers = [*form.cleaned_data['transaction_receiver']]
+            for i in receivers:
+                new_transaction = transaction()
+                new_transaction.id = uuid.uuid4()
+                new_transaction.date = datetime.datetime.today()
+                new_transaction.sign = rool_.sign
+                new_transaction.comment = f'{rool_}'
+                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.receiver = i
+                new_transaction.history = request.user.account
+                new_transaction.cnt = rool_.cost
+                new_transaction.save()
+                new_transaction.count()
+            return redirect('info-staff')
+    else:
+        form = transactions.NewTransactionRoolForm(initial={})
+
+    return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': f"Перевод по пункту"})
 
 @permission_required('bank.staff_')
 @permission_required('bank.transaction')
