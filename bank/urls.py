@@ -44,5 +44,6 @@ urlpatterns = [
 
     re_path(r'^autotransactions/info/$', autotransactions.all_autotransactions_view, name='autotransactions'),
     re_path(r'^autotransactions/create/$', autotransactions.new_autotransaction_add, name='new-autotransaction'),
+    re_path(r'^autotransactions/create/rool/$', autotransactions.new_rool_autotransaction_add, name='new-autotransaction-rool'),
     re_path(r'^autotransactions/edit/(?P<pk>[-\w]+)/$', autotransactions.re_new_autotransaction_add, name='autotransaction-edit'),
 ]

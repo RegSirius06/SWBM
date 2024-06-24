@@ -58,6 +58,28 @@ def re_new_autotransaction_add(request, pk):
 
 @permission_required('bank.staff_')
 @permission_required('bank.transaction')
+def new_rool_autotransaction_add(request):
+    if request.method == 'POST':
+        form = autotransactions.NewAutoTransactionRoolForm(request.POST)
+        if form.is_valid():
+            rool_ = form.cleaned_data['rool']
+            autotransaction_ = autotransaction()
+            autotransaction_.sign = rool_.sign
+            autotransaction_.comment = f'{rool_}'
+            autotransaction_.skip = form.cleaned_data['skip']
+            autotransaction_.creator = account.objects.get(last_name='Admin')
+            autotransaction_.history = request.user.account
+            autotransaction_.cnt = rool_.cost
+            autotransaction_.save()
+            autotransaction_.accounts.set(form.cleaned_data['accounts'])
+            return redirect('autotransactions')
+    else:
+        form = autotransactions.NewAutoTransactionRoolForm(initial={})
+
+    return render(request, 'bank/new_and_renew/add_new.html', {'form': form, 'head': f"Автотранзакция по пункту"})
+
+@permission_required('bank.staff_')
+@permission_required('bank.transaction')
 def new_autotransaction_add(request):
     if request.method == 'POST':
         form = autotransactions.NewAutoTransactionForm(request.POST)

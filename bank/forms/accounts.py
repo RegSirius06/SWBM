@@ -86,7 +86,7 @@ class ReadFromFileForm(forms.Form):
     def clean_type_(self):
         return self.cleaned_data['type_']
 
-    way_to_file = forms.CharField(label=gc("accounts, ReadFromFileForm, fields, type_, label"), required=False)
+    way_to_file = forms.CharField(label=gc("accounts, ReadFromFileForm, fields, way_to_file, label"), required=False)
 
     def clean_way_to_file(self):
         x = self.cleaned_data['way_to_file']

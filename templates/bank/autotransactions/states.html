@@ -4,7 +4,8 @@
     <h1>Все автотранзакции</h1>
     <ul class="nav">
         {% if perms.bank.staff_ %}
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-autotransaction' %}">Создать автотранзакцию</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-autotransaction' %}">Создать автотранзакцию</a></li>
+        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-autotransaction-rool' %}">Создать автотранзакцию по правилу</a></li>
         {% endif %}
     </ul>
     <br />

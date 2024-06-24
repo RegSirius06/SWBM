@@ -1,9 +1,36 @@
 from django import forms
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account
+from bank.models import account, rools
 from constants.constants import SIGN_SET, get_const_bank_forms as gc
+
+class NewAutoTransactionRoolForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["accounts"].queryset = account.objects.exclude(party=0).order_by('party', 'last_name')
+
+    accounts = forms.ModelMultipleChoiceField(queryset=account.objects.all(), label="На кого")
+
+    def clean_accounts(self):
+        x = self.cleaned_data['accounts']
+        if [i for i in x] == []:
+            raise ValidationError(_('Укажите хотя бы одного пользователя, к которому создаёте автотранзакцию.'))
+        return x
+
+    rool = forms.ModelChoiceField(queryset=rools.objects.filter(Q(cost__gt=0)), label='Пункт:')
+
+    def clean_rool(self):
+        return self.cleaned_data['rool']
+
+    skip = forms.IntegerField(help_text="Сколько дней пропускать, считая сегодня?", label="Пропуски")
+
+    def clean_skip(self):
+        skip = int(self.cleaned_data['skip'])
+        if skip < 0:
+            raise ValidationError(_(gc('transactions, NewTransactionBaseForm, methods, clean_transaction_cnt')))
+        return skip
 
 class NewAutoTransactionForm(forms.Form):
     def __init__(self, *args, **kwargs):
