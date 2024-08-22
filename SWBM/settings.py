@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-@@wh$_+h+l-6xpm*y!!ivrtt63x-6=uh$fy0lo9!f=ra#k*soq')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "django.contrib.sites",
     "django.contrib.sitemaps",
+    'corsheaders',
     'choice_of_path.apps.ChoiceOfPathConfig',
     'bank.apps.BankConfig',
     'messenger.apps.MessengerConfig',
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -149,7 +151,15 @@ SITEMAP_PROVIDERS = {
     'mysitemap': 'SWBM.sitemaps.MySiteMap',
 }
 
-# AUTORUNS
-CRONJOBS = [
-    ('* * * * *', f'bank.cron.Autoruns.get_autoruns')
+# SERVER
+PORT = 8000
+ADDRESS = "0.0.0.0"
+
+# NGROK
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.app',
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'https://*.ngrok-free.app',
 ]

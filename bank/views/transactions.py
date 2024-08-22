@@ -4,6 +4,7 @@ import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.utils.safestring import mark_safe
 
 from bank.models import account, transaction, good, rools
 from bank.forms import transactions
@@ -227,11 +228,13 @@ def new_transaction_buy_add(request):
                 goods = good.objects.filter(id__in=good_list_id).order_by("-cost")
                 cnt = 0
                 flag = False
-                comment = "Чек за покупку: "
+                comment = "Чек за покупку: \n\n"
                 for gd in goods:
                     cnt += gd.cost * good_dict[gd]
-                    comment += f"{gd.name}, {good_dict[gd]} раз: {gd.cost * good_dict[gd]}t; "
+                    if good_dict[gd] == 0: continue
+                    comment += f"{gd.name}, {good_dict[gd]} шт.: {gd.cost * good_dict[gd]}t; \n"
                     if cnt > new_transaction.receiver.balance: flag = True
+                comment += '\nСпасибо за покупку!'
                 if flag:
                     return errors.render_error(
                         request, "bank", "Создание чека",
@@ -245,7 +248,7 @@ def new_transaction_buy_add(request):
                     )
                 new_transaction.cnt = cnt
                 new_transaction.history = request.user.account
-                new_transaction.comment = comment
+                new_transaction.comment = mark_safe(comment)
                 new_transaction.save()
                 new_transaction.count()
             return redirect('info-staff')

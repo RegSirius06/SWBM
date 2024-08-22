@@ -233,7 +233,7 @@ class chat_valid(models.Model):
     
     def get_all_msg(self):
         list_x = [uuid.UUID(i) for i in self.list_messages]
-        return message.objects.filter(id__in=list_x)
+        return message.objects.filter(receiver=self.what_chat).filter(id__in=list_x)
     
     def get_all_CAA(self):
         return chat_and_acc.objects.filter(what_chat=self.what_chat)
