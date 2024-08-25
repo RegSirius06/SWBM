@@ -30,6 +30,7 @@
 /tele_bot/__pycache__/
 /1.csv
 /db_.sqlite3
+/db.sqlite3
 /users.txt
 /runserver.py
 /setup.py
