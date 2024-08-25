@@ -158,8 +158,12 @@ ADDRESS = "0.0.0.0"
 # NGROK
 CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.app',
+    'https://*.ngrok.app',
+    'https://*.ngrok.io',
 ]
 
 CORS_ORIGIN_WHITELIST = [
     'https://*.ngrok-free.app',
+    'https://*.ngrok.app',
+    'https://*.ngrok.io',
 ]
