@@ -20,6 +20,14 @@
 /utils/__pycache__/
 /SWBM/__pycache__/
 /reserve/
+/server/ngrok.json
+/server/__pycache__/
+/tele_bot/telebot.json
+/tele_bot/link.txt
+/tele_bot/py.py
+/tele_bot/z.py
+/tele_bot/люди.txt
+/tele_bot/__pycache__/
 /1.csv
 /db_.sqlite3
 /users.txt

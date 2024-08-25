@@ -16,5 +16,5 @@ class ChoiceOfPathConfig(AppConfig):
         scheduler = BackgroundScheduler()
         now = datetime.datetime.now()
         sleep = datetime.timedelta(hours=(23 - now.hour) % 12, minutes=58 - now.minute, seconds=60 - now.second)
-        scheduler.add_job(main, 'interval', seconds=10, start_date=now + sleep)
+        scheduler.add_job(main, 'interval', hours=12, start_date=now + sleep)
         scheduler.start()

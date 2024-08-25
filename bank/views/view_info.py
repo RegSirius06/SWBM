@@ -7,7 +7,7 @@ from messenger.models import chat_and_acc
 
 def index(request):
     forbes = account.objects.exclude(party=0).order_by('-balance')[:10]
-    antiforbes = account.objects.exclude(party=0).order_by('balance')[:3]
+    antiforbes = account.objects.exclude(party=0).filter(balance__lt=0).order_by('balance')
     admin = account.objects.get(last_name="Admin")
     for i in antiforbes:
         if i in forbes:
@@ -44,6 +44,10 @@ def all_accounts_list_view(request):
 
 @permission_required('bank.staff_')
 def all_accounts_detail_view(request, pk):
+    try:
+        is_ped = request.user.account.is_ped()
+    except AttributeError:
+        is_ped = False
     account_ = get_object_or_404(account, id=pk)
     object_list = [i for i in transaction.objects.filter(receiver=account_)]
     for i in transaction.objects.filter(creator=account_):
@@ -62,6 +66,7 @@ def all_accounts_detail_view(request, pk):
         context={
             'account': account_,
             'object_list': items1,
+            'is_ped': is_ped,
         }
     )
 
@@ -87,6 +92,10 @@ def my_transaction_view(request):
     )
 
 def rools_view(request):
+    try:
+        is_ped = request.user.account.is_ped()
+    except AttributeError:
+        is_ped = False
     return render(
         request,
         'bank/rules/rules.html',
@@ -95,6 +104,6 @@ def rools_view(request):
             'rool_a': rools.objects.filter(num_type='АкТ').order_by('num_pt1', 'num_pt2'),
             'rool_t': rools.objects.filter(num_type='ТкТ').order_by('num_pt1', 'num_pt2'),
             'rool_p': rools.objects.filter(num_type='КпТ').order_by('num_pt1', 'num_pt2'),
-            'is_ped': request.user.account.is_ped()
+            'is_ped': is_ped
         }
     )

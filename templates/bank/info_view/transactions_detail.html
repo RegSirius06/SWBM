@@ -21,6 +21,9 @@
                 <th score="col">Тип изменения</th>
                 <th score="col">Комментарий</th>
                 <th score="col">Создатель</th>
+                {% if is_ped %}
+                <th scope="col">Ссылка</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -45,10 +48,28 @@
                 <td>{{ element.get_type_of }}</td>
                 <td><pre class="text-break multiple-text">{{ element.comment }}</pre></td>
                 <td>{{ element.history }}</td>
+                {% if is_ped %}
+                <td>
+                    <a class="text-primary" class="nav-link" aria-current="page" href="{{ element.get_absolute_url }}">Редактировать</a>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% if object_list.has_previous %}
+        <a href="?page1={{ object_list.previous_page_number }}">Предыдущая страница</a>
+    {% endif %}
+    <span class="page-current">
+        Страница {{ object_list.number }} из {{ object_list.paginator.num_pages }}.
+    </span>
+    {% if object_list.has_next %}
+        <a href="?page1={{ object_list.next_page_number }}">Следующая страница</a>
+    {% endif %}
+    <form method="GET" action="{{ account.get_absolute_url }}">
+        <input type="text" name="page1" value="{{ messages.number }}" />
+        <button type="submit">Перейти</button>
+    </form>
     {% else %}
       <p>На ваш счет ещё не было поступлений.</p>
     {% endif %}

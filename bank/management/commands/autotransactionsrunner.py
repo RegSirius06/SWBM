@@ -1,5 +1,4 @@
 import datetime
-import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.core.management.base import BaseCommand
@@ -21,6 +20,5 @@ class Command(BaseCommand):
         now = datetime.datetime.now()
         sleep = datetime.timedelta(hours=23 - now.hour, minutes=58 - now.minute, seconds=60 - now.second)
         scheduler.add_job(main, 'interval', hours=24, start_date=now + sleep)
-        main()
         scheduler.start()
         while True: pass

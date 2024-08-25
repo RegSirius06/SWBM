@@ -11,8 +11,8 @@
       {% else %}
         <li>Вы не принадлежите ни к одному отряду.</li>
       {% endif %}
-      {% if request.user.account.group != None %}
-        <li>Группа: {{ request.user.account.group }}</li>
+      {% if request.user.account.user_group != 'None' %}
+        <li>Группа: {{ request.user.account.user_group }}</li>
       {% else %}
         <li>Вы не состоите ни в одной группе.</li>
         <p class="text-muted">Если это не так, вы можете обратиться к минфину/старшему куратору, он исправит.</p>
@@ -67,6 +67,7 @@
       </tr>
       {% endfor %}
     </tbody>
+    {% if user.is_authenticated %}
     <tfoot>
       <tr>
         <td><b>{{ request.user.account.get_number_f }}</b></td>
@@ -81,6 +82,7 @@
         {% endif %}</b></td>
       </tr>
     </tfoot>
+    {% endif %}
   </table>
   {% else %}
     <p class="p-3 mb-2 bg-info text-dark">Здесь будет расположен список Forbes.</p>
@@ -113,6 +115,7 @@
       </tr>
       {% endfor %}
     </tbody>
+    {% if user.is_authenticated %}
     <tfoot>
       <tr>
         <td><b>{{ request.user.account.get_number_a }}</b></td>
@@ -127,6 +130,7 @@
         {% endif %}</b></td>
       </tr>
     </tfoot>
+    {% endif %}
   </table>
   {% else %}
     <p class="p-3 mb-2 bg-info text-dark">Здесь будет расположен список AntiForbes.</p>

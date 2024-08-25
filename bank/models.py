@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 from utils.passwords import gen_pass
-from utils.decorators import periodic_function_call, function_logger
+from utils.decorators import function_logger
 from constants.constants import EXISTING_GROUPS, EXISTING_THEMES, EXISTING_TYPES_OF_RULES, PERMISSIONS, SIGN_SET_ALL, SIGN_SET, get_const_bank_models as gc
 
 class account(models.Model):
@@ -56,13 +56,13 @@ class account(models.Model):
         return f'"{self.account_status}"' if self.account_status != '' else gc("account, methods, get_status")
     
     def get_number_f(self) -> int:
-        fb = [i for i in account.objects.exclude(party=0).order_by('-balance', "party", "last_name")]
+        fb = [i for i in account.objects.exclude(party=0).order_by('-balance')]
         for i in range(len(fb)):
             if fb[i].id == self.id: return i + 1
         return 0
     
     def get_number_a(self) -> int:
-        fb = [i for i in account.objects.exclude(party=0).order_by('balance', "party", "last_name")]
+        fb = [i for i in account.objects.exclude(party=0).order_by('balance')]
         for i in range(len(fb)):
             if fb[i].id == self.id: return i + 1
         return 0

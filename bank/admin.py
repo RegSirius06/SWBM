@@ -17,7 +17,7 @@ class PlanAdmin(admin.ModelAdmin):
 
 @admin.register(transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_filter = ["date", "receiver", "creator", "history", "counted"]
+    list_filter = ["date", "receiver", "creator", "history", "counted", "sign"]
     pass
 
 @admin.register(autotransaction)
