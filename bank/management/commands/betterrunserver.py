@@ -75,6 +75,5 @@ class Command(RunserverCommand):
             self.stdout.write(self.style.SUCCESS('TeleBot started.'))
 
         # runserver
-        if flag:
-            options['addrport'] = options['host']
-            super().handle(*args, **options)
+        options['addrport'] = options['host']
+        super().handle(*args, **options)

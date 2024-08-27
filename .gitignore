@@ -36,7 +36,7 @@
 /setup.py
 /setup.spec
 /build/
-/dist/
+/setup/
 /manage.spec
 /swbm.spec
 /constants/__pycache__/
