@@ -1,18 +1,46 @@
 {% extends "messenger/base_generic.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Ошибка создания чата — Мессенджер ЛЕС</title>
+{% endblock %}
+
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Создание нового чата</h1>
+    <p class="lead text-danger">Ошибка: такой чат уже существует.</p>
+{% endblock %}
 
 {% block content %}
+    <p>Вы должны выбрать одно из действий ниже, чтобы завершить операцию.</p>
 
-    <h1>Создание нового чата</h1>
-    <h2>Ошибка создания</h2>
-    <p>При создании нового чата произошла ошибка: подобный чат уже существует.</p>
-    <p>Вы должны выыбрать одно из действий ниже для завершения операции.</p>
-    <form action="" method="post">
+    <form method="post"
+          action="{% url 'chat-create' %}"
+          class="needs-validation"
+          novalidate
+          aria-label="Форма создания нового чата">
         {% csrf_token %}
-        <table>
-        {{ form }}
-        </table>
-        <p class="text-muted">Анонимное сообщение можно сделать неанонимным, неанонимное сообщение нельзя сделать анонимным.</p>
-        <input type="submit" value="Создать" />
+
+        {% for field in form %}
+            <div class="mb-3">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="invalid-feedback d-block">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <p class="text-muted small">
+            Анонимное сообщение можно сделать неанонимным,
+            неанонимное сообщение нельзя сделать анонимным.
+        </p>
+
+        <button type="submit" class="btn btn-primary">
+            Создать чат
+        </button>
     </form>
 
 {% endblock %}

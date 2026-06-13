@@ -11,7 +11,7 @@ from utils import errors
 def all_autotransactions_view(request):
     all_tr = autotransaction.objects.all()
     paginator1 = Paginator(all_tr, 25)
-    page1 = request.GET.get('page1')
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
@@ -22,7 +22,8 @@ def all_autotransactions_view(request):
         request,
         'bank/autotransactions/states.html',
         context={
-            'object_list': items1,
+            'is_paginated': paginator1.num_pages > 1,
+            'page_obj': items1,
         }
     )
 

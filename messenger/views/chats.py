@@ -273,14 +273,17 @@ def chat_archive(request):
     chat_valid_ = chat_valid.objects.exclude(avaliable=True)
     message_all_ = [i.what_chat for i in chat_valid_]
     paginator1 = Paginator(message_all_, 25)
-    page1 = request.GET.get('page1')
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
         items1 = paginator1.page(1)
     except EmptyPage:
         items1 = paginator1.page(paginator1.num_pages)
-    return render(request, 'messenger/chats/chat_archive.html', {'messages': items1,})
+    return render(request, 'messenger/chats/chat_archive.html', {
+        'is_paginated': paginator1.num_pages > 1,
+        'page_obj': items1,
+    })
 
 @login_required
 def re_new_chat_add(request, pk):

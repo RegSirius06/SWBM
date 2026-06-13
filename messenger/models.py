@@ -129,8 +129,12 @@ class message(models.Model):
         return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}'
 
     def display_text(self):
-        f = self.date == self.date_of_edit and self.time == self.time_of_edit
-        add_text = text.get_change_msg(self.date_of_edit, self.time_of_edit) if not f else ''
+        f = self.date == self.date_of_edit and (
+                self.time.hour == self.time_of_edit.hour and
+                self.time.minute == self.time_of_edit.minute and
+                self.time.second == self.time_of_edit.second
+        )
+        add_text = text.get_change_msg(self.date_of_edit, self.time_of_edit) if not f and self.editable else ''
         return f'{crypto.decode(self.text["key"], self.text["alf"], self.text["msg"], self.text["msg_d"])}' + add_text
 
     class Meta:
@@ -263,6 +267,7 @@ class chat_and_acc(models.Model):
         self.save()
         return
 
+# TODO: Time
 class announcement(models.Model):
     number = models.IntegerField(default=0, verbose_name=gc("announcement, fields, number, verbose_name"))
     creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True,

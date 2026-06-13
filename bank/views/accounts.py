@@ -16,7 +16,7 @@ from utils import read_from, errors, text, passwords
 def account_info(request):
     acc_all = account.objects.all()
     paginator1 = Paginator(acc_all, 25)
-    page1 = request.GET.get('page1')
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
@@ -27,7 +27,8 @@ def account_info(request):
         request,
         'bank/accounts/account_status.html',
         context={
-            'object_list': items1,
+            'is_paginated': paginator1.num_pages > 1,
+            'page_obj': items1,
         }
     )
 
@@ -59,8 +60,7 @@ def new_account_add_from_file(request):
                             [
                                 ("new-user-auto", "Назад"),
                                 ('my-transactions', 'Мой счёт'),
-                                ('index_of_bank', 'Домой'),
-                                ('index', 'На главную'),
+                                ('index', 'Домой'),
                             ]
                         )
                 user_group = i['g']
@@ -135,8 +135,7 @@ def new_account_add(request):
                         [
                             ("new-user", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
             user_group = form.cleaned_data['user_group']
@@ -223,8 +222,7 @@ def new_account_full_add(request):
                         [
                             ("new-user-custom", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
             user_group = form.cleaned_data['user_group']

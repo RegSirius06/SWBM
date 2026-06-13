@@ -10,7 +10,7 @@ def update_msgs(request, pk):
     chat_ = get_object_or_404(chat, pk=pk)
     chat_valid_ = chat_valid.objects.get(what_chat=chat_)
     message_all_ = chat_valid_.get_all_msg()
-    paginator1 = Paginator(message_all_, 20)
+    paginator1 = Paginator(message_all_, 10)
     page1 = request.GET.get('page2')
     try:
         items1 = paginator1.page(page1)
@@ -33,7 +33,7 @@ def update_chats(request):
             list_id_chats.append(i.what_chat.id)
     mess_pr = chat.objects.filter(id__in=list_id_chats)
     chat_and_acc_all = chat_and_acc.objects.filter(what_chat__in=mess_pr).filter(what_acc=request.user.account)
-    paginator1 = Paginator(mess_pr, 25)
+    paginator1 = Paginator(mess_pr, 15)
     page1 = request.GET.get('page1')
     try:
         items1 = paginator1.page(page1)

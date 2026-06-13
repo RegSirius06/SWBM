@@ -1,22 +1,41 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
 
 {% block title %}
-{% if title %}
-<title>{{ title }}</title>
-{% else %}
-<title>Банк ЛИСа</title>
-{% endif %}
+    {% if title %}
+        <title>{{ title }}</title>
+    {% else %}
+        <title>Банк ЛЕС</title>
+    {% endif %}
+{% endblock %}
+
+{% block hero %}
+<h1 class="display-5 fw-bold">{{ head|default:"Создать запись" }}</h1>
+<p class="lead">Заполните форму ниже и нажмите «Создать».</p>
 {% endblock %}
 
 {% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        {% if form.errors %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Пожалуйста, исправьте ошибки в полях ниже.
+            </div>
+        {% endif %}
 
-    <h1>{{ head }}</h1>
-    <form action="" method="post">
-        {% csrf_token %}
-        <table>
-        {{ form }}
-        </table>
-        <input type="submit" value="Создать" />
-    </form>
+        <form method="post" novalidate>
+            {% csrf_token %}
 
+            <table>
+            {{ form }}
+            </table>
+
+            <div class="gap-2">
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-plus-circle me-2"></i>Создать
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

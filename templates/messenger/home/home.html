@@ -1,71 +1,123 @@
 {% extends "messenger/base_generic.html" %}
-
-{% block content %}
-<h1>Здравствуй, {{ request.user.account }}</h1>
-<form action="" method="post"><ui>
-    <li>Если вам некомфортно читать сообщения, вы можете изменить тему сообщений <a href="{% url 'list-themes' %}">по соответствующей ссылке...</a></li>
-    {% if request.user.account.party != 0 %}
-    <li>Отряд: {{ request.user.account.party }}</li>
-    {% else %}
-    <li>Вы не принадлежите ни к одному отряду.</li>
-    {% endif %}
-    <p class="text-muted">Если это не так, вы можете обратиться к админу, он исправит.</p>
-    {% csrf_token %}
-    {{ form.as_ul }}
-    <input type="submit" value="Обновить статус" />
-</ui></form>
-
-<h1>Сообщения:</h1>
-<ul class="nav">
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-new' %}">Создать глобальное сообщение</a></li>
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-new' %}">Создать новый чат</a></li>
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'messages-edit' %}">Просмотреть отправленные сообщения</a></li>
-    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'chats-archived' %}">Просмотреть чаты из архива</a></li>
-</ul>
-<br />
-
 {% load static %}
-<script src="{% static 'src/js/jquery.js' %}"></script>
 
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{% static 'src/js/jquery.js' %}"></script>
 <script>
-    $(document).ready(function() {
-        setInterval(updateMessages, 30000); // Обновление каждые 30 секунд (можно настроить)
-
-        function updateMessages() {
+        // Обновление списка личных чатов
+        function updateChats() {
             $.ajax({
                 url: "{% url 'update-chats' %}",
                 dataType: 'json',
-                success: function(response) {
-                    $('#chats').html(response.html); // Обновляем список сообщений
+                success: function (response) {
+                    $('#chats').html(response.html);
                 }
             });
         }
-    });
-</script>
 
-<h2>Личные чаты:</h2>
-<div id="chats">
-    {% include 'messenger/updates/update_chats.html' %}
-</div>
-
-<script>
-    $(document).ready(function() {
-        setInterval(updateMessages, 30000); // Обновление каждые 30 секунд (можно настроить)
-
-        function updateMessages() {
+        // Обновление списка глобальных сообщений
+        function updateGlobals() {
             $.ajax({
                 url: "{% url 'update-globals' %}",
                 dataType: 'json',
-                success: function(response) {
-                    $('#globals').html(response.html); // Обновляем список сообщений
+                success: function (response) {
+                    $('#globals').html(response.html);
                 }
             });
         }
-    });
-</script>
 
-<h2>Глобальные сообщения:</h2>
-<div id="globals">
-    {% include 'messenger/updates/update_globals.html' %}
-</div>
+        $(document).ready(function () {
+            // Первичный запуск
+            updateChats();
+            updateGlobals();
+
+            // Периодическое обновление (каждые 30 сек)
+            setInterval(updateChats, 30000);
+            setInterval(updateGlobals, 30000);
+        });
+    </script>
 {% endblock %}
+
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Мессенджер ЛЕС</h1>
+    <p class="lead">Общайтесь, создавайте чаты и следите за глобальными сообщениями.</p>
+{% endblock %}
+
+{% block content %}
+    <div class="card shadow-sm mb-5">
+        <div class="card-body d-flex align-items-center justify-content-between">
+            <div>
+                <h2 class="card-title mb-1">Привет, {{ request.user.account }}</h2>
+                {% if request.user.account.party %}
+                    <p class="card-text mb-0"><i class="bi bi-people me-1"></i>Отряд: {{ request.user.account.party }}</p>
+                {% else %}
+                    <p class="card-text text-muted mb-0"><i class="bi bi-exclamation-circle me-1"></i>Вы не принадлежите ни к одному отряду.</p>
+                {% endif %}
+                <p class="card-text text-muted small mt-2">
+                    Если информация неверна – обратитесь к админу.
+                </p>
+            </div>
+            <a href="{% url 'list-themes' %}"
+               class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-palette me-1"></i>Изменить тему
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-light fw-bold">
+            Обновить статус
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-12">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">
+                        {{ form.status.label }}
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.status.errors|join:", " }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Обновить статус
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Сообщения:</h3>
+    <ul class="nav nav-pills mb-4 flex-column flex-sm-row">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'messages-new' %}">Создать глобальное сообщение</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'chats-new' %}">Создать новый чат</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'messages-edit' %}">Просмотреть отправленные сообщения</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'chats-archived' %}">Просмотреть чаты из архива</a>
+        </li>
+    </ul>
+
+    <h3 class="mt-5">Личные чаты:</h3>
+    <div id="chats" class="mb-4">
+        {% include 'messenger/updates/update_chats.html' %}
+    </div>
+
+    <h3 class="mt-5">Глобальные сообщения:</h3>
+    <div id="globals">
+        {% include 'messenger/updates/update_globals.html' %}
+    </div>
+{% endblock %}
+

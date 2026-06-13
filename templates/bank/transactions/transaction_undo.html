@@ -1,5 +1,27 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
+
+{% block hero %}
+<h1 class="display-5">
+    <i class="bi bi-graph-up me-2"></i>Статус всех транзакций
+</h1>
+{% endblock %}
 
 {% block content %}
-<h1>Статус всех существующих транзакций: {{ request.user.account.undo_transactions }}</h1>
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm text-center">
+            <div class="card-body py-5">
+                <h2 class="card-title display-6 mb-3">
+                    Текущий статус отмены транзакций:
+                </h2>
+                <p class="lead fw-bold text-primary mb-0">
+                    {{ request.user.account.undo_transactions }}
+                </p>
+                <small class="text-muted d-block mt-2">
+                    (Обновление происходит автоматически каждый раз, когда вы открываете страницу.)
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

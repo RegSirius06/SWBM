@@ -14,13 +14,15 @@
     <script src="{% static 'src/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    {% block extrahead %}
+    {% endblock %}
 </head>
 
 <body class="d-flex flex-column min-vh-100 bg-light">
-
 {# ------------------------------------------------- #}
 {#                     NAVBAR                        #}
 {# ------------------------------------------------- #}
+{% block navbar %}
 <header class="navbar navbar-expand-md navbar-dark bg-dark bg-opacity-85 shadow-sm fixed-top">
     <div class="container-fluid container-xxl">
         <a class="navbar-brand d-flex align-items-center"
@@ -48,15 +50,15 @@
                         </a>
                     </li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link" href="{% url 'rules' %}"><i class="bi bi-journal-text me-1"></i>Законы ЛИСограда</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'rules' %}"><i class="bi bi-journal-text me-1"></i>Законы</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'plans' %}"><i class="bi bi-calendar-event me-1"></i>Расписание</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'answers' %}"><i class="bi bi-question-circle me-1"></i>Задачи</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'shop' %}"><i class="bi bi-shop-window me-1"></i>Магазин</a></li>
-                <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'index_of_messenger' %}">Мессенджер</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'index_of_messenger' %}">Мессенджер</a></li>
                 {% if perms.bank.staff_ %}
-                <li class="nav-item"><a class="nav-link" aria-current="page" href="/admin/">Admin-панель</a></li>
+                <li class="nav-item"><a class="nav-link" href="/admin/">Admin-панель</a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'password-change' %}">Сменить пароль</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'password-change' %}">Сменить пароль</a></li>
             </ul>
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -129,11 +131,18 @@
         </ul>
     </div>
 </div>
+{% endblock %}
 
 {# ------------------------------------------------- #}
 {#                 HERO (заглавный блок)             #}
 {# ------------------------------------------------- #}
-{% block hero %}
+{% block nohero %}
+<section class="py-5 mt-5 bg-dark bg-opacity-75 text-white">
+    <div class="container-xxl text-center py-5">
+        {% block hero %}
+        {% endblock %}
+    </div>
+</section>
 {% endblock %}
 
 {# ------------------------------------------------- #}
@@ -200,7 +209,7 @@
                 <a href="{% url 'my-transactions' %}" class="text-light text-decoration-underline">Баланс</a>
             </li>
         </ul>
-        <p class="mt-3 mb-0 small">© {{ now|date:"Y" }} Банк ЛИСа. Все права защищены.</p>
+        <p class="mt-3 mb-0 small">© {{ now|date:"Y" }} Банк ЛЕС. Все права защищены.</p>
     </div>
 </footer>
 {% endblock %}

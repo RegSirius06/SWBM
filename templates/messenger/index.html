@@ -1,68 +1,72 @@
 {% extends "messenger/base_generic.html" %}
+{% load static %}
+
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Добро пожаловать в мессенджер!</h1>
+    <p class="lead">Теперь можно общаться.</p>
+{% endblock %}
 
 {% block content %}
-<h1>Добро пожаловать!</h1>
-  <h6>Это главная страница мессенджера.</h6>
-  <!--
-  {% if user.is_authenticated %}
-    <h2>Здравствуй, {{ request.user.account }}</h2>
-    <ui>
-      {% if request.user.account.party != 0 %}
-        <li>Отряд: {{ request.user.account.party }}</li>
-      {% else %}
-        <li>Вы не принадлежите ни к одному отряду.</li>
-      {% endif %}
-      {% if request.user.account.group != 'None' %}
-        <li>Группа: {{ request.user.account.group }}</li>
-      {% else %}
-        <li>Вы не состоите ни в одной группе.</li>
-        <p class="text-muted">Если это не так, вы можете обратиться к минфину, он исправит.</p>
-      {% endif %}
-    </ui>
-  {% endif %}
-    -->
-  {% if readen_status %}
-  <h6><strong class="green">У вас нет новых сообщений.</strong></h6>
-  {% else %}
-  <h6><strong class="red">У вас есть новые сообщения!</strong></h6>
-  {% endif %}
-  <h6>Используйте поле сверху для навигации по сайту.</h6>
-  {% if perms.lfmsh.staff_ %}
-  <h2>Для персонала:</h2>
-  <ul class="nav">
-      <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'anns-new' %}">Работа с объявлениями</a></li>
-  </ul>
-  <br />
-  {% endif %}
-<h2>Объявления:</h2>
-{% if ant_list %}
-  {% for element in ant_list %}
-  <h3>{{ element.name }}</h3>
-  <p>{{ element.text }}</p>
-  {% if element.picture %}
-    <img src="{{ element.get_img }}"
-    {% if element.orientation == 0 %} width="300" {% elif element.orientation == 1 %} width="200" {% else %} width="235" {% endif %}
-    {% if element.orientation == 0 %} height="200" {% elif element.orientation == 1 %} height="300" {% else %} height="235" {% endif %}
-    />
-  {% endif %}
-  <p class="text-muted">Создатель: {{ element.creator }}</p>
-  {% endfor %}
-  {% if ant_list.has_previous %}
-      <a href="?page1={{ ant_list.previous_page_number }}">Предыдущая страница</a>
-  {% endif %}
-  <span class="page-current">
-      Страница {{ ant_list.number }} из {{ ant_list.paginator.num_pages }}.
-  </span>
-  {% if ant_list.has_next %}
-      <a href="?page1={{ ant_list.next_page_number }}">Следующая страница</a>
-  {% endif %}
-  <form method="GET" action="{% url 'index' %}">
-      <input type="text" name="page1" value="{{ ant_list.number }}" />
-      <button type="submit">Перейти</button>
-  </form>
-  <p class="text-muted">Тоже хочешь разместить объявление? Подай заявку на его размещение <a href="{% url 'anns' %}">здесь...</a></p>
+{% if readen_status %}
+    <div class="alert alert-success" role="alert">
+        <strong class="text-success">У вас нет новых сообщений.</strong>
+    </div>
 {% else %}
-  <p>Здесь ещё нет объявлений. Но вы можете подать заявку на их размещение <a href="{% url 'anns' %}">здесь...</a></p>
+    <div class="alert alert-danger" role="alert">
+        <strong class="text-danger">У вас есть новые сообщения!</strong>
+    </div>
 {% endif %}
-  <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+
+<p class="mb-4">Используйте поле сверху для навигации по сайту.</p>
+
+{% if perms.lfmsh.staff_ %}
+    <section class="mb-5">
+        <h2 class="h4">Для персонала:</h2>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page"
+                   href="{% url 'anns-new' %}">Работа с объявлениями</a>
+            </li>
+        </ul>
+    </section>
+{% endif %}
+
+<section>
+    <h2 class="h4 mb-4">Объявления:</h2>
+
+    {% if page_obj %}
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for element in page_obj %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if element.picture %}
+                            <img src="{{ element.get_img }}"
+                                 class="card-img-top"
+                                 {% if element.orientation == 0 %}width="300" height="200"
+                                 {% elif element.orientation == 1 %}width="200" height="300"
+                                 {% else %}width="235" height="235"{% endif %}>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ element.name }}</h5>
+                            <p class="card-text flex-grow-1">{{ element.text }}</p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            Создатель: {{ element.creator }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <p class="text-muted mt-3">
+            Тоже хочешь разместить объявление? Подай заявку
+            <a href="{% url 'anns' %}">здесь...</a>
+        </p>
+    {% else %}
+        <p>
+            Здесь ещё нет объявлений. Но вы можете подать заявку
+            <a href="{% url 'anns' %}">здесь...</a>
+        </p>
+    {% endif %}
+</section>
 {% endblock %}

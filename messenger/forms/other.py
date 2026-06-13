@@ -20,7 +20,17 @@ class ImageSelectWidget(forms.RadioSelect):
         return mark_safe('\n'.join(output))
 
 class SetStatus(forms.Form):
-    status = forms.CharField(max_length=50, required=False, label=gc("other, SetStatus, fields, status, label"))
+    status = forms.CharField(
+        max_length=50,
+        required=False,
+        label=gc("other, SetStatus, fields, status, label"),
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control",
+                "autocomplete": "off",
+            }
+        ),
+    )
 
     def clean_status(self):
         return self.cleaned_data['status']

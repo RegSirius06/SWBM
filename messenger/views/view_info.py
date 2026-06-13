@@ -12,8 +12,8 @@ from utils import theme
 
 def index(request):
     anns = announcement.objects.filter(status=True)
-    paginator1 = Paginator(anns, 3)
-    page1 = request.GET.get('page1')
+    paginator1 = Paginator(anns, 4)
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
@@ -27,7 +27,11 @@ def index(request):
     return render(
         request,
         'messenger/index.html',
-        context={'readen_status': readen_status, 'ant_list': items1,},
+        context={
+            'readen_status': readen_status,
+            'is_paginated': paginator1.num_pages > 1,
+            'page_obj': items1,
+        },
     )
 
 @login_required

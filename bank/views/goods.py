@@ -52,4 +52,4 @@ def re_new_good_add(request, pk):
         comment = good_.comment
         cost = good_.cost
         form = goods.ReNewGoodAddForm(initial={'cost': cost, 'comment': comment, 'name': name,})
-    return render(request, 'bank/new_and_renew/edit_or_delete.html', {'form': form, 'head': 'Изменение товара:', 'title': "Ассортимент магазина",})
+    return render(request, 'bank/new_and_renew/edit_or_delete.html', {'form': form, 'head': 'Изменение товара', 'title': "Ассортимент магазина",})

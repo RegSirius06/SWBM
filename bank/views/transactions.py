@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.utils.safestring import mark_safe
 
-from bank.models import account, transaction, good, rools
+from bank.models import account, transaction, good, rules
 from bank.forms import transactions
 from utils import errors
 
@@ -15,7 +15,7 @@ from utils import errors
 def all_transactions_view(request):
     all_tr = transaction.objects.all()
     paginator1 = Paginator(all_tr, 25)
-    page1 = request.GET.get('page1')
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
@@ -26,14 +26,15 @@ def all_transactions_view(request):
         request,
         'bank/transactions/transaction_status.html',
         context={
-            'object_list': items1,
+            'is_paginated': paginator1.num_pages > 1,
+            'page_obj': items1,
         }
     )
 
 @permission_required('bank.staff_')
 @permission_required('bank.transaction')
 def new_rool_transaction_base_add(request, pk):
-    rool_ = get_object_or_404(rools, pk=pk)
+    rool_ = get_object_or_404(rules, pk=pk)
     if request.method == 'POST':
         form = transactions.NewTransactionRoolBaseForm(request.POST)
         if form.is_valid():
@@ -105,8 +106,7 @@ def new_transaction_staff_add(request):
                         [
                             ("new-transaction-staff", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 new_transaction.cnt = form.cleaned_data['transaction_cnt']
@@ -181,8 +181,7 @@ def new_transaction_full_add(request):
                         [
                             ("new-transaction-full", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 elif account.objects.get(last_name='Admin') == new_transaction.receiver:
@@ -192,8 +191,7 @@ def new_transaction_full_add(request):
                         [
                             ("new-transaction-full", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 new_transaction.cnt = form.cleaned_data['transaction_cnt']
@@ -242,8 +240,7 @@ def new_transaction_buy_add(request):
                         [
                             ("new-transaction-buy", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 new_transaction.cnt = cnt
@@ -279,8 +276,7 @@ def new_transaction_base_add(request):
                         [
                             ("new-transaction-base", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 elif account.objects.get(last_name='Admin') == new_transaction.receiver:
@@ -290,8 +286,7 @@ def new_transaction_base_add(request):
                         [
                             ("new-transaction-base", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 new_transaction.cnt = form.cleaned_data['transaction_cnt']
@@ -302,8 +297,7 @@ def new_transaction_base_add(request):
                         [
                             ("new-transaction-base", "Назад"),
                             ('my-transactions', 'Мой счёт'),
-                            ('index_of_bank', 'Домой'),
-                            ('index', 'На главную'),
+                            ('index', 'Домой'),
                         ]
                     )
                 new_transaction.save()

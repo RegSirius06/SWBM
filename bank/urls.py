@@ -4,7 +4,7 @@ from bank.views import autotransactions, plans, daily_answers, goods, accounts, 
 
 urlpatterns = [
     re_path(r'^$', view_info.index, name='index'),
-    re_path(r'^rules/$', view_info.rools_view, name='rules'),
+    re_path(r'^rules/$', view_info.rules_view, name='rules'),
 
     re_path(r'^shop/$', goods.shop_view, name='shop'),
     re_path(r'^shop/goods/new/$', goods.new_good_add, name='good-new'),

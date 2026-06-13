@@ -1,5 +1,5 @@
 from django.contrib import admin
-from bank.models import account, transaction, autotransaction, rools, good, plan, daily_answer
+from bank.models import account, transaction, autotransaction, rules, good, plan, daily_answer
 
 @admin.register(account)
 class AccountAdmin(admin.ModelAdmin):
@@ -29,6 +29,6 @@ class AutoTransactionAdmin(admin.ModelAdmin):
 class GoodAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(rools)
+@admin.register(rules)
 class RoolsAdmin(admin.ModelAdmin):
     pass

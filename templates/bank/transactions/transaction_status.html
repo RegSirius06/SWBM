@@ -1,60 +1,98 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
+
+{% block hero %}
+<h1 class="display-4 fw-bold mb-3">Все транзакции</h1>
+<hr class="border-light opacity-50 my-4">
+{% if perms.bank.staff_ %}
+<ul class="d-flex flex-wrap justify-content-center gap-2 mt-3 list-unstyled">
+    <li>
+        <a class="btn btn-outline-light btn-lg"
+           href="{% url 'new-transaction-full' %}">
+            Создать транзакцию (лучше не здесь)
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-outline-light btn-lg"
+           href="{% url 'new-transaction-staff' %}">
+            Оформить штраф/премию
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-outline-light btn-lg"
+           href="{% url 'new-transaction-rool' %}">
+            Оформить штраф/премию по правилу
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-outline-light btn-lg"
+           href="{% url 'new-transaction-party' %}">
+            Оформить штраф/премию на весь отряд
+        </a>
+    </li>
+    <li>
+        <a class="btn btn-outline-light btn-lg"
+           href="{% url 'new-transaction-buy' %}">
+            Оформить покупку
+        </a>
+    </li>
+
+    {% if page_obj %}
+        <li>
+            <a class="btn btn-outline-light btn-lg"
+               href="{% url 'do' %}">
+                Применить все штрафы/премии
+            </a>
+        </li>
+        <li>
+            <a class="btn btn-outline-light btn-lg"
+               href="{% url 'undo' %}">
+                Отменить все штрафы/премии
+            </a>
+        </li>
+    {% endif %}
+</ul>
+{% endif %}
+{% endblock %}
 
 {% block content %}
-    <h1>Все транзакции</h1>
-    <ul class="nav">
-        {% if perms.bank.staff_ %}
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-full' %}">Создать транзакцию</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-staff' %}">Оформить штраф/премию</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-rool' %}">Оформить штраф/премию по правилу</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-party' %}">Оформить штраф/премию на весь отряд</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-buy' %}">Оформить покупку</a></li>
-            {% if object_list %}
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'do' %}">Применить все штрафы/премии</a></li>
-            <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'undo' %}">Отменить все штрафы/премии</a></li>
-            {% endif %}
-        {% endif %}
-    </ul>
-    <br />
-    {% if object_list %}
-    <table  class="table table-striped table-hover table-bordered" cellpadding=30px>
-        <thead>
-            <tr>
-                <th scope="col">Транзакция</th>
-                <th score="col">Статус</th>
-                <th score="col">Ссылка</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for element in object_list %}
-            <tr>
-                <td>{{ element }}</td>
-                <td>
-                    {% if element.counted == True %}
-                        <span class="green">Применено</span>
-                    {% else %}
-                        <span class="red">Не применено</span>
-                    {% endif %}
-                </td>
-                <td><a href="{{ element.get_absolute_url }}">Изменить транзакцию...</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% if object_list.has_previous %}
-        <a href="?page1={{ object_list.previous_page_number }}">Предыдущая страница</a>
-    {% endif %}
-    <span class="page-current">
-        Страница {{ object_list.number }} из {{ object_list.paginator.num_pages }}.
-    </span>
-    {% if object_list.has_next %}
-        <a href="?page1={{ object_list.next_page_number }}">Следующая страница</a>
-    {% endif %}
-    <form method="GET" action="{% url 'info-staff' %}">
-        <input type="text" name="page1" value="{{ messages.number }}" />
-        <button type="submit">Перейти</button>
-    </form>
-    {% else %}
-      <p>Ещё не существует ни одной транзакции.</p>
-    {% endif %}
+{% if page_obj %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Транзакция</th>
+                    <th scope="col">Статус</th>
+                    <th scope="col">Ссылка</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for element in page_obj %}
+                <tr>
+                    <td>{{ element }}</td>
+                    <td>
+                        {% if element.counted %}
+                            <span class="text-success fw-semibold">Применено</span>
+                        {% else %}
+                            <span class="text-danger fw-semibold">Не применено</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ element.get_absolute_url }}" class="link-primary">
+                            Изменить транзакцию…
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center fst-italic">Транзакций нет.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="mt-4 text-muted">
+        Ещё не существует ни одной транзакции.
+    </p>
+{% endif %}
 {% endblock %}

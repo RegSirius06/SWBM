@@ -122,6 +122,7 @@ class account(models.Model):
         f.close()
         return "Done!"
 
+# TODO: Time
 class transaction(models.Model):
     date = models.DateField(null=True, verbose_name=gc("transaction, fields, date, verbose_name"))
     comment = models.CharField(max_length=70, default=gc("transaction, fields, comment, default"),
@@ -247,14 +248,12 @@ class autotransaction(models.Model):
             return rs
         do()
 
-class rools(models.Model):
+class rules(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text=gc("rools, fields, id, help_text"))
-    num_type = models.CharField(max_length=3, choices=EXISTING_TYPES_OF_RULES, default=EXISTING_TYPES_OF_RULES[0][0],
+    num_type = models.CharField(max_length=8, choices=EXISTING_TYPES_OF_RULES, default=EXISTING_TYPES_OF_RULES[0][0],
                                 verbose_name=gc("rools, fields, num_type, verbose_name"))
-    num_pt1 = models.IntegerField(default=1, help_text=gc("rools, fields, num_pt1, help_text"),
+    num_pt = models.IntegerField(default=1, help_text=gc("rools, fields, num_pt1, help_text"),
                                   verbose_name=gc("rools, fields, num_pt1, verbose_name"))
-    num_pt2 = models.IntegerField(default=0, help_text=gc("rools, fields, num_pt2, help_text"),
-                                  verbose_name=gc("rools, fields, num_pt2, verbose_name"))
     comment = models.CharField(max_length=250, default=gc("rools, fields, comment, default"),
                                verbose_name=gc("rools, fields, comment, verbose_name"))
     punishment = models.CharField(max_length=100, default=gc("rools, fields, punishment, default"),
@@ -264,15 +263,13 @@ class rools(models.Model):
                             verbose_name=gc("transaction, fields, sign, verbose_name"))
 
     class Meta:
-        ordering = ["num_type", "num_pt1", "num_pt2"]
+        ordering = ["num_type", "num_pt"]
 
     def __str__(self) -> str:
-        return (f'{self.num_type} {self.num_pt1}.0{self.num_pt2}' if len(f'{self.num_pt2}') == 1 else\
-            f'{self.num_type} {self.num_pt1}.{self.num_pt2}') + f': {self.comment}'
+        return f'{self.num_type} {self.num_pt}: {self.comment}'
 
     def get_num(self) -> str:
-        return f'{self.num_type} {self.num_pt1}.0{self.num_pt2}' if len(f'{self.num_pt2}') == 1 else\
-            f'{self.num_type} {self.num_pt1}.{self.num_pt2}'
+        return f'{self.num_type} {self.num_pt}'
 
     def get_cost(self) -> str:
         return f'{self.cost}t' if self.cost > 0 else "Не нормирован"

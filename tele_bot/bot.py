@@ -5,7 +5,7 @@ import json
 from telebot import types
 from django.db.models import Q
 from django.contrib.auth.models import User
-from bank.models import account, transaction, plan, rools, daily_answer, good
+from bank.models import account, transaction, plan, rules, daily_answer, good
 from server.server import get_link4bot
 
 def get_acc(user_id):
@@ -208,7 +208,7 @@ def cnt(message, user_id=None):
 @bot.message_handler(commands=['rool'])
 def rool(message):
     s = ""
-    for i in rools.objects.all():
+    for i in rules.objects.all():
         if i.is_costable():
             s += f'{i}; {i.punishment}, {i.get_cost()}\n'
         else:

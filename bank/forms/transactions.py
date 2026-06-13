@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account, good, rools
+from bank.models import account, good, rules
 from constants.constants import SIGN_SET, SIGN_SET_ALL, DATE_START_OF_, DATE_END_OF_, get_const_bank_forms as gc
 
 class NewTransactionRoolBaseForm(forms.Form):
@@ -20,7 +20,7 @@ class NewTransactionRoolBaseForm(forms.Form):
         return self.cleaned_data['transaction_receiver']
 
 class NewTransactionRoolForm(NewTransactionRoolBaseForm):
-    rool = forms.ModelChoiceField(queryset=rools.objects.filter(Q(cost__gt=0)), label='Пункт:')
+    rool = forms.ModelChoiceField(queryset=rules.objects.filter(Q(cost__gt=0)), label='Пункт:')
 
     def clean_rool(self):
         return self.cleaned_data['rool']

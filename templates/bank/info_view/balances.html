@@ -1,30 +1,27 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
+
+{% block hero %}
+<h1 class="display-4 fw-bold mb-3">Все аккаунты</h1>
+<p class="lead">Список всех пользователей и их текущий баланс.</p>
+{% endblock %}
 
 {% block content %}
-    <h1>Все транзакции всех пользователей:</h1>
-    {% if object_list %}
-    <ui>
-        {% for element in object_list %}
-        <li>
-            <a href="{{ element.get_absolute_url }}">{{ element.short_name }} <b>({{ element.balance }}t)</b></a>
-        </li>
+{% if page_obj %}
+    <ul class="list-group mb-4">
+        {% for element in page_obj %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <a href="{{ element.get_absolute_url }}" class="list-group-item-action text-decoration-none">
+                    {{ element.short_name }}
+                </a>
+                <span class="badge bg-primary rounded-pill">{{ element.balance }}t</span>
+            </li>
+        {% empty %}
+            <li class="list-group-item text-muted">Нет аккаунтов.</li>
         {% endfor %}
-    </ui>
-    {% if object_list.has_previous %}
-        <a href="?page1={{ object_list.previous_page_number }}">Предыдущая страница</a>
-    {% endif %}
-    <span class="page-current">
-        Страница {{ object_list.number }} из {{ object_list.paginator.num_pages }}.
-    </span>
-    {% if object_list.has_next %}
-        <a href="?page1={{ object_list.next_page_number }}">Следующая страница</a>
-    {% endif %}
-    <form method="GET" action="{% url 'accounts' %}">
-        <input type="text" name="page1" value="{{ messages.number }}" />
-        <button type="submit">Перейти</button>
-    </form>
-    {% else %}
-      <p>Ещё не существует ни одного аккаунта.</p>
-    {% endif %}
-    <a href="#top" title="В начало" tabindex="-1" class="topbutton">Наверх</a>
+    </ul>
+{% else %}
+    <div class="alert alert-info text-center">
+        Ещё не существует ни одного аккаунта ребёнка.
+    </div>
+{% endif %}
 {% endblock %}

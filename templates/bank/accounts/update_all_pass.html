@@ -1,5 +1,38 @@
 {% extends "bank/base_generic.html" %}
 
+{% block hero %}
+<h1 class="display-5 fw-bold">
+    <i class="bi bi-key me-2"></i>Обновление пароля
+</h1>
+<p class="lead text-muted">
+    Текущий статус процедуры обновления паролей для аккаунтов.
+</p>
+{% endblock %}
+
 {% block content %}
-<h1>Статус процедуры обновления паролей: {{ request.user.account.update_passwords }}</h1>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+
+        {# Блок‑сообщение с текущим статусом #}
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle me-2 fs-4"></i>
+            <div>
+                <strong>Статус процедуры обновления паролей:</strong>
+                {% if request.user.account.update_passwords %}
+                    <span class="badge bg-success ms-2">Включено</span>
+                {% else %}
+                    <span class="badge bg-secondary ms-2">Выключено</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {# При желании можно добавить кнопку для перехода к настройкам #}
+        <div class="d-grid gap-2 mt-4">
+            <a href="{% url 'account-settings' %}"
+               class="btn btn-outline-primary">
+                <i class="bi bi-gear me-2"></i>Перейти к настройкам аккаунта
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

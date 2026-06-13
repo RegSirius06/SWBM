@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bank.models import account, rools
+from bank.models import account, rules
 from constants.constants import SIGN_SET, get_const_bank_forms as gc
 
 class NewAutoTransactionRoolForm(forms.Form):
@@ -19,7 +19,7 @@ class NewAutoTransactionRoolForm(forms.Form):
             raise ValidationError(_('Укажите хотя бы одного пользователя, к которому создаёте автотранзакцию.'))
         return x
 
-    rool = forms.ModelChoiceField(queryset=rools.objects.filter(Q(cost__gt=0)), label='Пункт:')
+    rool = forms.ModelChoiceField(queryset=rules.objects.filter(Q(cost__gt=0)), label='Пункт:')
 
     def clean_rool(self):
         return self.cleaned_data['rool']

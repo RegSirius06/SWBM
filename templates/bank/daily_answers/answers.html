@@ -1,22 +1,58 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
 
-{% block title %}<title>Задачи</title>{% endblock %}
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Задачи</h1>
+    <p class="lead">
+        Здесь перечислены все доступные задачи.
+        {% if perms.bank.meria %}
+            <a href="{% url 'answers-new' %}" class="btn btn-outline-success btn-sm me-2">
+                <i class="bi bi-plus-lg"></i> Добавить задачу
+            </a>
+        {% endif %}
+    </p>
+{% endblock %}
 
 {% block content %}
-<h1>Задачи</h1>
-{% if perms.bank.meria %}
-  <p><a href="{% url 'answers-new' %}">Здесь вы можете добавить новую задачу...</a></p>
-{% endif %}
-{% if answers %}
-  {% for element in answers %}
-    <h2>{{ element.name }}</h2>
-    {% if perms.bank.meria %}<h6><a href="{{ element.get_absolute_url }}">Изменить задачу...</a></h6>{% endif %}
-    <pre class="multiple-text">{{ element.text }}</pre>
-    <p>Плата за решение: <span class="green">{{ element.cnt }}</span>t.</p>
-    <h6 class="text-muted">Срок сдачи: {% if element.status %}14 июля{% else %}сегодня{% endif %}.</h6>
-    <br />
-  {% endfor %}
-{% else %}
-  <p>Задачи ещё не составлены.</p>
-{% endif %}
+    {% if answers %}
+        <div class="row g-4">
+            {% for element in answers %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 answer-card shadow-sm">
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title">{{ element.name }}</h5>
+
+                            {% if perms.bank.meria %}
+                                <h6 class="mt-1">
+                                    <a href="{{ element.get_absolute_url }}" class="text-decoration-none">
+                                        <i class="bi bi-pencil-square me-1"></i>Изменить задачу
+                                    </a>
+                                </h6>
+                            {% endif %}
+
+                            <pre class="mt-3 flex-grow-1 mb-3">{{ element.text }}</pre>
+
+                            <p class="mb-1">
+                                Плата за решение:
+                                <span class="badge bg-success">{{ element.cnt }}t</span>
+                            </p>
+
+                            <p class="text-muted mb-0">
+                                Срок сдачи:
+                                {% if element.status %}
+                                    <span class="badge bg-warning text-dark">14 июля</span>
+                                {% else %}
+                                    <span class="badge bg-danger">сегодня</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            Задачи ещё не составлены.
+        </div>
+    {% endif %}
 {% endblock %}

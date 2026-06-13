@@ -1,159 +1,324 @@
 {% extends "messenger/base_generic.html" %}
+{% load static text_tags %}                     {#  format_text, … #}
+
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Мессенджер ЛЕС</h1>
+    <p class="lead">Ваши отправленные, архивные и глобальные сообщения.</p>
+{% endblock %}
 
 {% block content %}
-<h1>Отправленные сообщения:</h1>
+<h2 class="mb-4">Отправленные сообщения</h2>
 {% if messages %}
-<table class="table table-striped table-bordered" cellpadding=30px>
-    <thead>
-        <tr>
-            <th scope="col">Чат</th>
-            <th scope="col">Дата</th>
-            <th scope="col">Текст</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Ответ</th>
-            <th scope="col">Обновление</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="row g-4">
         {% for element in messages %}
-        <tr>
-            <td>{{ element.receiver.name }}</td>
-            <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td>
-                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span>
-                <br />
-                {% if element.editable %}
-                <span class="green">Изменяемое</span>
-                {% else %}
-                <span class="red">Неизменяемое</span>
-                {% endif %}
-            </td>
-            <td>{% if element.answer_for %}
-                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
-                {% else %}<span class="green">Нет</span>{% endif %}</td>
-            <td class="td"><a href="{{ element.get_absolute_url }}">Изменить сообщение...</a></td>
-        </tr>
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                        <div class="small text-muted">
+                            {% if element.anonim %}
+                                <i class="bi bi-incognito"></i> Анонимно
+                            {% else %}
+                                {{ element.creator }}
+                            {% endif %}
+                        </div>
+
+                        <a href="{{ element.get_absolute_url_for_resend }}"
+                           class="btn btn-outline-secondary btn-sm"
+                           title="Переслать сообщение">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <pre class="text-break multiple-text mb-2">
+{{ element.display_text|format_text }}
+                        </pre>
+
+                        <p class="mb-1 small text-muted">
+                            {% if element.anonim %}
+                                Статус неизвестен
+                            {% else %}
+                                Статус: {{ element.creator.get_status }}
+                            {% endif %}
+                        </p>
+
+                        <p class="mb-0 small text-muted">
+                            Отправка: {{ element.get_date }}.
+                        </p>
+                    </div>
+
+                    {% if element.answer_for %}
+                        <div class="card-footer bg-light py-2">
+                            <a href="{{ element.get_absolute_url_for_view_answer }}"
+                               class="blockquote-footer small text-decoration-none">
+                                <i>{{ element.get_text_for_view_answer }}</i>
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
-    </tbody>
-</table>
-{% if messages.has_previous %}
-    <a href="?page1={{ messages.previous_page_number }}">Предыдущая страница</a>
-{% endif %}
-<span class="page-current">
-    Страница {{ messages.number }} из {{ messages.paginator.num_pages }}.
-</span>
-{% if messages.has_next %}
-    <a href="?page1={{ messages.next_page_number }}">Следующая страница</a>
-{% endif %}
-<form method="GET" action="{% url 'messages-edit' %}">
-    <input type="text" name="page1" value="{{ messages.number }}" />
-    <button type="submit">Перейти</button>
-</form>
+    </div>
+
+    {% if messages.has_other_pages %}
+        <nav aria-label="Навигация по отправленным сообщениям" class="my-4">
+            <ul class="pagination justify-content-center">
+
+                {% if messages.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page1={{ messages.previous_page_number }}"
+                           aria-label="Предыдущая">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+                {% endif %}
+
+                <li class="page-item active"><span class="page-link">
+                    {{ messages.number }}/{{ messages.paginator.num_pages }}
+                </span></li>
+
+                {% if messages.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page1={{ messages.next_page_number }}"
+                           aria-label="Следующая">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <form method="GET"
+              action="{% url 'messages' %}"
+              class="d-flex justify-content-center align-items-center mt-3">
+            <label for="page1" class="me-2 mb-0 small text-muted">Перейти к странице:</label>
+            <input type="number"
+                   name="page1"
+                   id="page1"
+                   min="1"
+                   max="{{ messages.paginator.num_pages }}"
+                   value="{{ messages.number }}"
+                   class="form-control form-control-sm w-auto me-2"
+                   style="max-width:70px;">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Перейти</button>
+        </form>
+    {% endif %}
 {% else %}
-    <p>Вы ещё никому не писали.</p>
+    <p class="text-center text-muted my-4">Вы ещё никому не писали.</p>
 {% endif %}
-<h1>Отправленные сообщения (в архиве):</h1>
+
+<h2 class="my-5">Отправленные сообщения (в архиве)</h2>
 {% if items3 %}
-<table class="table table-striped table-bordered" cellpadding=30px>
-    <thead>
-        <tr>
-            <th scope="col">Чат</th>
-            <th scope="col">Дата</th>
-            <th scope="col">Текст</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Ответ</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for element in items3 %}
-        <tr>
-            <td>{{ element.receiver.name }}</td>
-            <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td>
-                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span>
-                <br />
-                {% if element.editable %}
-                <span class="green">Изменяемое</span>
-                {% else %}
-                <span class="red">Неизменяемое</span>
+    {% for element in items3 %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <strong class="small">
+                    {% if element.anonim %}
+                        Сообщение отправлено анонимно.
+                    {% else %}
+                        {{ element.creator }}:
+                    {% endif %}
+                </strong>
+
+                <a href="{{ element.get_absolute_url_for_resend }}"
+                   class="btn btn-outline-secondary btn-sm"
+                   title="Переслать сообщение">
+                    <i class="bi bi-arrow-repeat"></i>
+                </a>
+            </div>
+
+            <div class="card-body">
+                <pre class="text-break multiple-text mb-3 {{ theme }}">
+{{ element.display_text|format_text }}
+                </pre>
+
+                <p class="mb-1 small text-muted">
+                    {% if element.anonim %}
+                        Статус неизвестен
+                    {% else %}
+                        Статус: {{ element.creator.get_status }}
+                    {% endif %}
+                </p>
+
+                <p class="mb-2 small text-muted">
+                    Отправка: {{ element.get_date }}.
+                </p>
+
+                {% if element.answer_for %}
+                    <a href="{{ element.get_absolute_url_for_view_answer }}"
+                       class="blockquote-footer small text-decoration-none">
+                        <i>{{ element.get_text_for_view_answer }}</i>
+                    </a>
                 {% endif %}
-            </td>
-            <td>{% if element.answer_for %}
-                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
-                {% else %}<span class="green">Нет</span>{% endif %}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% if items3.has_previous %}
-    <a href="?page3={{ items3.previous_page_number }}">Предыдущая страница</a>
-{% endif %}
-<span class="page-current">
-    Страница {{ items3.number }} из {{ items3.paginator.num_pages }}.
-</span>
-{% if items3.has_next %}
-    <a href="?page3={{ items3.next_page_number }}">Следующая страница</a>
-{% endif %}
-<form method="GET" action="{% url 'messages-edit' %}">
-    <input type="text" name="page3" value="{{ items3.number }}" />
-    <button type="submit">Перейти</button>
-</form>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if items3.has_other_pages %}
+        <nav aria-label="Навигация по архивным сообщениям" class="my-4">
+            <ul class="pagination justify-content-center">
+
+                {% if items3.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page3={{ items3.previous_page_number }}"
+                           aria-label="Предыдущая">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+                {% endif %}
+
+                <li class="page-item active"><span class="page-link">
+                    {{ items3.number }}/{{ items3.paginator.num_pages }}
+                </span></li>
+
+                {% if items3.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page3={{ items3.next_page_number }}"
+                           aria-label="Следующая">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <form method="GET"
+              action="{% url 'messages' %}"
+              class="d-flex justify-content-center align-items-center mt-3">
+            <label for="page3" class="me-2 mb-0 small text-muted">Перейти к странице:</label>
+            <input type="number"
+                   name="page3"
+                   id="page3"
+                   min="1"
+                   max="{{ items3.paginator.num_pages }}"
+                   value="{{ items3.number }}"
+                   class="form-control form-control-sm w-auto me-2"
+                   style="max-width:70px;">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Перейти</button>
+        </form>
+    {% endif %}
 {% else %}
-    <p>В архиве ещё нет чатов с вашими сообщениями.</p>
+    <p class="text-center text-muted my-4">В архиве ещё нет чатов с вашими сообщениями.</p>
 {% endif %}
-<h1>Глобальные сообщения:</h1>
+
+<h2 class="my-5">Глобальные сообщения</h2>
+
 {% if messages_public %}
-<table class="table table-striped table-bordered" cellpadding=30px>
-    <thead>
-        <tr>
-            <th scope="col">Дата</th>
-            <th scope="col">Текст</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Ответ</th>
-            <th scope="col">Обновление</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for element in messages_public %}
-        <tr>
-            <td>{{ element.get_date }}</td>
-            <td><pre class="text-break multiple-text">{{ element.display_text }}</pre></td>
-            <td>
-                <span {% if element.anonim %} class="green" {% elif not element.anonim_legacy %} class="red" {% endif %}>
-                {{ element.anonim_status }}</span>
-                <br />
-                {% if element.editable %}
-                <span class="green">Изменяемое</span>
-                {% else %}
-                <span class="red">Неизменяемое</span>
+    {% for element in messages_public %}
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <strong class="small">
+                    {% if element.anonim %}
+                        Сообщение отправлено анонимно.
+                    {% else %}
+                        {{ element.creator }}:
+                    {% endif %}
+                </strong>
+
+                <a href="{{ element.get_absolute_url_for_resend }}"
+                   class="btn btn-outline-secondary btn-sm"
+                   title="Переслать сообщение">
+                    <i class="bi bi-arrow-repeat"></i>
+                </a>
+            </div>
+
+            <div class="card-body">
+                <pre class="text-break multiple-text mb-3 {{ theme }}">
+{{ element.display_text|format_text }}
+                </pre>
+
+                <p class="mb-1 small text-muted">
+                    {% if element.anonim %}
+                        Статус неизвестен
+                    {% else %}
+                        Статус: {{ element.creator.get_status }}
+                    {% endif %}
+                </p>
+
+                <p class="mb-2 small text-muted">
+                    Отправка: {{ element.get_date }}.
+                </p>
+
+                {% if element.answer_for %}
+                    <a href="{{ element.get_absolute_url_for_view_answer }}"
+                       class="blockquote-footer small text-decoration-none">
+                        <i>{{ element.get_text_for_view_answer }}</i>
+                    </a>
                 {% endif %}
-            </td>
-            <td>{% if element.answer_for %}
-                <a class="red" href="{{ element.get_absolute_url_for_view_answer }}">{{ element.get_text_for_view_answer }}</a>
-                {% else %}<span class="green">Нет</span>{% endif %}</td>
-            <td class="td"><a href="{{ element.get_absolute_url }}">Изменить сообщение...</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-{% if messages_public.has_previous %}
-    <a href="?page2={{ messages_public.previous_page_number }}">Предыдущая страница</a>
-{% endif %}
-<span class="page-current">
-    Страница {{ messages_public.number }} из {{ messages_public.paginator.num_pages }}.
-</span>
-{% if messages_public.has_next %}
-    <a href="?page2={{ messages_public.next_page_number }}">Следующая страница</a>
-{% endif %}
-<form method="GET" action="{% url 'messages-edit' %}">
-    <input type="text" name="page2" value="{{ messages_public.number }}" />
-    <button type="submit">Перейти</button>
-</form>
+            </div>
+
+            {% if element.editable %}
+                <div class="card-footer bg-light py-2 text-end">
+                    <a href="{{ element.get_absolute_url }}" class="btn btn-sm btn-outline-primary">
+                        Изменить сообщение…
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    {% if messages_public.has_other_pages %}
+        <nav aria-label="Навигация по глобальным сообщениям" class="my-4">
+            <ul class="pagination justify-content-center">
+
+                {% if messages_public.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page2={{ messages_public.previous_page_number }}"
+                           aria-label="Предыдущая">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
+                {% endif %}
+
+                <li class="page-item active"><span class="page-link">
+                    {{ messages_public.number }}/{{ messages_public.paginator.num_pages }}
+                </span></li>
+
+                {% if messages_public.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="?page2={{ messages_public.next_page_number }}"
+                           aria-label="Следующая">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <form method="GET"
+              action="{% url 'messages' %}"
+              class="d-flex justify-content-center align-items-center mt-3">
+            <label for="page2" class="me-2 mb-0 small text-muted">Перейти к странице:</label>
+            <input type="number"
+                   name="page2"
+                   id="page2"
+                   min="1"
+                   max="{{ messages_public.paginator.num_pages }}"
+                   value="{{ messages_public.number }}"
+                   class="form-control form-control-sm w-auto me-2"
+                   style="max-width:70px;">
+            <button type="submit" class="btn btn-outline-primary btn-sm">Перейти</button>
+        </form>
+    {% endif %}
 {% else %}
-    <p>Вы ещё не отправляли глобальных сообщений.</p>
+    <p class="text-center text-muted my-4">Вы ещё не отправляли глобальных сообщений.</p>
 {% endif %}
 {% endblock %}

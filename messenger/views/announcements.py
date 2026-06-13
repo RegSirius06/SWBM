@@ -14,7 +14,7 @@ from messenger.forms import announcements
 def all_announcements_view(request):
     anns = announcement.objects.filter(status=False)#.order_by("creator", "name")
     paginator1 = Paginator(anns, 25)
-    page1 = request.GET.get('page1')
+    page1 = request.GET.get('page')
     try:
         items1 = paginator1.page(page1)
     except PageNotAnInteger:
@@ -24,7 +24,10 @@ def all_announcements_view(request):
     return render(
         request,
         'messenger/announcements/announcements.html',
-        context={'plans': items1,},
+        context={
+            'is_paginated': paginator1.num_pages > 1,
+            'page_obj': items1
+        },
     )
 
 @login_required
