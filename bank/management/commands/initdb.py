@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
@@ -51,6 +52,7 @@ class Command(BaseCommand):
             admin_account.first_name = "BANK"
             admin_account.middle_name = "BANK"
             admin_account.last_name = "Admin"
+            admin_account.id = uuid.UUID(int=0)
             admin_account.save()
         except CommandError as e:
             self.stderr.write(e)

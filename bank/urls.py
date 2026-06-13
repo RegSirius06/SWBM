@@ -3,7 +3,7 @@ from bank.views import autotransactions, plans, daily_answers, goods, accounts, 
 #from django.conf.urls import url
 
 urlpatterns = [
-    re_path(r'^$', view_info.index, name='index_of_bank'),
+    re_path(r'^$', view_info.index, name='index'),
     re_path(r'^rules/$', view_info.rools_view, name='rules'),
 
     re_path(r'^shop/$', goods.shop_view, name='shop'),

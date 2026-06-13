@@ -1,0 +1,13 @@
+{% extends "base_generic.html" %}          {# наследуем общий макет #}
+
+{% block content %}
+<div class="mt-4">
+    <p class="p-3 mb-2 bg-success text-white rounded">
+        Вы вышли из аккаунта!
+    </p>
+
+    <a href="{% url 'login' %}" class="btn btn-outline-primary">
+        <i class="bi bi-box-arrow-in-right me-1"></i>Войти снова
+    </a>
+</div>
+{% endblock %}

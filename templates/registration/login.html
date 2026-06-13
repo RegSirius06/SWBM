@@ -1,70 +1,124 @@
-{% extends "registration/base_generic.html" %}
+{% extends "base_generic.html" %}
+
+{% block hero %}
+<div class="pt-5">
+    <div class="bg-dark bg-opacity-10 py-5 text-center rounded-3">
+        <h1 class="display-5 fw-bold text-dark">Вход в личный кабинет</h1>
+        <p class="lead text-muted">Введите логин и пароль, чтобы продолжить.</p>
+    </div>
+</div>
+{% endblock %}
 
 {% block content %}
+<div class="row justify-content-center">
+    <div class="col-sm-10 col-md-8 col-lg-5">
 
-<style>
-html,
-body {
-  height: 100%;
-}
+        {% if form.errors %}
+            <div class="alert alert-danger d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <div>Неправильный логин или пароль. Попробуйте ещё раз.</div>
+            </div>
+        {% endif %}
 
-.form-signin {
-  max-width: 330px;
-  padding: 1rem;
-}
+        {% if next %}
+            {% if user.is_authenticated %}
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <div>У вашего аккаунта нет доступа к этой странице. Войдите под другим пользователем.</div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning d-flex align-items-center">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <div>Для просмотра этой страницы необходимо войти в аккаунт.</div>
+                </div>
+            {% endif %}
+        {% endif %}
 
-.form-signin .form-floating:focus-within {
-  z-index: 2;
-}
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
 
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
+                <form method="post" action="{% url 'login' %}" class="needs-validation" novalidate>
+                    {% csrf_token %}
 
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-</style>
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">
+                            {{ form.username.label }}
+                        </label>
+                        <input type="text"
+                               name="{{ form.username.html_name }}"
+                               id="{{ form.username.id_for_label }}"
+                               value="{{ form.username.value|default_if_none:'' }}"
+                               class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                               required
+                               autocomplete="username">
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.username.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
 
-<h1 class="h3 mb-3 fw-normal">Пожалуйста, войдите</h1>
+                    <div class="mb-4">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">
+                            {{ form.password.label }}
+                        </label>
+                        <div class="input-group">
+                            <input type="password"
+                                   name="{{ form.password.html_name }}"
+                                   id="{{ form.password.id_for_label }}"
+                                   class="form-control{% if form.password.errors %} is-invalid{% endif %}"
+                                   required autocomplete="current-password">
+                            <button type="button"
+                                    class="btn btn-outline-secondary toggle-pass"
+                                    data-target="{{ form.password.id_for_label }}"
+                                    title="Показать/скрыть пароль">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {{ form.password.errors|striptags }}
+                            </div>
+                        {% endif %}
+                    </div>
 
-{% if form.errors %}
-  <p class="p-3 mb-2 bg-danger text-white">Ваши имя пользователя и пароль не подходят к существующим. Попробуйте ещё раз.</p>
-{% endif %}
+                    <input type="hidden" name="next" value="{{ next }}">
 
-{% if next %}
-  {% if user.is_authenticated %}
-    <p class="p-3 mb-2 bg-warning text-dark">У вашего аккаунта нет доступа к этой странице. Чтобы продолжить,
-    пожалуйста, войдите с учетной записью, которая имеет доступ к этой странице.</p>
-  {% else %}
-    <p class="p-3 mb-2 bg-warning text-dark">Вы должны войти в аккаунт, чтобы увидеть эту страницу.</p>
-  {% endif %}
-{% endif %}
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                    </button>
+                </form>
 
-<form method="post" action="{% url 'login' %}">
-{% csrf_token %}
-<ul>
-<li>
-  {{ form.username.label_tag }}
-  <br />
-  {{ form.username }}
-</li>
+                <hr class="my-4">
 
-<li>
-{{ form.password.label_tag }}
-<br />
-{{ form.password }}
-</li>
-<br />
-<input type="submit" value="Войти" />
-<input type="hidden" name="next" value="{{ next }}" />
-</ul>
-</form>
+                <p class="text-center mb-0">
+                    <a href="{% url 'password_reset' %}" class="link-secondary">
+                        <i class="bi bi-key me-1"></i>Забыли пароль?
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggles = document.querySelectorAll('.toggle-pass');
+        toggles.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const targetId = btn.dataset.target;
+                const input = document.getElementById(targetId);
+                if (!input) return;
 
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.className = isPassword ? 'bi bi-eye' : 'bi bi-eye-slash';
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

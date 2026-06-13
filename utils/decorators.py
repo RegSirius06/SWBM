@@ -3,7 +3,7 @@ import datetime
 import time
 
 from functools import wraps
-from typing import ParamSpec, TypeVar, Callable, Generic, Self, Optional, overload
+from typing import  Callable, Generic, Optional, ParamSpec, TypeVar, overload
 
 try:
     from constants.constants import ACCRUAL_START_TIME_OF_AUTOTRANSACTIONS
@@ -15,13 +15,16 @@ __all__ = [
     'function_logger'
 ]
 
-__F_Spec__ = ParamSpec("__F_Spec__")
-__F_Return__ = TypeVar("__F_Return__")
+FSpec = ParamSpec("FSpec")
+FReturn = TypeVar("FReturn")
 
-class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
-    wrapped_call: Callable[__F_Spec__, __F_Return__]
-    caller: Callable[__F_Spec__, __F_Return__]
-    call_result: __F_Return__
+SelfPeriodic = TypeVar("SelfPeriodic", bound="PeriodicFunctionCall")
+SelfLogger = TypeVar("SelfLogger", bound="FunctionLogger")
+
+class PeriodicFunctionCall(Generic[FSpec, FReturn]):
+    wrapped_call: Callable[FSpec, FReturn]
+    caller: Callable[FSpec, FReturn]
+    call_result: FReturn
     call_create_buf: bool
     decorators: list[object]
     interval_in_seconds: int
@@ -29,23 +32,23 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
 
     def __new__(
             cls,
-            call: Callable[__F_Spec__, __F_Return__],
+            call: Callable[FSpec, FReturn],
             interval_in_seconds: int,
             call_return: bool,
             target_time: Optional[datetime.time],
-            ) -> Self:
-            if isinstance(call, __PeriodicFunctionCall__):
+            ) -> SelfPeriodic:
+            if isinstance(call, PeriodicFunctionCall):
                 return call
             return super().__new__(cls)
 
     def __init__(
             self,
-            call: Callable[__F_Spec__, __F_Return__],
+            call: Callable[FSpec, FReturn],
             interval_in_seconds: int,
             call_return: bool,
             target_time: Optional[datetime.time]
             ) -> None:
-        if not isinstance(call, __PeriodicFunctionCall__):
+        if not isinstance(call, PeriodicFunctionCall):
             self.interval_in_seconds = interval_in_seconds
             self.wrapped_call = call
             self.decorators = []
@@ -63,17 +66,17 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
 
         @wraps(self.wrapped_call)
         def caller(
-            *args: __F_Spec__.args,
-            **kwargs: __F_Spec__.kwargs
-            ) -> __F_Return__:
+            *args: FSpec.args,
+            **kwargs: FSpec.kwargs
+            ) -> FReturn:
             return self.wrapped_call(*args, **kwargs)
 
         self.caller = caller
 
         @wraps(self.wrapped_call)
         def wrapper(
-            *args: __F_Spec__.args,
-            **kwargs: __F_Spec__.kwargs
+            *args: FSpec.args,
+            **kwargs: FSpec.kwargs
             ) -> None:
             flag = True
             while True:
@@ -94,9 +97,9 @@ class __PeriodicFunctionCall__(Generic[__F_Spec__, __F_Return__]):
 
     def __call__(
             self,
-            *args: __F_Spec__.args,
-            **kwargs: __F_Spec__.kwargs
-            ) -> Optional[__F_Return__]:
+            *args: FSpec.args,
+            **kwargs: FSpec.kwargs
+            ) -> Optional[FReturn]:
         if self.call_create_buf:
             self.call_result = self.caller(*args, **kwargs)
             self.call_create_buf = False
@@ -107,31 +110,31 @@ def periodic_function_call(
         target_time: Optional[datetime.time] = None,
         *,
         call_return: Optional[bool] = False
-        ) -> Callable[[Callable[__F_Spec__, __F_Return__]], __PeriodicFunctionCall__[__F_Spec__, __F_Return__]]:
-    def decorator(func: Callable[__F_Spec__, __F_Return__]) -> __PeriodicFunctionCall__[__F_Spec__, __F_Return__]:
-        return __PeriodicFunctionCall__(func, interval_in_seconds, call_return, target_time)
+        ) -> Callable[[Callable[FSpec, FReturn]], PeriodicFunctionCall[FSpec, FReturn]]:
+    def decorator(func: Callable[FSpec, FReturn]) -> PeriodicFunctionCall[FSpec, FReturn]:
+        return PeriodicFunctionCall(func, interval_in_seconds, call_return, target_time)
     return decorator
 
-class __FunctionLogger__(Generic[__F_Spec__, __F_Return__]):
-    wrapped_call: Callable[__F_Spec__, __F_Return__]
+class FunctionLogger(Generic[FSpec, FReturn]):
+    wrapped_call: Callable[FSpec, FReturn]
     decorators: list[object]
     name_log_file: list[str]
 
     def __new__(
             cls,
-            call: Callable[__F_Spec__, __F_Return__],
+            call: Callable[FSpec, FReturn],
             name_log_file: Optional[str]
-            ) -> Self:
-        if isinstance(call, __FunctionLogger__):
+            ) -> SelfLogger:
+        if isinstance(call, FunctionLogger):
             return call
         return super().__new__(cls)
 
     def __init__(
             self,
-            call: Callable[__F_Spec__, __F_Return__],
+            call: Callable[FSpec, FReturn],
             name_log_file: str
             ) -> None:
-        if isinstance(call, __FunctionLogger__):
+        if isinstance(call, FunctionLogger):
             if call in self.decorators:
                 if name_log_file in call.name_log_file:
                     raise ValueError(f"Logs about the function \"{call.wrapped_call.__name__}\" "
@@ -145,9 +148,9 @@ class __FunctionLogger__(Generic[__F_Spec__, __F_Return__]):
 
     def __call__(
             self,
-            *args: __F_Spec__.args,
-            **kwargs: __F_Spec__.kwargs
-            ) -> __F_Return__:
+            *args: FSpec.args,
+            **kwargs: FSpec.kwargs
+            ) -> FReturn:
         result = self.wrapped_call(*args, **kwargs)
         log_label = f"{datetime.datetime.today()} - function \"{self.wrapped_call.__name__}\" returned {result};\n"
         for ways in self.name_log_file:
@@ -157,19 +160,19 @@ class __FunctionLogger__(Generic[__F_Spec__, __F_Return__]):
 
 def __function_logger_wrapper__(
         name_log_file: str|None
-        ) -> Callable[[Callable[__F_Spec__, __F_Return__]], __FunctionLogger__[__F_Spec__, __F_Return__]]:
-    def decorator(func: Callable[__F_Spec__, __F_Return__]) -> __FunctionLogger__[__F_Spec__, __F_Return__]:
+        ) -> Callable[[Callable[FSpec, FReturn]], FunctionLogger[FSpec, FReturn]]:
+    def decorator(func: Callable[FSpec, FReturn]) -> FunctionLogger[FSpec, FReturn]:
         if name_log_file:
-            return __FunctionLogger__(func, name_log_file)
-        return __FunctionLogger__(func, "log.log")
+            return FunctionLogger(func, name_log_file)
+        return FunctionLogger(func, "log.log")
     return decorator
 
 @overload
 def function_logger(
-    call: Callable[__F_Spec__, __F_Return__],
+    call: Callable[FSpec, FReturn],
     *,
     name_log_file: Optional[str] = None
-) -> Callable[__F_Spec__, __F_Return__]:
+) -> Callable[FSpec, FReturn]:
     ...
 
 @overload
@@ -178,20 +181,20 @@ def function_logger(
     *,
     name_log_file: Optional[str] = None
 ) -> Callable[
-    [Callable[__F_Spec__, __F_Return__]],
-    Callable[__F_Spec__, __F_Return__]
+    [Callable[FSpec, FReturn]],
+    Callable[FSpec, FReturn]
 ]: ... 
 
 def function_logger(
-        func: Optional[Callable[__F_Spec__, __F_Return__]] = None,
+        func: Optional[Callable[FSpec, FReturn]] = None,
         *,
         name_log_file: Optional[str] = None
     ) -> Callable[
-        [Callable[__F_Spec__, __F_Return__]],
-        Callable[__F_Spec__, __F_Return__]
+        [Callable[FSpec, FReturn]],
+        Callable[FSpec, FReturn]
     ] | Callable[
-        __F_Spec__,
-        __F_Return__
+        FSpec,
+        FReturn
     ]:
     wrap_decorator = __function_logger_wrapper__(name_log_file)
     if func is None:

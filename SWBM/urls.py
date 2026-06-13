@@ -28,8 +28,8 @@ sitemaps = {
 
 urlpatterns = [
     path('admin/', admin.site.urls, name="admin_"),
-    path('choose_your_path/', include('choice_of_path.urls'), name="CYP_COP"),
-    path('', RedirectView.as_view(url='/choose_your_path/', permanent=True)),
+    path('password/', include('password.urls'), name="PWD"),
+    path('', RedirectView.as_view(url='/bank/', permanent=True)),
     path('bank/', include('bank.urls'), name="bank_"),
     path('messenger/', include('messenger.urls'), name="messenger_"),
     path('accounts/', include('django.contrib.auth.urls')),

@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.sitemaps",
     'corsheaders',
-    'choice_of_path.apps.ChoiceOfPathConfig',
+    'password.apps.PasswordConfig',
     'bank.apps.BankConfig',
     'messenger.apps.MessengerConfig',
 ]

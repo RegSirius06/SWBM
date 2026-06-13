@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from bank.urls import urlpatterns as urlpatterns_bank
 from messenger.urls import urlpatterns as urlpatterns_messenger
-from choice_of_path.urls import urlpatterns as urlpatterns_COP
+from password.urls import urlpatterns as urlpatterns_COP
 
 class MySiteMap(sitemaps.Sitemap):
     priority = 0.5

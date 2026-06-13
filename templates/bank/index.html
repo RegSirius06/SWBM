@@ -1,138 +1,235 @@
-{% extends "bank/base_generic.html" %}
+{% extends "base_generic.html" %}
+{% load static %}
 
+{# ------------------------------------------------- #}
+{#                     HERO                         #}
+{# ------------------------------------------------- #}
+{% block hero %}
+<section class="py-5 mt-5 bg-dark bg-opacity-75 text-white">
+    <div class="container-xxl text-center py-5">
+        <h1 class="display-4 fw-bold mb-3">Добро пожаловать в Банк ЛЕС</h1>
+        <p class="lead mb-4">Теперь с оплатой по QR‑коду.</p>
+        <a href="#mainContent"
+           class="btn btn-outline-light btn-lg rounded-pill">
+            <i class="bi bi-arrow-down me-2"></i>Перейти к сервисам
+        </a>
+    </div>
+</section>
+{% endblock %}
+
+{# ------------------------------------------------- #}
+{#                MAIN CONTENT (index)               #}
+{# ------------------------------------------------- #}
 {% block content %}
-<h1>Добро пожаловать!</h1>
-  <h6>Это главная страница банка ЛИСа.</h6>
-  {% if user.is_authenticated %}
-    <h2>Здравствуй, {{ request.user.account }}</h2>
-    <ui>
-      {% if request.user.account.party != 0 %}
-        <li>Отряд: {{ request.user.account.party }}</li>
-      {% else %}
-        <li>Вы не принадлежите ни к одному отряду.</li>
-      {% endif %}
-      {% if request.user.account.user_group != 'None' %}
-        <li>Группа: {{ request.user.account.user_group }}</li>
-      {% else %}
-        <li>Вы не состоите ни в одной группе.</li>
-        <p class="text-muted">Если это не так, вы можете обратиться к минфину/старшему куратору, он исправит.</p>
-      {% endif %}
-    </ui>
-  {% endif %}
-  <h6>Используйте поле сверху для навигации по сайту.</h6>
-  {% if perms.bank.staff_ %}
-    <h2>Для персонала:</h2>
-    <h4>Счёт банка:
-      {% if admin.balance > 0 %}
-        <span class="green">{{ admin.balance }}t</span>
-      {% elif admin.balance < 0 %}
-        <span class="red">{{ admin.balance }}t</span>
-      {% else %}
-        {{ admin.balance }}t
-      {% endif %}</h4>
-      <ul class="nav">
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'accounts' %}">Посмотреть все счета</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'new-transaction-rool' %}">Оформить штраф/премию по правилу</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-staff' %}">Работа с транзакциями</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'autotransactions' %}">Работа с автотранзакциями</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'info-users' %}">Работа с пользователями</a></li>
-      </ul>
-      <br />
-  {% endif %}
-  {% if forbes %}
-  <h2>Список "Forbes":</h2>
-  <table class="table table-striped table-hover table-bordered" cellpadding=30px>
-    <caption>На них нужно равняться!</caption>
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Человек</th>
-        <th scope="col">Отряд</th>
-        <th scope="col">Баланс</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for element in forbes %}
-      <tr>
-        <td>{{ element.get_number_f }}</td>
-        <td>{{ element }}</td>
-        <td>{{ element.party }}</td>
-        <td>{% if element.balance > 0 %}
-          <span class="green">{{ element.balance }}t</span>
-        {% elif element.balance < 0 %}
-          <span class="red">{{ element.balance }}t</span>
+<div class="row g-4 mb-5">
+    <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'my-transactions' %}" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-wallet2 display-4 text-primary mb-3"></i>
+                    <h5 class="card-title text-center">Мой счёт</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'answers' %}" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-question-circle display-4 text-success mb-3"></i>
+                    <h5 class="card-title text-center">Задачи</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'plans' %}" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-calendar-event display-4 text-warning mb-3"></i>
+                    <h5 class="card-title text-center">Расписание</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <a href="{% url 'shop' %}" class="text-decoration-none">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center py-4">
+                    <i class="bi bi-shop-window display-4 text-danger mb-3"></i>
+                    <h5 class="card-title text-center">Магазин</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<h1 class="h3">Добро пожаловать!</h1>
+<p class="lead">Это главная страница банка ЛИСа.</p>
+
+{% if user.is_authenticated %}
+    <h2 class="h5">Здравствуй, {{ request.user.account }}</h2>
+
+    <ul class="list-unstyled ps-3 mb-4">
+        {% if request.user.account.party %}
+            <li>Отряд: {{ request.user.account.party }}</li>
         {% else %}
-          {{ element.balance }}t
-        {% endif %}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    {% if user.is_authenticated %}
-    <tfoot>
-      <tr>
-        <td><b>{{ request.user.account.get_number_f }}</b></td>
-        <td><b>{{ request.user.account }}</b></td>
-        <td><b>{{ request.user.account.party }}</b></td>
-        <td><b>{% if request.user.account.balance > 0 %}
-          <span class="green">{{ request.user.account.balance }}t</span>
-        {% elif request.user.account.balance < 0 %}
-          <span class="red">{{ request.user.account.balance }}t</span>
+            <li class="text-muted">Вы не принадлежите ни к одному отряду.</li>
+        {% endif %}
+
+        {% if request.user.account.user_group and request.user.account.user_group != 'None' %}
+            <li>Группа: {{ request.user.account.user_group }}</li>
         {% else %}
-          {{ request.user.account.balance }}t
-        {% endif %}</b></td>
-      </tr>
-    </tfoot>
-    {% endif %}
-  </table>
-  {% else %}
+            <li class="text-muted">Вы не состоите ни в одной группе.</li>
+            <p class="text-muted small">
+                Если это не так, обратитесь к минфину/старшему куратору – он исправит.
+            </p>
+        {% endif %}
+    </ul>
+{% endif %}
+
+<p class="mt-3"><small>Используйте меню сверху для навигации по сайту.</small></p>
+
+{# ---------- STAFF‑BLOCK (только для персонала) ------------------- #}
+{% if perms.bank.staff_ %}
+    <h2 class="h4 mt-5">Для персонала:</h2>
+
+    <h4 class="mb-3">Счёт банка:
+        {% if admin.balance > 0 %}
+            <span class="text-success">{{ admin.balance }}t</span>
+        {% elif admin.balance < 0 %}
+            <span class="text-danger">{{ admin.balance }}t</span>
+        {% else %}
+            {{ admin.balance }}t
+        {% endif %}
+    </h4>
+
+    <ul class="nav nav-pills flex-column flex-sm-row gap-2 mb-4">
+        <li class="nav-item"><a class="nav-link" href="{% url 'accounts' %}">Посмотреть все счета</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'new-transaction-rool' %}">Оформить штраф/премию по правилу</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'info-staff' %}">Работа с транзакциями</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'autotransactions' %}">Работа с автотранзакциями</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'info-users' %}">Работа с пользователями</a></li>
+    </ul>
+{% endif %}
+
+{# ---------- FORBES‑TABLE ------------------------------------------ #}
+{% if forbes %}
+    <h2 class="h4 mt-5">Список «Forbes»</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle">
+            <caption class="text-center fw-semibold mb-2">На них нужно равняться!</caption>
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Человек</th>
+                    <th scope="col">Отряд</th>
+                    <th scope="col">Баланс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for element in forbes %}
+                    <tr>
+                        <td>{{ element.get_number_f }}</td>
+                        <td>{{ element }}</td>
+                        <td>{{ element.party }}</td>
+                        <td>
+                            {% if element.balance > 0 %}
+                                <span class="text-success">{{ element.balance }}t</span>
+                            {% elif element.balance < 0 %}
+                                <span class="text-danger">{{ element.balance }}t</span>
+                            {% else %}
+                                {{ element.balance }}t
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+            {% if user.is_authenticated %}
+                <tfoot class="table-light">
+                    <tr>
+                        <td><strong>{{ request.user.account.get_number_f }}</strong></td>
+                        <td><strong>{{ request.user.account }}</strong></td>
+                        <td><strong>{{ request.user.account.party }}</strong></td>
+                        <td><strong>
+                            {% if request.user.account.balance > 0 %}
+                                <span class="text-success">{{ request.user.account.balance }}t</span>
+                            {% elif request.user.account.balance < 0 %}
+                                <span class="text-danger">{{ request.user.account.balance }}t</span>
+                            {% else %}
+                                {{ request.user.account.balance }}t
+                            {% endif %}
+                        </strong></td>
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    </div>
+{% else %}
     <p class="p-3 mb-2 bg-info text-dark">Здесь будет расположен список Forbes.</p>
-  {% endif %}
-  {% if antiforbes %}
-  <h2>Список "AntiForbes":</h2>
-  <table class="table table-striped table-hover table-bordered" cellpadding=30px>
-    <caption>На них не нужно равняться!</caption>
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Человек</th>
-        <th scope="col">Отряд</th>
-        <th scope="col">Баланс</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for element in antiforbes %}
-      <tr>
-        <td>{{ element.get_number_a }}</td>
-        <td>{{ element }}</td>
-        <td>{{ element.party }}</td>
-        <td>{% if element.balance > 0 %}
-          <span class="green">{{ element.balance }}t</span>
-        {% elif element.balance < 0 %}
-          <span class="red">{{ element.balance }}t</span>
-        {% else %}
-          {{ element.balance }}t
-        {% endif %}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-    {% if user.is_authenticated %}
-    <tfoot>
-      <tr>
-        <td><b>{{ request.user.account.get_number_a }}</b></td>
-        <td><b>{{ request.user.account }}</b></td>
-        <td><b>{{ request.user.account.party }}</b></td>
-        <td><b>{% if request.user.account.balance > 0 %}
-          <span class="green">{{ request.user.account.balance }}t</span>
-        {% elif request.user.account.balance < 0 %}
-          <span class="red">{{ request.user.account.balance }}t</span>
-        {% else %}
-          {{ request.user.account.balance }}t
-        {% endif %}</b></td>
-      </tr>
-    </tfoot>
-    {% endif %}
-  </table>
-  {% else %}
+{% endif %}
+
+{# ---------- ANTI‑FORBES‑TABLE ------------------------------------ #}
+{% if antiforbes %}
+    <h2 class="h4 mt-5">Список «AntiForbes»</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle">
+            <caption class="text-center fw-semibold mb-2">На них не нужно равняться!</caption>
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Человек</th>
+                    <th scope="col">Отряд</th>
+                    <th scope="col">Баланс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for element in antiforbes %}
+                    <tr>
+                        <td>{{ element.get_number_a }}</td>
+                        <td>{{ element }}</td>
+                        <td>{{ element.party }}</td>
+                        <td>
+                            {% if element.balance > 0 %}
+                                <span class="text-success">{{ element.balance }}t</span>
+                            {% elif element.balance < 0 %}
+                                <span class="text-danger">{{ element.balance }}t</span>
+                            {% else %}
+                                {{ element.balance }}t
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+
+            {% if user.is_authenticated %}
+                <tfoot class="table-light">
+                    <tr>
+                        <td><strong>{{ request.user.account.get_number_a }}</strong></td>
+                        <td><strong>{{ request.user.account }}</strong></td>
+                        <td><strong>{{ request.user.account.party }}</strong></td>
+                        <td><strong>
+                            {% if request.user.account.balance > 0 %}
+                                <span class="text-success">{{ request.user.account.balance }}t</span>
+                            {% elif request.user.account.balance < 0 %}
+                                <span class="text-danger">{{ request.user.account.balance }}t</span>
+                            {% else %}
+                                {{ request.user.account.balance }}t
+                            {% endif %}
+                        </strong></td>
+                    </tr>
+                </tfoot>
+            {% endif %}
+        </table>
+    </div>
+{% else %}
     <p class="p-3 mb-2 bg-info text-dark">Здесь будет расположен список AntiForbes.</p>
-  {% endif %}
+{% endif %}
+
 {% endblock %}
