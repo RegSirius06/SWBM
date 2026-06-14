@@ -1,0 +1,68 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block hero %}
+    <h1 class="display-4 fw-bold mb-3">Частичная информация о счёте</h1>
+    <p class="lead">Доступно без полной авторизации.</p>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <section class="mb-4">
+            <h2 class="h5">Основные данные</h2>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>ФИО:</strong>
+                    {{ partial_info.last_name }} {{ partial_info.first_name }} {{ partial_info.middle_name }}
+                </li>
+                <li class="list-group-item d-flex align-items-center">
+                    <strong class="me-2">Баланс:</strong>
+                    {% if partial_info.balance > 0 %}
+                        <span class="text-success fw-medium">{{ partial_info.balance }}t</span>
+                    {% elif partial_info.balance < 0 %}
+                        <span class="text-danger fw-medium">{{ partial_info.balance }}t</span>
+                    {% else %}
+                        <span class="fw-medium">{{ partial_info.balance }}t</span>
+                    {% endif %}
+                </li>
+            </ul>
+        </section>
+
+        <hr class="my-4">
+        {% if not request.user.is_authenticated %}
+            <section class="mb-4">
+                <h3 class="h6">Для доступа к полной информации введите пароль</h3>
+
+                <form method="post" class="row g-2 align-items-center mt-2">
+                    {% csrf_token %}
+
+                    <div class="col-auto">
+                        <input type="password"
+                               name="password"
+                               placeholder="Пароль"
+                               required
+                               class="form-control"
+                               style="width: 260px;">
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                        </button>
+                    </div>
+                </form>
+            </section>
+        {% else %}
+            <section class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-info-circle me-2"></i>
+                Вы уже авторизованы как
+                <strong class="mx-1">{{ request.user.account.short_name }}</strong>.
+                <a href="{% url 'my-transactions' %}" class="ms-2 text-decoration-underline">
+                    Перейти к полной информации о вашем аккаунте
+                </a>
+            </section>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

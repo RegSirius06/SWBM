@@ -26,10 +26,7 @@ class account(models.Model):
                                   help_text=gc('account, fields, user_group, help_text'),
                                   verbose_name=gc('account, fields, user_group, verbose_name'))
     party = models.IntegerField(default=0, verbose_name=gc('account, fields, party, verbose_name'))
-
-    theme_self = models.CharField(max_length=50, choices=EXISTING_THEMES, default='default',
-                                  help_text=gc('account, fields, theme_self, help_text'),
-                                  verbose_name=gc('account, fields, theme_self, verbose_name'))
+    qr_image = models.ImageField(upload_to='qr/', blank=True, null=True, verbose_name="QR")
     account_status = models.CharField(max_length=100, default='', blank=True,
                                       verbose_name=gc('account, fields, account_status, verbose_name'))
 
@@ -122,9 +119,8 @@ class account(models.Model):
         f.close()
         return "Done!"
 
-# TODO: Time
 class transaction(models.Model):
-    date = models.DateField(null=True, verbose_name=gc("transaction, fields, date, verbose_name"))
+    date = models.DateTimeField(auto_now=True, verbose_name=gc("transaction, fields, date, verbose_name"))
     comment = models.CharField(max_length=70, default=gc("transaction, fields, comment, default"),
                                verbose_name=gc("transaction, fields, comment, verbose_name"))
     receiver = models.ForeignKey('account', related_name='received_trans', on_delete=models.CASCADE, null=True,

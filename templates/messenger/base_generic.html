@@ -29,7 +29,6 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'messages' %}">Мессенджер</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'anns' %}">Создать объявление</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'list-themes' %}">Изменить тему</a></li>
                 {% endif %}
                 <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'index' %}">Банк</a></li>
                 {% if perms.bank.staff_ %}

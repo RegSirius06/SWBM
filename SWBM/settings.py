@@ -155,6 +155,12 @@ SITEMAP_PROVIDERS = {
 PORT = 8000
 ADDRESS = "0.0.0.0"
 
+try:
+    with open(BASE_DIR / "my_url.txt", "r") as f:
+        SITE_URL = f.readline()
+except:
+    SITE_URL = f"http://{ADDRESS}:{PORT}"
+
 # NGROK
 CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.app',

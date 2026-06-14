@@ -269,6 +269,7 @@ class chat_and_acc(models.Model):
 
 # TODO: Time
 class announcement(models.Model):
+    date = models.DateTimeField(auto_now=True, verbose_name="Дата и время")
     number = models.IntegerField(default=0, verbose_name=gc("announcement, fields, number, verbose_name"))
     creator = models.ForeignKey(account, on_delete=models.CASCADE, null=True,
                                 verbose_name=gc("announcement, fields, creator, verbose_name"))
@@ -279,6 +280,9 @@ class announcement(models.Model):
     picture = models.ImageField(verbose_name=gc("announcement, fields, picture, verbose_name"), null=True)
     orientation = models.IntegerField(choices=PICTURE_TYPES, default=0,
                                       verbose_name=gc("announcement, fields, orientation, verbose_name"))
+
+    class Meta:
+        ordering = ["-date"]
 
     def get_absolute_url(self):
         return reverse('anns-new-n', args=[str(self.id)])

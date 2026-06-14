@@ -38,7 +38,7 @@ def re_new_autotransaction_add(request, pk):
                 autotransaction_.delete()
             else:
                 autotransaction_.history = request.user.account
-                autotransaction_.creator = account.objects.get(last_name='Admin')
+                autotransaction_.creator = account.objects.get(id=uuid.UUID(int=0))
                 autotransaction_.accounts.set(form.cleaned_data['accounts'])
                 autotransaction_.cnt = form.cleaned_data['cnt']
                 autotransaction_.skip = form.cleaned_data['skip']
@@ -68,7 +68,7 @@ def new_rool_autotransaction_add(request):
             autotransaction_.sign = rool_.sign
             autotransaction_.comment = f'{rool_}'
             autotransaction_.skip = form.cleaned_data['skip']
-            autotransaction_.creator = account.objects.get(last_name='Admin')
+            autotransaction_.creator = account.objects.get(id=uuid.UUID(int=0))
             autotransaction_.history = request.user.account
             autotransaction_.cnt = rool_.cost
             autotransaction_.save()
@@ -87,7 +87,7 @@ def new_autotransaction_add(request):
         if form.is_valid():
             autotransaction_ = autotransaction()
             autotransaction_.history = request.user.account
-            autotransaction_.creator = account.objects.get(last_name='Admin')
+            autotransaction_.creator = account.objects.get(id=uuid.UUID(int=0))
             autotransaction_.cnt = form.cleaned_data['cnt']
             autotransaction_.skip = form.cleaned_data['skip']
             autotransaction_.sign = form.cleaned_data['sign']

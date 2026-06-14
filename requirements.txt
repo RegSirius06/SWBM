@@ -4,3 +4,4 @@ apscheduler
 telebot
 ngrok
 django-cors-headers
+myqr

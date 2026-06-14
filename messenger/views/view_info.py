@@ -35,35 +35,6 @@ def index(request):
     )
 
 @login_required
-def list_themes(request):
-    date = datetime.date.today()
-    time = datetime.time(datetime.datetime.today().hour, datetime.datetime.today().minute, datetime.datetime.today().second,)
-    d_t = f'{date} в {time}'
-    themes = [i[-1] for i in EXISTING_THEMES]
-    paginator1 = Paginator(themes, 15)
-    page1 = request.GET.get('page1')
-    try:
-        items1 = paginator1.page(page1)
-    except PageNotAnInteger:
-        items1 = paginator1.page(1)
-    except EmptyPage:
-        items1 = paginator1.page(paginator1.num_pages)
-    if request.method == 'POST':
-        form = other.ReNewThemeForm(request.POST, selected=request.user.account.theme_self)
-        if form.is_valid():
-            x = form.cleaned_data["type_"]
-            if x: theme.get_active_theme(request.user.account, delete=True, new=x)
-            else: theme.get_active_theme(request.user.account, delete=True)
-            return redirect('list-themes')
-    else: form = other.ReNewThemeForm(selected=request.user.account.theme_self)
-    return render(
-        request,
-        'messenger/themes/themes.html',
-        context={'themes': items1, 'date': d_t, 'form': form, 'theme': theme.get_active_theme(request.user.account),
-                 'type': theme.get_type_theme(request.user.account),}
-    )
-
-@login_required
 def home(request):
     chat_valid_all = list(chat_valid.objects.exclude(avaliable=False))
     list_id_chats = []

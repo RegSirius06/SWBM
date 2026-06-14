@@ -64,9 +64,10 @@
 </div>
 
 <h1 class="h3">Добро пожаловать!</h1>
-<p class="lead">Это главная страница банка ЛИСа.</p>
+<p class="lead">Это главная страница банка ЛЕС.</p>
 
 {% if user.is_authenticated %}
+<section class="mb-4">
     <h2 class="h5">Здравствуй, {{ request.user.account }}</h2>
 
     <ul class="list-unstyled ps-3 mb-4">
@@ -85,6 +86,29 @@
             </p>
         {% endif %}
     </ul>
+
+    <h3 class="h6">Ваш QR‑код</h3>
+    {% if request.user.account.qr_image %}
+        <div class="align-items-center mb-3">
+            <img src="{{ request.user.account.qr_image.url }}"
+                 alt="QR‑code"
+                 class="img-fluid me-3"
+                 style="max-width:250px; max-height:250px;">
+            <form id="refresh-qr-form"
+                  method="post"
+                  action="{% url 'qr-refresh' %}"
+                  class="flex-shrink-0">
+                {% csrf_token %}
+                <button type="submit"
+                        class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Обновить QR‑код
+                </button>
+            </form>
+        </div>
+    {% else %}
+        <p class="text-muted">QR‑код пока не сгенерирован.</p>
+    {% endif %}
+</section>
 {% endif %}
 
 <p class="mt-3"><small>Используйте меню сверху для навигации по сайту.</small></p>

@@ -4,7 +4,6 @@ from messenger.views import chats, updates, messages, announcements, view_info
 
 urlpatterns = [
     re_path(r'^$', view_info.index, name='index_of_messenger'),
-    re_path(r'^themes/$', view_info.list_themes, name='list-themes'),
     re_path(r'^messages/$', view_info.home, name='messages'),
     re_path(r'^messages/detail/(?P<pk>[-\w]+)/$', view_info.view_message_detail, name='messages-detail'),
 

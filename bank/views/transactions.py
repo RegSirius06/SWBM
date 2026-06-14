@@ -45,7 +45,7 @@ def new_rool_transaction_base_add(request, pk):
                 new_transaction.date = datetime.datetime.today()
                 new_transaction.sign = rool_.sign
                 new_transaction.comment = f'{rool_}'
-                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.creator = account.objects.get(id=uuid.UUID(int=0))
                 new_transaction.receiver = i
                 new_transaction.history = request.user.account
                 new_transaction.cnt = rool_.cost
@@ -71,7 +71,7 @@ def new_rool_transaction_add(request):
                 new_transaction.date = datetime.datetime.today()
                 new_transaction.sign = rool_.sign
                 new_transaction.comment = f'{rool_}'
-                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.creator = account.objects.get(id=uuid.UUID(int=0))
                 new_transaction.receiver = i
                 new_transaction.history = request.user.account
                 new_transaction.cnt = rool_.cost
@@ -95,7 +95,7 @@ def new_transaction_staff_add(request):
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = form.cleaned_data['transaction_date']
                 new_transaction.comment = form.cleaned_data['transaction_comment']
-                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.creator = account.objects.get(id=uuid.UUID(int=0))
                 new_transaction.receiver = i
                 new_transaction.sign = form.cleaned_data['transaction_sign']
                 new_transaction.history = request.user.account
@@ -136,7 +136,7 @@ def new_transaction_staff_party_add(request):
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = form.cleaned_data['transaction_date']
                 new_transaction.comment = form.cleaned_data['transaction_comment']
-                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.creator = account.objects.get(id=uuid.UUID(int=0))
                 new_transaction.receiver = i
                 new_transaction.sign = form.cleaned_data['transaction_sign']
                 new_transaction.history = request.user.account
@@ -184,7 +184,7 @@ def new_transaction_full_add(request):
                             ('index', 'Домой'),
                         ]
                     )
-                elif account.objects.get(last_name='Admin') == new_transaction.receiver:
+                elif account.objects.get(id=uuid.UUID(int=0)) == new_transaction.receiver:
                     return errors.render_error(
                         request, "bank", "Создание транзакции",
                         "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",
@@ -218,7 +218,7 @@ def new_transaction_buy_add(request):
                 new_transaction = transaction()
                 new_transaction.id = uuid.uuid4()
                 new_transaction.date = datetime.datetime.today()
-                new_transaction.creator = account.objects.get(last_name='Admin')
+                new_transaction.creator = account.objects.get(id=uuid.UUID(int=0))
                 new_transaction.receiver = i
                 new_transaction.sign = "purchase-"
                 good_dict = form.clean_goods()[0]
@@ -279,7 +279,7 @@ def new_transaction_base_add(request):
                             ('index', 'Домой'),
                         ]
                     )
-                elif account.objects.get(last_name='Admin') == new_transaction.receiver:
+                elif account.objects.get(id=uuid.UUID(int=0)) == new_transaction.receiver:
                     return errors.render_error(
                         request, "bank", "Создание перевода",
                         "Вы не можете перевести деньги на банковский счёт. Сегодня без донатов.",

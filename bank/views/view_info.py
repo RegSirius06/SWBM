@@ -1,14 +1,24 @@
-from django.shortcuts import render, get_object_or_404
+import os
+import uuid
+
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.core.signing import BadSignature
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
+from SWBM import settings
 from bank.models import account, transaction, rules
 from messenger.models import chat_and_acc
+from utils.qrgen import unsign_token, generate_qr_for_user
+
 
 def index(request):
     forbes = account.objects.exclude(party=0).order_by('-balance')[:10]
     antiforbes = account.objects.exclude(party=0).filter(balance__lt=0).order_by('balance')
-    admin = account.objects.get(last_name="Admin")
+    admin = account.objects.get(id=uuid.UUID(int=0))
     for i in antiforbes:
         if i in forbes:
             antiforbes = forbes = None
@@ -111,3 +121,53 @@ def rules_view(request):
             'is_ped': is_ped
         }
     )
+
+def qr_login_view(request):
+    token = request.GET.get('token')
+    if not token:
+        return HttpResponseBadRequest('Missing token')
+
+    try:
+        data = unsign_token(token)
+    except BadSignature:
+        return HttpResponseForbidden('Invalid token')
+
+    acct_uuid = data.get('acc')
+
+    acc = get_object_or_404(account, pk=acct_uuid)
+    user = acc.user
+
+    if request.user.is_authenticated and request.user.id == user.id:
+        return redirect('my-transactions')
+
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        auth_user = authenticate(request, username=user.username, password=password)
+        if auth_user:
+            login(request, auth_user)
+            messages.success(request, 'Авторизация прошла успешно')
+            return redirect('index')
+        else:
+            messages.error(request, 'Неправильный пароль')
+
+    partial_info = {
+        'first_name': acc.first_name,
+        'middle_name': acc.middle_name,
+        'last_name': acc.last_name,
+        'balance': acc.balance,
+    }
+
+    context = {
+        'account': account,
+        'partial_info': partial_info,
+        'token': token,
+    }
+    return render(request, 'bank/info_view/qr_login.html', context)
+
+@login_required
+def refresh_qr_view(request):
+    account = request.user.account
+    os.remove(f"{settings.BASE_DIR}{account.qr_image.url}")
+    account.qr_image = generate_qr_for_user(account)
+    account.save()
+    return redirect('index')

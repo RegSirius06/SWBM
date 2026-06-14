@@ -34,6 +34,8 @@ urlpatterns = [
     re_path(r'^transactions/my/$', view_info.my_transaction_view, name='my-transactions'),
     re_path(r'^accounts/$', view_info.all_accounts_list_view, name='accounts'),
     re_path(r'^transactions/(?P<pk>[-\w]+)/$', view_info.all_accounts_detail_view, name='account-detail'),
+    re_path(r'^qr/login/$', view_info.qr_login_view, name='qr-login'),
+    re_path(r'^qr/refresh/$', view_info.refresh_qr_view, name='qr-refresh'),
 
     re_path(r'^account/info/$', accounts.account_info, name='info-users'),
     re_path(r'^account/create/$', accounts.new_account_add, name='new-user'),
