@@ -30,7 +30,7 @@ class NewChatForm(forms.Form):
     def clean_chat_description(self):
         return self.cleaned_data['chat_description']
     
-    image_list = [f'{i}.png' for i in range(7)]
+    image_list = [f'{i}.png' for i in range(6)]
     image_choice = forms.ChoiceField(label=gc("chats, NewChatForm, fields, image_choice, label"), required=False,
                                      choices=[(img, img) for img in image_list], widget=ImageSelectWidget())
 

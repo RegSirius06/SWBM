@@ -33,7 +33,7 @@ def generate_qr_for_user(user: account) -> str:
 
     myqr.run(
         words=qr_url,
-        picture=str(Path(settings.STATIC_ROOT) / 'favicon.png'),
+        picture=str(Path(settings.STATIC_ROOT) / '0.png'),
         colorized=True,
         contrast=1.0,
         brightness=1.0,
@@ -52,7 +52,7 @@ def make_qr_base64(url: str, version: int = 1, level: str = "H") -> str:
     myqr.run(
         url,
         save_name=tmp_path,
-        picture=str(Path(settings.STATIC_ROOT) / 'favicon.png'),
+        picture=str(Path(settings.STATIC_ROOT) / '0.png'),
         colorized=True,
         contrast=1.0,
         brightness=1.0,
