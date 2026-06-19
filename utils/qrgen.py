@@ -26,7 +26,7 @@ def generate_qr_for_user(user: account) -> str:
     token = make_signed_token(user.id)
     qr_url = f"{settings.SITE_URL}{reverse('qr-login')}?token={token}"
 
-    filename = f"{uuid.uuid4().hex}.png"
+    filename = f"({user.main_info()}):{uuid.uuid4().hex}.png"
     qr_dir = Path(settings.MEDIA_ROOT) / "qr"
     qr_dir.mkdir(parents=True, exist_ok=True)
     out_path = qr_dir / filename

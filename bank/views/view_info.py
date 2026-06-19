@@ -87,9 +87,7 @@ def all_accounts_detail_view(request, pk):
 @login_required
 def my_transaction_view(request):
     buy_path = reverse("new-transaction-buy")
-    full_url = request.build_absolute_uri(
-        f"{buy_path}?account={request.user.account.id}"
-    )
+    full_url = f"{settings.SITE_URL}{buy_path}?account={request.user.account.id}"
     cache_key = f"qr-buy-{request.user.account.id}"
     qr_base64 = cache.get(cache_key)
 
