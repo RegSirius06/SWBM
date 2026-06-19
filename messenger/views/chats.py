@@ -243,8 +243,7 @@ def chat_view(request, pk):
     return render(
         request,
         'messenger/chats/chats_view_n.html',
-        {'form': form, 'chat': chat_, 'items2': items1, 'form2': form2, 'readen_status': chat_and_acc_.readen,
-         'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account),}
+        {'form': form, 'chat': chat_, 'items2': items1, 'form2': form2, 'readen_status': chat_and_acc_.readen,}
         )
 
 @login_required
@@ -264,8 +263,7 @@ def chat_archived_view(request, pk):
     return render(
         request,
         'messenger/chats/chats_archived_view_n.html',
-        {'items2': items1, 'chat': chat_,
-         'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account),}
+        {'items2': items1, 'chat': chat_,}
     )
 
 @login_required

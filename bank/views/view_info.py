@@ -3,16 +3,18 @@ import uuid
 
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.signing import BadSignature
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import permission_required, login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.urls import reverse
 
 from SWBM import settings
 from bank.models import account, transaction, rules
 from messenger.models import chat_and_acc
-from utils.qrgen import unsign_token, generate_qr_for_user
+from utils.qrgen import unsign_token, generate_qr_for_user, make_qr_base64
 
 
 def index(request):
@@ -84,6 +86,17 @@ def all_accounts_detail_view(request, pk):
 
 @login_required
 def my_transaction_view(request):
+    buy_path = reverse("new-transaction-buy")
+    full_url = request.build_absolute_uri(
+        f"{buy_path}?account={request.user.account.id}"
+    )
+    cache_key = f"qr-buy-{request.user.account.id}"
+    qr_base64 = cache.get(cache_key)
+
+    if not qr_base64:
+        qr_base64 = make_qr_base64(full_url)
+        cache.set(cache_key, qr_base64, timeout=600)
+
     acc_all = [i for i in transaction.objects.filter(receiver=request.user.account)]
     for i in transaction.objects.filter(creator=request.user.account):
         acc_all.append(i)
@@ -99,6 +112,7 @@ def my_transaction_view(request):
         request,
         'bank/info_view/my_transactions.html',
         context={
+            "qr_base64": qr_base64,
             "is_paginated": paginator1.num_pages > 1,
             'page_obj': items1,
         }

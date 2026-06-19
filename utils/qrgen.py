@@ -1,3 +1,6 @@
+import base64
+import os
+import tempfile
 import uuid
 from pathlib import Path
 from typing import Any
@@ -40,3 +43,26 @@ def generate_qr_for_user(user: account) -> str:
     )
 
     return f"qr/{filename}"
+
+def make_qr_base64(url: str, version: int = 1, level: str = "H") -> str:
+    tmp_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp_path = tmp_file.name
+    tmp_file.close()
+
+    myqr.run(
+        url,
+        save_name=tmp_path,
+        picture=str(Path(settings.STATIC_ROOT) / 'favicon.png'),
+        colorized=True,
+        contrast=1.0,
+        brightness=1.0,
+        version=version,
+        level=level,
+    )
+
+    with open(tmp_path, "rb") as f:
+        img_bytes = f.read()
+    b64 = base64.b64encode(img_bytes).decode("ascii")
+    os.remove(tmp_path)
+
+    return b64

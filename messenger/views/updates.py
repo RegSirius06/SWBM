@@ -21,7 +21,7 @@ def update_msgs(request, pk):
 
     html = render_to_string(
         'messenger/updates/update_messages.html',
-        {'items2': items1, 'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account)}
+        {'items2': items1,}
     )
     return JsonResponse({'html': html,})
 
@@ -58,7 +58,6 @@ def update_globals(request):
 
     html = render_to_string(
         'messenger/updates/update_globals.html',
-        {'items2': items2, 'theme': theme.get_active_theme(request.user.account),
-         'type': theme.get_type_theme(request.user.account)}
+        {'items2': items2,}
     )
     return JsonResponse({'html': html})

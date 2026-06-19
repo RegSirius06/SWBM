@@ -1,14 +1,10 @@
-import datetime
-
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib.auth.decorators import login_required
 
 from messenger.models import message, chat, chat_valid, chat_and_acc, announcement
 from bank.models import account
-from constants.constants import EXISTING_THEMES
 from messenger.forms import other
-from utils import theme
 
 def index(request):
     anns = announcement.objects.filter(status=True)
@@ -71,8 +67,7 @@ def home(request):
     else:
         status = request.user.account.account_status
         form = other.SetStatus(initial={'status': status,})
-    context={'items1': items1, 'items2': items2, 'form': form, 'readen_status': chat_and_acc_all,
-             'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account),}
+    context={'items1': items1, 'items2': items2, 'form': form, 'readen_status': chat_and_acc_all,}
     return render(
         request,
         'messenger/home/home.html',
@@ -88,6 +83,5 @@ def view_message_detail(request, pk):
     return render(
         request,
         'messenger/messages/messages_detail_view.html',
-        {'element': message_, 'chat': chat_, 'avaliable': avaliable,
-        'theme': theme.get_active_theme(request.user.account), 'type': theme.get_type_theme(request.user.account),},
+        {'element': message_, 'chat': chat_, 'avaliable': avaliable,},
     )
