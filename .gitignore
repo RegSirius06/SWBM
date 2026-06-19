@@ -19,7 +19,6 @@
 /bank/management/commands/__pycache__/
 /utils/__pycache__/
 /SWBM/__pycache__/
-/reserve/
 /server/ngrok.json
 /server/__pycache__/
 /tele_bot/telebot.json
